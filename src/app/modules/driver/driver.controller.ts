@@ -44,9 +44,65 @@ const updateDriverStatus = catchAsync(async (req: Request, res: Response) => {
   });
 });
 
+const getMe = catchAsync(async (req: Request, res: Response, next: NextFunction) => {
+    const decodedToken = req.user as JwtPayload
+    const result = await driverServices.getMe(decodedToken.userId);
+    sendResponse(res, {
+        success: true,
+        statusCode: httpStatus.OK,
+        message: "Your Driver Profile Retrieved Successfully",
+        data: result.data
+    })
+})
+
+
+const updateMyDriverProfile = catchAsync(async (req: Request, res: Response) => {
+  const user = req.user as JwtPayload;
+  const userId = user.userId;
+  const updateData = { ...req.body };
+
+  if (req.file?.path) {
+    updateData.nid = req.file.path;
+  }
+
+  const updatedDriver = await driverServices.updateMyDriverProfile(userId, updateData);
+
+  sendResponse(res, {
+    success: true,
+    statusCode: httpStatus.OK,
+    message: "Driver profile updated successfully",
+    data: updatedDriver,
+  });
+});
+
+const getAllDrivers = catchAsync(async (req: Request, res: Response, next: NextFunction) => {
+    const result = await driverServices.getAllDrivers();
+
+    sendResponse(res, {
+        success: true,
+        statusCode: httpStatus.CREATED,
+        message: "All Driver Retrieved Successfully",
+        data: result.data
+    })
+})
+const getSingleDriver = catchAsync(async (req: Request, res: Response, next: NextFunction) => {
+    const id = req.params.id;
+    const result = await driverServices.getSingleDriver(id);
+    sendResponse(res, {
+        success: true,
+        statusCode: httpStatus.CREATED,
+        message: "Driver Retrieved Successfully",
+        data: result.data
+    })
+})
+
 
 export const driverControllers = {
     createDriver,
-    updateDriverStatus
+    updateDriverStatus,
+    getMe,
+    updateMyDriverProfile,
+    getSingleDriver,
+    getAllDrivers
 
 }

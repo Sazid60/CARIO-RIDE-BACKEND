@@ -3,6 +3,8 @@ import { DriverStatus, IDriver } from "./driver.interface";
 import { Driver } from "./driver.model";
 import httpStatus from 'http-status-codes';
 import { User } from "../user/user.model"; // adjust path if needed
+import { Role } from "../user/user.interface";
+import mongoose from "mongoose";
 
 const createDriver = async (payload: IDriver) => {
   const user = await User.findById(payload.userId);
@@ -38,29 +40,98 @@ const createDriver = async (payload: IDriver) => {
   return driver;
 };
 
-const updateDriverStatus = async (id: string, driverStatus: DriverStatus) => {
-  const driver = await Driver.findById(id);
+
+// admin will update driver status 
+
+export const updateDriverStatus = async (id: string, driverStatus: DriverStatus) => {
+  const session = await mongoose.startSession();
+  session.startTransaction();
+
+  try {
+    const driver = await Driver.findById(id).session(session);
+    if (!driver) {
+      throw new AppError(httpStatus.NOT_FOUND, "Driver not found");
+    }
+
+    if (driver.driverStatus === DriverStatus.APPROVED && driverStatus === DriverStatus.APPROVED) {
+      throw new AppError(httpStatus.BAD_REQUEST, "Driver is already approved");
+    }
+
+    driver.driverStatus = driverStatus;
+    await driver.save({ session });
+
+    if (driverStatus === DriverStatus.APPROVED) {
+      await User.findByIdAndUpdate(driver.userId, { role: Role.DRIVER }, { session });
+    }
+
+    await session.commitTransaction();
+    session.endSession();
+
+    return driver;
+  } catch (error) {
+    await session.abortTransaction();
+    session.endSession();
+    throw error;
+  }
+};
+
+const getMe = async (userId: string) => {
+  const driver = await Driver.findOne({ userId })
+  // console.log(driver)
+  return {
+    data: driver
+  }
+};
+
+const updateMyDriverProfile = async (userId: string, updatedData: Partial<IDriver>) => {
+
+  const driver = await Driver.findOne({ userId });
+  if (!driver) {
+    throw new AppError(httpStatus.NOT_FOUND, "Driver not found");
+  }
+
+  const updatedDriver = await Driver.findOneAndUpdate(
+    { userId: userId },
+    updatedData,
+    { new: true, runValidators: true }
+  );
+
+  return {
+    data: updatedDriver
+  }
+};
+
+
+const getAllDrivers = async () => {
+  const drivers = await Driver.find({})
+  return {
+    data: drivers,
+  }
+}
+
+
+const getSingleDriver = async (id: string) => {
+  const driver = await Driver.findById(id).populate({
+  path: "userId",
+  select: "-password -auths"
+});
+
 
   if (!driver) {
     throw new AppError(httpStatus.NOT_FOUND, "Driver not found");
   }
-  
-  if (driver.driverStatus === DriverStatus.APPROVED) {
-    throw new AppError(httpStatus.BAD_REQUEST, "Driver is already approved");
+
+
+  return {
+    data: driver
   }
-
-  if (driver.driverStatus === DriverStatus.SUSPENDED) {
-    throw new AppError(httpStatus.BAD_REQUEST, "Driver is suspended");
-  }
-
-
-  driver.driverStatus = driverStatus;
-  await driver.save();
-
-  return driver;
 };
 
 export const driverServices = {
   createDriver,
-  updateDriverStatus
+  updateDriverStatus,
+  getMe,
+  updateMyDriverProfile,
+  getAllDrivers,
+  getSingleDriver
 };
