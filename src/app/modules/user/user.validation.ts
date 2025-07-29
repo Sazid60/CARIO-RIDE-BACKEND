@@ -59,9 +59,6 @@ export const updateUserZodSchema = z.object({
     isActive: z
         .enum(Object.values(IsActive) as [string])
         .optional(),
-    isDeleted: z
-        .boolean({ invalid_type_error: "isDeleted must be true or false" })
-        .optional(),
     isVerified: z
         .boolean({ invalid_type_error: "isVerified must be true or false" })
         .optional(),

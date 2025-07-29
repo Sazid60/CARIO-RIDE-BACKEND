@@ -17,11 +17,11 @@ const createDriver = async (payload: IDriver) => {
   }
 
   if (!user.phone) {
-    throw new AppError(httpStatus.BAD_REQUEST, "Please update your phone number before applying.");
+    throw new AppError(httpStatus.BAD_REQUEST, "Please update your phone number in user profile before applying.");
   }
 
   if (!user.location || !user.location.coordinates || user.location.coordinates.length !== 2) {
-    throw new AppError(httpStatus.BAD_REQUEST, "Please update your current location before applying.");
+    throw new AppError(httpStatus.BAD_REQUEST, "Please update your location In User Profile before applying.");
   }
 
   const existingDriver = await Driver.findOne({ userId: payload.userId });
@@ -164,3 +164,5 @@ export const driverServices = {
   goOffline,
   goOnline
 };
+
+

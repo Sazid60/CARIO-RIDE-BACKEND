@@ -26,10 +26,9 @@ const userSchema = new Schema<IUser>({
         default: "Point",
       },
       coordinates: {
-        type: [Number]
+        type: [Number, Number],
       },
     },
-    isDeleted: { type: Boolean, default: false },
     isActive: {
         type: String,
         enum: Object.values(IsActive),

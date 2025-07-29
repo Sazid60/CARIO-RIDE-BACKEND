@@ -41,6 +41,6 @@ export interface IDriver {
   currentLocation?: ICurrentLocation;
   ridingStatus: DriverRidingStatus;
   totalEarning?: number;
-  nid: string;
+  drivingLicense: string;
   driverStatus: DriverStatus;
 }

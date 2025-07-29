@@ -25,14 +25,11 @@ const credentialsLogin = catchAsync(async (req: Request, res: Response, next: Ne
         }
 
         if (!user) {
-            // console.log("from !user");
-            // return new AppError(401, info.message)
             return next(new AppError(401, info.message))
         }
 
         const userTokens = await createUserToken(user)
 
-        // delete user.toObject().password
 
         const { password: pass, ...rest } = user.toObject()
 

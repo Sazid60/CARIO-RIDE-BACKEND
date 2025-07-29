@@ -43,6 +43,7 @@ router.post(
   checkAuth(Role.DRIVER),
   driverControllers.goOffline
 );
+
 router.patch("/status/:id",
     checkAuth(Role.ADMIN, Role.SUPER_ADMIN),
     validateRequest(updateDriverStatusZodSchema),
