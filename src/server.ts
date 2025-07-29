@@ -1,33 +1,43 @@
-
+/* eslint-disable no-console */
 import { Server } from "http"
+
 import mongoose from "mongoose"
-import app from "./app"
-import { envVars } from "./app/config/env"
+import app from "./app";
+import { envVars } from "./app/config/env";
+import { seedSuperAdmin } from "./app/utils/seedSuperAdmin";
+import { connectRedis } from "./app/config/redis.config";
+
 let server: Server
+
 
 const startServer = async () => {
     try {
-        await mongoose.connect(envVars.DB_URL)
+        await mongoose.connect(envVars.DB_URL);
         console.log("Connected To MongoDb")
         server = app.listen(envVars.PORT, () => {
-            console.log(`Server Is Running On Port ${envVars.PORT}`)
+            console.log(`Server is Running On Port ${envVars.PORT}`)
         })
     } catch (error) {
         console.log(error)
     }
 }
 
-startServer()
+(async () => {
+    await connectRedis()
+    await startServer()
+    await seedSuperAdmin()
+})()
 
-process.on("SIGTERM", () => {
-    console.log("SIGTERM signal received... Server shutting down..");
-
+process.on("SIGTERM", (err) => {
+    console.log("Signal Termination Happened...! Server Is Shutting Down !", err)
     if (server) {
         server.close(() => {
             process.exit(1)
-        });
+        })
     }
+
     process.exit(1)
+
 })
 
 process.on("SIGINT", () => {
@@ -41,9 +51,8 @@ process.on("SIGINT", () => {
     process.exit(1)
 
 })
-
-
 process.on("unhandledRejection", () => {
+
     console.log("Unhandled Rejection Happened...! Server Is Shutting Down !")
     if (server) {
         server.close(() => {
@@ -54,7 +63,6 @@ process.on("unhandledRejection", () => {
     process.exit(1)
 
 })
-
 
 process.on("uncaughtException", (err) => {
     console.log("Uncaught Exception Happened...! Server Is Shutting Down !", err)
@@ -67,3 +75,4 @@ process.on("uncaughtException", (err) => {
     process.exit(1)
 
 })
+
