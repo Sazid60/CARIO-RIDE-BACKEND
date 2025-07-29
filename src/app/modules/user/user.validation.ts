@@ -29,10 +29,16 @@ export const createUserZodSchema = z.object({
             message: "Phone number must be valid for Bangladesh. Format: +8801XXXXXXXXX or 01XXXXXXXXX",
         })
         .optional(),
-    address: z
-        .string({ invalid_type_error: "Address must be string" })
-        .max(200, { message: "Address cannot exceed 200 characters." })
-        .optional()
+    location: z
+        .object({
+            type: z.literal("Point"),
+            coordinates: z
+                .tuple([z.number(), z.number()])
+                .refine((coords) => coords.length === 2, {
+                    message: "Coordinates must be [longitude, latitude]",
+                }),
+        })
+        .optional(),
 })
 
 export const updateUserZodSchema = z.object({
@@ -59,8 +65,14 @@ export const updateUserZodSchema = z.object({
     isVerified: z
         .boolean({ invalid_type_error: "isVerified must be true or false" })
         .optional(),
-    address: z
-        .string({ invalid_type_error: "Address must be string" })
-        .max(200, { message: "Address cannot exceed 200 characters." })
-        .optional()
+    location: z
+        .object({
+            type: z.literal("Point"),
+            coordinates: z
+                .tuple([z.number(), z.number()])
+                .refine((coords) => coords.length === 2, {
+                    message: "Coordinates must be [longitude, latitude]",
+                }),
+        })
+        .optional(),
 })

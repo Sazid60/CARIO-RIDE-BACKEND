@@ -19,7 +19,16 @@ const userSchema = new Schema<IUser>({
     },
     phone: { type: String },
     picture: { type: String },
-    address: { type: String },
+    location: {
+      type: {
+        type: String,
+        enum: ["Point"],
+        default: "Point",
+      },
+      coordinates: {
+        type: [Number]
+      },
+    },
     isDeleted: { type: Boolean, default: false },
     isActive: {
         type: String,
