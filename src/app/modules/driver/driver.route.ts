@@ -2,7 +2,7 @@ import { Router } from "express";
 import { checkAuth } from "../../middlewares/checkAuth";
 import { Role } from "../user/user.interface";
 import { validateRequest } from "../../middlewares/validateRequest";
-import { createDriverZodSchema, updateDriverProfileZodSchema, updateDriverStatusZodSchema } from "./driver.validation";
+import { createDriverZodSchema, goOnlineZodSchema, updateDriverProfileZodSchema, updateDriverStatusZodSchema } from "./driver.validation";
 import { multerUpload } from "../../config/multer.config";
 import { driverControllers } from "./driver.controller";
 
@@ -31,6 +31,18 @@ router.patch(
 
 // go online or offline 
 
+router.patch(
+  "/go-online",
+  checkAuth(Role.DRIVER),
+  validateRequest(goOnlineZodSchema),
+  driverControllers.goOnline
+);
+
+router.post(
+  "/go-offline",
+  checkAuth(Role.DRIVER),
+  driverControllers.goOffline
+);
 router.patch("/status/:id",
     checkAuth(Role.ADMIN, Role.SUPER_ADMIN),
     validateRequest(updateDriverStatusZodSchema),

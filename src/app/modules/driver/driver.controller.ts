@@ -13,22 +13,22 @@ import { JwtPayload } from "jsonwebtoken";
 
 
 const createDriver = catchAsync(async (req: Request, res: Response, next: NextFunction) => {
-    const user = req.user as JwtPayload
-    const userId = user.userId
+  const user = req.user as JwtPayload
+  const userId = user.userId
 
-    const payload: IDriver = {
-        ...req.body,
-        userId,
-        nid: req.file?.path
-    }
-    const driver = await driverServices.createDriver(payload)
+  const payload: IDriver = {
+    ...req.body,
+    userId,
+    nid: req.file?.path
+  }
+  const driver = await driverServices.createDriver(payload)
 
-    sendResponse(res, {
-        success: true,
-        statusCode: httpStatus.CREATED,
-        message: "Driver Created Successfully",
-        data: driver
-    })
+  sendResponse(res, {
+    success: true,
+    statusCode: httpStatus.CREATED,
+    message: "Driver Created Successfully",
+    data: driver
+  })
 })
 
 const updateDriverStatus = catchAsync(async (req: Request, res: Response) => {
@@ -45,14 +45,14 @@ const updateDriverStatus = catchAsync(async (req: Request, res: Response) => {
 });
 
 const getMe = catchAsync(async (req: Request, res: Response, next: NextFunction) => {
-    const decodedToken = req.user as JwtPayload
-    const result = await driverServices.getMe(decodedToken.userId);
-    sendResponse(res, {
-        success: true,
-        statusCode: httpStatus.OK,
-        message: "Your Driver Profile Retrieved Successfully",
-        data: result.data
-    })
+  const decodedToken = req.user as JwtPayload
+  const result = await driverServices.getMe(decodedToken.userId);
+  sendResponse(res, {
+    success: true,
+    statusCode: httpStatus.OK,
+    message: "Your Driver Profile Retrieved Successfully",
+    data: result.data
+  })
 })
 
 
@@ -76,33 +76,61 @@ const updateMyDriverProfile = catchAsync(async (req: Request, res: Response) => 
 });
 
 const getAllDrivers = catchAsync(async (req: Request, res: Response, next: NextFunction) => {
-    const result = await driverServices.getAllDrivers();
+  const result = await driverServices.getAllDrivers();
 
-    sendResponse(res, {
-        success: true,
-        statusCode: httpStatus.CREATED,
-        message: "All Driver Retrieved Successfully",
-        data: result.data
-    })
+  sendResponse(res, {
+    success: true,
+    statusCode: httpStatus.CREATED,
+    message: "All Driver Retrieved Successfully",
+    data: result.data
+  })
 })
 const getSingleDriver = catchAsync(async (req: Request, res: Response, next: NextFunction) => {
-    const id = req.params.id;
-    const result = await driverServices.getSingleDriver(id);
-    sendResponse(res, {
-        success: true,
-        statusCode: httpStatus.CREATED,
-        message: "Driver Retrieved Successfully",
-        data: result.data
-    })
+  const id = req.params.id;
+  const result = await driverServices.getSingleDriver(id);
+  sendResponse(res, {
+    success: true,
+    statusCode: httpStatus.CREATED,
+    message: "Driver Retrieved Successfully",
+    data: result.data
+  })
 })
+
+const goOnline = catchAsync(async (req, res) => {
+  const user = req.user as JwtPayload;
+  const userId = user.userId;
+  const currentLocation = req.body;
+  const result = await driverServices.goOnline(userId,currentLocation);
+  sendResponse(res, {
+    success: true,
+    statusCode: httpStatus.OK,
+    message: "You are Online Now!",
+    data: result.data
+  })
+});
+
+const goOffline = catchAsync(async (req, res) => {
+   const user = req.user as JwtPayload;
+  const userId = user.userId;
+
+  const result = await driverServices.goOffline(userId);
+  sendResponse(res, {
+    success: true,
+    statusCode: httpStatus.OK,
+    message: "You Have Became Offline Now!",
+    data: result.data
+  })
+});
 
 
 export const driverControllers = {
-    createDriver,
-    updateDriverStatus,
-    getMe,
-    updateMyDriverProfile,
-    getSingleDriver,
-    getAllDrivers
+  createDriver,
+  updateDriverStatus,
+  getMe,
+  updateMyDriverProfile,
+  getSingleDriver,
+  getAllDrivers,
+  goOffline,
+  goOnline
 
 }

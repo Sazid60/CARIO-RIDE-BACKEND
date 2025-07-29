@@ -1,5 +1,5 @@
 import AppError from "../../errorHelpers/AppError";
-import { DriverStatus, IDriver } from "./driver.interface";
+import { DriverStatus, ICurrentLocation, IDriver } from "./driver.interface";
 import { Driver } from "./driver.model";
 import httpStatus from 'http-status-codes';
 import { User } from "../user/user.model"; // adjust path if needed
@@ -112,9 +112,9 @@ const getAllDrivers = async () => {
 
 const getSingleDriver = async (id: string) => {
   const driver = await Driver.findById(id).populate({
-  path: "userId",
-  select: "-password -auths"
-});
+    path: "userId",
+    select: "-password -auths"
+  });
 
 
   if (!driver) {
@@ -127,11 +127,40 @@ const getSingleDriver = async (id: string) => {
   }
 };
 
+const goOnline = async (userId: string, currentLocation :ICurrentLocation) => {
+  const driver = await Driver.findOneAndUpdate(
+    { userId },
+    {
+      onlineStatus: "ONLINE",
+      currentLocation: currentLocation,
+    },
+    { new: true }
+  );
+  return { data: driver };
+};
+
+const goOffline = async (userId: string) => {
+  const driver = await Driver.findOneAndUpdate(
+    { userId },
+    {
+      onlineStatus: "OFFLINE",
+      currentLocation: {
+        type: "Point",
+        coordinates: [], 
+      },
+    },
+    { new: true }
+  );
+  return { data: driver };
+};
+
 export const driverServices = {
   createDriver,
   updateDriverStatus,
   getMe,
   updateMyDriverProfile,
   getAllDrivers,
-  getSingleDriver
+  getSingleDriver,
+  goOffline,
+  goOnline
 };
