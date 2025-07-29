@@ -19,7 +19,7 @@ const createDriver = catchAsync(async (req: Request, res: Response, next: NextFu
   const payload: IDriver = {
     ...req.body,
     userId,
-    nid: req.file?.path
+    drivingLicense: req.file?.path
   }
   const driver = await driverServices.createDriver(payload)
 
@@ -62,7 +62,7 @@ const updateMyDriverProfile = catchAsync(async (req: Request, res: Response) => 
   const updateData = { ...req.body };
 
   if (req.file?.path) {
-    updateData.nid = req.file.path;
+    updateData.drivingLicense = req.file.path;
   }
 
   const updatedDriver = await driverServices.updateMyDriverProfile(userId, updateData);

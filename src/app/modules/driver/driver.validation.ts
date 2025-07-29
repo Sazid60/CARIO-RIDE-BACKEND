@@ -23,7 +23,7 @@ export const createDriverZodSchema = z.object({
 
   totalEarning: z.number().min(0).optional(),
 
-  nid: z
+  drivingLicense: z
     .string().optional()
 
 });
@@ -48,7 +48,7 @@ export const updateDriverProfileZodSchema = z.object({
       vehicleType: z.enum(Object.values(VehicleType) as [string]).optional(),
     })
     .optional(),
-  nid: z.string().optional(),
+  drivingLicense: z.string().optional(),
 });
 
 

@@ -20,13 +20,7 @@ export const globalErrorHandler = async (err: any, req: Request, res: Response, 
     if (req.file) {
         await deleteImageFromCloudinary(req.file.path)
     }
-
-    if (req.files && Array.isArray(req.files) && req.files.length) {
-        const imageUrls = (req.files as Express.Multer.File[]).map(file => file.path)
-        await Promise.all(imageUrls.map(url => deleteImageFromCloudinary(url)))
-    }
-
-
+    
     // ____________
 
     let errorSources: TErrorSources[] = []

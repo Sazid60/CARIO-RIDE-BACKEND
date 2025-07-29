@@ -30,7 +30,6 @@ export interface IUser {
     coordinates: [number, number]; 
   };
 
-  isDeleted?: boolean;
   isActive?: IsActive;
   isVerified?: boolean;
   role: Role;
