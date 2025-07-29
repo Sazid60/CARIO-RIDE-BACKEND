@@ -58,3 +58,11 @@ export const updateDriverZodSchema = z.object({
 
   driverStatus: z.enum(Object.values(DriverStatus) as [string]).optional(),
 })
+
+
+export const updateDriverStatusZodSchema = z.object({
+  driverStatus: z.enum(Object.values(DriverStatus) as [string], {
+    required_error: "Driver status is required",
+    invalid_type_error: "Invalid driver status value",
+  }),
+});

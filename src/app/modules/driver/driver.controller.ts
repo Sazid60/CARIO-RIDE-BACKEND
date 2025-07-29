@@ -31,8 +31,22 @@ const createDriver = catchAsync(async (req: Request, res: Response, next: NextFu
     })
 })
 
+const updateDriverStatus = catchAsync(async (req: Request, res: Response) => {
+  const { id } = req.params;
+  const { driverStatus } = req.body;
+
+  const result = await driverServices.updateDriverStatus(id, driverStatus);
+
+  res.status(httpStatus.OK).json({
+    success: true,
+    message: `Driver status updated to ${driverStatus}`,
+    data: result,
+  });
+});
+
 
 export const driverControllers = {
     createDriver,
+    updateDriverStatus
 
 }
