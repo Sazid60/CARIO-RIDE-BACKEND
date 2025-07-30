@@ -1,5 +1,5 @@
 import { model, Schema } from "mongoose";
-import { IAuthProvider, IsActive, IUser, Role } from "./user.interface";
+import { IAuthProvider, IsActive, IUser, RiderStatus, Role } from "./user.interface";
 
 const authProviderSchema = new Schema<IAuthProvider>({
     provider: { type: String, required: true },
@@ -33,6 +33,11 @@ const userSchema = new Schema<IUser>({
         type: String,
         enum: Object.values(IsActive),
         default: IsActive.ACTIVE
+    },
+    riderStatus  : {
+        type: String,
+        enum: Object.values(RiderStatus),
+        default: RiderStatus.IDLE
     },
     isVerified: { type: Boolean, default: true },
 

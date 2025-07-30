@@ -2,7 +2,7 @@
 import { Ride } from "./ride.model";
 import { IRide, RideStatus } from "./ride.interface";
 import { calculateDistanceAndFare } from "../../utils/calculateDistanceAndFare";
-import { IsActive, IUser } from "../user/user.interface";
+import { IsActive, IUser, RiderStatus } from "../user/user.interface";
 import { User } from "../user/user.model";
 import httpStatus from 'http-status-codes';
 import AppError from "../../errorHelpers/AppError";
@@ -11,31 +11,48 @@ import { DriverStatus, IDriver } from "../driver/driver.interface";
 import haversine from 'haversine-distance';
 
 
+
 const createRide = async (payload: IRide) => {
   const { pickupLocation, destination } = payload;
 
+  const session = await Ride.startSession();
+   session.startTransaction();
+  try {
+ 
 
-  const rider = await User.findById(payload.riderId);
+    const rider = await User.findById(payload.riderId).session(session);
+    if (!rider) {
+      throw new AppError(httpStatus.NOT_FOUND, "Rider not found.");
+    }
 
+    if (rider.isActive === IsActive.BLOCKED) {
+      throw new AppError(httpStatus.BAD_REQUEST, "You are blocked. Contact admin.");
+    }
 
-  if (rider && rider?.isActive === IsActive.BLOCKED) {
-    throw new AppError(httpStatus.BAD_REQUEST, "You Are Blocked. Contact Admin.");
+    if (rider.riderStatus === RiderStatus.REQUESTED || rider.riderStatus === RiderStatus.ON_RIDE) {
+      throw new AppError(httpStatus.BAD_REQUEST, "You already have a ride in progress or pending.");
+    }
+
+    const { distanceKm, fare } = calculateDistanceAndFare(
+      pickupLocation.coordinates,
+      destination.coordinates
+    );
+
+    const ride = await Ride.create([{ ...payload, travelDistance: distanceKm, fare }], { session });
+
+    await User.findByIdAndUpdate(payload.riderId, { riderStatus: RiderStatus.REQUESTED }, { session });
+
+    await session.commitTransaction();
+    session.endSession();
+
+    return { data: ride[0] };
+  } catch (error) {
+    await session.abortTransaction();
+    session.endSession();
+    throw error;
   }
-
-
-  const { distanceKm, fare } = calculateDistanceAndFare(
-    pickupLocation.coordinates,
-    destination.coordinates
-  );
-
-  const ride = await Ride.create({
-    ...payload,
-    travelDistance: distanceKm,
-    fare,
-  });
-
-  return { data: ride };
 };
+
 export const getRidesNearMe = async (userId: string) => {
   const user: IUser | null = await User.findById(userId);
 
@@ -74,7 +91,7 @@ export const getRidesNearMe = async (userId: string) => {
       { lat: driverLat, lon: driverLng },
       { lat: pickupLat, lon: pickupLng }
     );
-    return distanceInMeters <= 1000; 
+    return distanceInMeters <= 1000;
   });
 
   return {

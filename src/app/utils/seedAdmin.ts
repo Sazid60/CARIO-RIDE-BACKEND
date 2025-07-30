@@ -1,6 +1,6 @@
 /* eslint-disable no-console */
 import { envVars } from "../config/env"
-import { IAuthProvider, IUser, Role } from "../modules/user/user.interface"
+import { IAuthProvider, IUser, Role, RiderStatus } from '../modules/user/user.interface';
 import { User } from "../modules/user/user.model"
 import bcryptjs from 'bcryptjs';
 
@@ -25,6 +25,7 @@ export const seedAdmin = async () => {
             email: envVars.ADMIN_EMAIL,
             password: hashedPassword,
             isVerified: true,
+            riderStatus : RiderStatus.IDLE,
             auths: [authProvider]
 
         }

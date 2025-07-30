@@ -2,9 +2,8 @@ import AppError from "../../errorHelpers/AppError";
 import { DriverStatus, ICurrentLocation, IDriver } from "./driver.interface";
 import { Driver } from "./driver.model";
 import httpStatus from 'http-status-codes';
-import { User } from "../user/user.model"; // adjust path if needed
+import { User } from "../user/user.model"; 
 import { Role } from "../user/user.interface";
-import mongoose from "mongoose";
 
 const createDriver = async (payload: IDriver) => {
   const user = await User.findById(payload.userId);
@@ -44,7 +43,7 @@ const createDriver = async (payload: IDriver) => {
 // admin will update driver status 
 
 export const updateDriverStatus = async (id: string, driverStatus: DriverStatus) => {
-  const session = await mongoose.startSession();
+  const session = await Driver.startSession();
   session.startTransaction();
 
   try {
