@@ -26,9 +26,13 @@ router.get("/rides-near",
 
 // driver accept ride
 
+router.patch("/accept-ride/:id", checkAuth(Role.DRIVER), rideController.acceptRide)
+
 // driver reject ride 
 
-// 
+// Pickup the rider
+
+// on Transit
 
 
 

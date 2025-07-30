@@ -46,7 +46,24 @@ const getRidesNearMe = catchAsync(async (req: Request, res: Response) => {
   });
 });
 
+const acceptRide = catchAsync(async (req: Request, res: Response) => {
+  const driver = req.user as JwtPayload;
+  const driverId = driver.userId;
+  const rideId = req.params.id
+
+
+  const acceptedRide = await rideService.acceptRide(driverId, rideId)
+
+  sendResponse(res, {
+    success: true,
+    statusCode: httpStatus.CREATED,
+    message: "Ride Accepted successfully",
+    data: acceptedRide.data
+  });
+});
+
 export const rideController = {
   createRide,
-  getRidesNearMe
+  getRidesNearMe,
+  acceptRide
 };
