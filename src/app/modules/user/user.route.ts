@@ -17,9 +17,7 @@ router.get("/all-users", checkAuth(Role.ADMIN, Role.SUPER_ADMIN), userController
 
 router.get("/me", checkAuth(...Object.values(Role)), userControllers.getMe)
 
-router.post("/register",
-    validateRequest(createUserZodSchema),
-    userControllers.createUser)
+router.post("/register",validateRequest(createUserZodSchema),userControllers.createUser)
 
 router.patch("/:id", validateRequest(updateUserZodSchema), checkAuth(...Object.values(Role)), userControllers.updateUser)
 router.get("/:id",checkAuth(Role.ADMIN, Role.SUPER_ADMIN), userControllers.getSingleUser)

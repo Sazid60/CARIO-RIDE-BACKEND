@@ -30,11 +30,8 @@ passport.use(
                 }
 
 
-                if (isUserExist.isActive === IsActive.BLOCKED || isUserExist.isActive === IsActive.INACTIVE) {
+                if (isUserExist.isActive === IsActive.BLOCKED) {
                     return done(`User Is ${isUserExist.isActive}`)
-                }
-                if (isUserExist.isDeleted) {
-                    return done(`User Is Deleted`)
                 }
                 const isGoogleAuthenticated = isUserExist.auths.some(providerObjects => providerObjects.provider == "google")
 
@@ -79,13 +76,10 @@ passport.use(
                     return done(null, false, { message: "User is not verified" })
                 }
 
-                if (isUserExist && (isUserExist.isActive === IsActive.BLOCKED || isUserExist.isActive === IsActive.INACTIVE)) {
+                if (isUserExist && (isUserExist.isActive === IsActive.BLOCKED)) {
                     done(`User is ${isUserExist.isActive}`)
                 }
 
-                if (isUserExist && isUserExist.isDeleted) {
-                    return done(null, false, { message: "User is deleted" })
-                }
 
                 if (!isUserExist) {
                     isUserExist = await User.create(
