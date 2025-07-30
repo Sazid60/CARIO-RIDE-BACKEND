@@ -1,7 +1,6 @@
 import { Types } from "mongoose";
 
 export enum Role {
-  SUPER_ADMIN = "SUPER_ADMIN",
   ADMIN = "ADMIN",
   RIDER = "RIDER",
   DRIVER = "DRIVER",
@@ -15,6 +14,12 @@ export enum IsActive {
 export interface IAuthProvider {
   provider: "google" | "credentials";
   providerId: string;
+}
+
+export enum RiderStatus {
+  IDLE = "IDLE",
+  REQUESTED = "REQUESTED",
+  ON_RIDE = "ON_RIDE"
 }
 
 export interface IUser {
@@ -34,6 +39,7 @@ export interface IUser {
   isVerified?: boolean;
   role: Role;
   auths: IAuthProvider[];
+  riderStatus  : RiderStatus,
 
   createdAt?: Date;
   updatedAt?: Date;

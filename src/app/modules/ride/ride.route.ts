@@ -19,6 +19,10 @@ router.post(
 );
 
 // get all the available rides in driver coordinates 
+router.get("/rides-near", 
+  checkAuth(Role.DRIVER),
+  rideController.getRidesNearMe
+)
 
 // driver accept ride
 

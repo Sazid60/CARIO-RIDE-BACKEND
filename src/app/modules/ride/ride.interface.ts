@@ -5,7 +5,7 @@ export interface ILocation {
     coordinates: [number, number];
 }
 
-export enum IRideStatus {
+export enum RideStatus {
     REQUESTED = "REQUESTED",
     ACCEPTED = "ACCEPTED",
     PICKED_UP = "PICKED_UP",
@@ -21,7 +21,7 @@ export interface IRide extends Document {
   destination: ILocation;
   travelDistance?: number; 
   fare?: number; 
-  rideStatus: IRideStatus;
+  rideStatus: RideStatus;
   timestamps: {
     requestedAt: Date;
     acceptedAt?: Date;

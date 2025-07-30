@@ -76,12 +76,10 @@ const forgotPassword = async (email: string) => {
     if (!isUserExist.isVerified) {
         throw new AppError(httpStatus.BAD_REQUEST, "User is not verified")
     }
-    if (isUserExist.isActive === IsActive.BLOCKED || isUserExist.isActive === IsActive.INACTIVE) {
+    if (isUserExist.isActive === IsActive.BLOCKED) {
         throw new AppError(httpStatus.BAD_REQUEST, `User is ${isUserExist.isActive}`)
     }
-    if (isUserExist.isDeleted) {
-        throw new AppError(httpStatus.BAD_REQUEST, "User is deleted")
-    }
+
 
     const jwtPayload = {
         userId: isUserExist._id,
@@ -125,7 +123,6 @@ const resetPassword = async (payload: Record<string, any>, decodedToken: JwtPayl
     await isUserExist.save()
 }
 export const AuthServices = {
-    // credentialsLogin,
     getNewAccessToken,
     changePassword,
     resetPassword,

@@ -24,20 +24,16 @@ export const createUserToken = (user: Partial<IUser>) => {
 
 export const createNewAccessTokenWithRefreshToken = async (refreshToken: string) => {
     const verifiedRefreshToken = verifyToken(refreshToken, envVars.JWT_REFRESH_SECRET) as JwtPayload
-    // we do not have to check the verified status and throw error because if not verified it automatically send error . so no need to write if else 
 
     const isUserExist = await User.findOne({ email: verifiedRefreshToken.email })
     if (!isUserExist) {
         throw new AppError(httpStatus.BAD_REQUEST, "User Does Not Exist")
     }
 
-    if (isUserExist.isActive === IsActive.BLOCKED || isUserExist.isActive === IsActive.INACTIVE) {
+    if (isUserExist.isActive === IsActive.BLOCKED) {
         throw new AppError(httpStatus.BAD_REQUEST, `User Is ${isUserExist.isActive}`)
     }
-    if (isUserExist.isDeleted) {
-        throw new AppError(httpStatus.BAD_REQUEST, "User Is Deleted")
-    }
-    // generating access token 
+
     const jwtPayload = {
         userId: isUserExist._id,
         email: isUserExist.email,

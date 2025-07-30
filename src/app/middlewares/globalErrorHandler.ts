@@ -21,7 +21,6 @@ export const globalErrorHandler = async (err: any, req: Request, res: Response, 
         await deleteImageFromCloudinary(req.file.path)
     }
     
-    // ____________
 
     let errorSources: TErrorSources[] = []
     let statusCode = 500
