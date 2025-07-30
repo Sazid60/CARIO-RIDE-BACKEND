@@ -39,6 +39,7 @@ export interface IDriver {
   onlineStatus: DriverOnlineStatus;
   currentLocation?: ICurrentLocation;
   ridingStatus: DriverRidingStatus;
+  totalRides ?: number,
   totalEarning?: number;
   drivingLicense: string;
   driverStatus: DriverStatus;

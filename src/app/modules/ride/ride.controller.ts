@@ -92,10 +92,27 @@ const startRide = catchAsync(async (req: Request, res: Response) => {
   });
 });
 
+const completeRide = catchAsync(async (req: Request, res: Response) => {
+  const driver = req.user as JwtPayload;
+  const driverId = driver.userId;
+  const rideId = req.params.id
+
+  const rideInfo = await rideService.completeRide(driverId, rideId)
+
+  sendResponse(res, {
+    success: true,
+    statusCode: httpStatus.CREATED,
+    message: "Ride Has Been Completed !",
+    data: rideInfo.data
+  });
+  
+});
+
 export const rideController = {
   createRide,
   getRidesNearMe,
   acceptRide,
   pickupRider,
-  startRide
+  startRide,
+  completeRide
 };

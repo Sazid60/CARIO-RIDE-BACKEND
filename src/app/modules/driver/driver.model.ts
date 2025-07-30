@@ -44,6 +44,10 @@ const driverSchema = new Schema<IDriver>(
       type: Number,
       default: 0,
     },
+    totalRides: {
+      type: Number,
+      default: 0,
+    },
     drivingLicense: {
       type: String,
       required: true,

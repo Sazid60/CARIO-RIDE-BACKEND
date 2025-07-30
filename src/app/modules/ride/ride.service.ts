@@ -269,7 +269,7 @@ const startRide = async (driverUserId: string, rideId: string) => {
 
 
     if (driver.onlineStatus === DriverOnlineStatus.OFFLINE) {
-      throw new AppError(httpStatus.BAD_REQUEST, "Go Online To Pickup The Rider!");
+      throw new AppError(httpStatus.BAD_REQUEST, "Go Online To start The Ride!");
     }
 
     const ride = await Ride.findById(rideId).session(session);
@@ -316,6 +316,9 @@ const startRide = async (driverUserId: string, rideId: string) => {
     driver.ridingStatus = DriverRidingStatus.RIDING;
     await driver.save({ session });
 
+    rider.riderStatus = RiderStatus.ON_RIDE;
+    await rider.save({ session });
+
     await session.commitTransaction();
     session.endSession();
 
@@ -331,12 +334,96 @@ const startRide = async (driverUserId: string, rideId: string) => {
     throw error;
   }
 };
+const completeRide = async (driverUserId: string, rideId: string) => {
+  const session = await Ride.startSession();
+  session.startTransaction();
+
+  try {
+    const driver = await Driver.findOne({ userId: driverUserId }).session(session);
+    if (!driver) {
+      throw new AppError(httpStatus.NOT_FOUND, "Driver not found.");
+    }
+
+    if (driver.driverStatus === DriverStatus.SUSPENDED) {
+      throw new AppError(httpStatus.BAD_REQUEST, "You are suspended. Cannot complete.");
+    }
+
+
+    if (driver.onlineStatus === DriverOnlineStatus.OFFLINE) {
+      throw new AppError(httpStatus.BAD_REQUEST, "Go Online To Pickup The Rider!");
+    }
+
+    const ride = await Ride.findById(rideId).session(session);
+    if (!ride) {
+      throw new AppError(httpStatus.NOT_FOUND, "Ride not found.");
+    }
+
+    if (!ride.driverId) {
+      throw new AppError(httpStatus.BAD_REQUEST, "You Have Not Accepted This Ride Yet! Accept First!");
+    }
+
+    if (String(driver._id) !== String(ride.driverId)) {
+      throw new AppError(httpStatus.BAD_REQUEST, "You cannot Start Riding with another driver's rider!");
+    }
+
+    if (ride.rideStatus === RideStatus.CANCELLED) {
+      throw new AppError(httpStatus.BAD_REQUEST, "This ride was cancelled.");
+    }
+
+    if ([RideStatus.COMPLETED].includes(ride.rideStatus)) {
+      throw new AppError(httpStatus.BAD_REQUEST, `This ride is already in ${ride.rideStatus} State.`);
+    }
+
+    if (ride.rideStatus !== RideStatus.IN_TRANSIT) {
+      throw new AppError(httpStatus.BAD_REQUEST, "You must Start Ride To Finish The Ride!.");
+    }
+
+    if (String(driver.userId) === String(ride.riderId)) {
+      throw new AppError(httpStatus.BAD_REQUEST, "You cannot Run your ride with Your Owns.");
+    }
+
+    const rider = await User.findById(ride.riderId).session(session);
+    if (!rider) {
+      throw new AppError(httpStatus.NOT_FOUND, "Rider not found.");
+    }
+
+    ride.rideStatus = RideStatus.COMPLETED;
+    ride.timestamps = {
+      ...ride.timestamps,
+      completedAt: new Date(),
+    };
+    await ride.save({ session });
+
+    driver.ridingStatus = DriverRidingStatus.IDLE;
+    driver.totalEarning = Number(driver.totalEarning || 0) + Number(ride.fare || 0);
+    driver.totalRides = Number(driver.totalRides || 0) + 1;
+    driver.currentLocation = ride.destination;
+    await driver.save({ session });
+
+    rider.riderStatus = RiderStatus.IDLE;
+    await rider.save({ session });
+
+    await session.commitTransaction();
+    session.endSession();
+
+    return {
+      data: {
+        totalIncome: ride.fare,
+      },
+    };
+  } catch (error) {
+    await session.abortTransaction();
+    session.endSession();
+    throw error;
+  }
+};
 
 export const rideService = {
   createRide,
   getRidesNearMe,
   acceptRide,
   pickupRider,
-  startRide
+  startRide,
+  completeRide
 };
 

@@ -47,6 +47,7 @@ const rideSchema = new Schema<IRide>(
       },
       acceptedAt: Date,
       pickedUpAt: Date,
+      startedAt : Date,
       completedAt: Date,
       cancelledAt: Date,
     },
