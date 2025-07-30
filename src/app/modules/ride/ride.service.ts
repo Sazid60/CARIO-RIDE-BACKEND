@@ -28,7 +28,7 @@ const createRide = async (payload: IRide) => {
       throw new AppError(httpStatus.BAD_REQUEST, "You are blocked. Contact admin.");
     }
     if (rider.riderStatus === RiderStatus.REQUESTED || rider.riderStatus === RiderStatus.ON_RIDE) {
-      throw new AppError(httpStatus.BAD_REQUEST, "You already have a ride in progress or pending.");
+      throw new AppError(httpStatus.BAD_REQUEST, `You already have a ride in ${rider.riderStatus} State.`);
     }
 
     const { distanceKm, fare } = calculateDistanceAndFare(
@@ -129,7 +129,7 @@ export const acceptRide = async (driverUserId: string, rideId: string) => {
     }
 
     if (ride.rideStatus !== RideStatus.REQUESTED) {
-      throw new AppError(httpStatus.BAD_REQUEST, "Ride is Already Accepted");
+      throw new AppError(httpStatus.BAD_REQUEST, `Ride is Already ${ride.rideStatus}`);
     }
 
 
@@ -237,6 +237,9 @@ const pickupRider = async (driverUserId: string, rideId: string) => {
 
     driver.ridingStatus = DriverRidingStatus.RIDING;
     await driver.save({ session });
+
+    rider.riderStatus = RiderStatus.PICKED_UP;
+    await rider.save({ session });
 
     await session.commitTransaction();
     session.endSession();
@@ -418,12 +421,44 @@ const completeRide = async (driverUserId: string, rideId: string) => {
   }
 };
 
+const getAllRidesForAdmin = async() =>{
+  const allRides = await Ride.find({})
+
+  return {
+    allRides
+  }
+}
+const getAllRidesForRider = async(riderId : string) =>{
+
+  const allRides = await Ride.find({ riderId : {$eq :riderId}})
+  return {
+    allRides
+  }
+}
+const getAllRidesForDriver = async(userId : string) =>{
+  const driver = await Driver.findOne({userId}) 
+
+  if(!driver){
+    throw new AppError(httpStatus.BAD_REQUEST, "Driver InFormation Not Found !")
+  }
+  
+  const driverId= driver._id
+
+  const allRides = await Ride.find({ driverId : {$eq : driverId}})
+  return {
+    allRides
+  }
+}
+
 export const rideService = {
   createRide,
   getRidesNearMe,
   acceptRide,
   pickupRider,
   startRide,
-  completeRide
+  completeRide,
+  getAllRidesForAdmin,
+  getAllRidesForRider,
+  getAllRidesForDriver 
 };
 

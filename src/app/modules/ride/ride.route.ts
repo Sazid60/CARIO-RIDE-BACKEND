@@ -24,6 +24,35 @@ router.get("/rides-near",
   rideController.getRidesNearMe
 )
 
+
+
+// GET ALL RIDES- Admin
+
+router.get("/all-rides-admin", 
+  checkAuth(Role.ADMIN),
+  rideController.getAllRidesForAdmin
+)
+
+// GET ALL MY RIDES - riders
+
+router.get("/all-rides-rider", 
+  checkAuth(Role.RIDER),
+  rideController.getAllRidesForRider
+)
+
+// GET ALL MY RIDES - driver
+
+router.get("/all-rides-driver", 
+  checkAuth(Role.DRIVER),
+  rideController.getAllRidesForDriver
+)
+
+// GET MY RIDE  - Rider
+
+// GET Rides Near Me - rider
+
+
+
 // driver accept ride
 
 router.patch("/accept-ride/:id", checkAuth(Role.DRIVER), rideController.acceptRide)
@@ -35,9 +64,7 @@ router.patch("/pickup-rider/:id", checkAuth(Role.DRIVER), rideController.pickupR
 router.patch("/start-ride/:id", checkAuth(Role.DRIVER), rideController.startRide)
 
 // COMPLETE THE RIDE
-
 router.patch("/complete-ride/:id", checkAuth(Role.DRIVER), rideController.completeRide)
-
 
 
 export const RideRoutes = router
