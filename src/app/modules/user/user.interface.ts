@@ -19,6 +19,7 @@ export interface IAuthProvider {
 export enum RiderStatus {
   IDLE = "IDLE",
   REQUESTED = "REQUESTED",
+  WAITING = "WAITING",
   ON_RIDE = "ON_RIDE"
 }
 

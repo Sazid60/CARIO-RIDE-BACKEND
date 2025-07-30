@@ -13,8 +13,7 @@ export enum DriverOnlineStatus {
 export enum DriverRidingStatus {
   IDLE = "IDLE",
   ACCEPTED = "ACCEPTED",
-  PICKED_UP = "PICKED_UP",
-  IN_TRANSIT = "IN_TRANSIT",
+  RIDING = "RIDING"
 }
 
 export enum DriverStatus {
