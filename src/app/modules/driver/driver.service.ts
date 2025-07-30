@@ -2,8 +2,8 @@ import AppError from "../../errorHelpers/AppError";
 import { DriverStatus, ICurrentLocation, IDriver } from "./driver.interface";
 import { Driver } from "./driver.model";
 import httpStatus from 'http-status-codes';
-import { User } from "../user/user.model"; 
-import { Role } from "../user/user.interface";
+import { User } from "../user/user.model";
+import { IsActive, Role } from "../user/user.interface";
 
 const createDriver = async (payload: IDriver) => {
   const user = await User.findById(payload.userId);
@@ -11,8 +11,11 @@ const createDriver = async (payload: IDriver) => {
     throw new AppError(httpStatus.NOT_FOUND, "User not found!");
   }
 
-  if (user.isActive === "BLOCKED") {
+  if (user.isActive === IsActive.BLOCKED) {
     throw new AppError(httpStatus.FORBIDDEN, "Your account is blocked. Contact support.");
+  }
+  if (!user.isVerified) {
+    throw new AppError(httpStatus.FORBIDDEN, "Your account is Not Verified. Contact support.");
   }
 
   if (!user.phone) {
@@ -51,6 +54,7 @@ export const updateDriverStatus = async (id: string, driverStatus: DriverStatus)
     if (!driver) {
       throw new AppError(httpStatus.NOT_FOUND, "Driver not found");
     }
+
 
     if (driver.driverStatus === DriverStatus.APPROVED && driverStatus === DriverStatus.APPROVED) {
       throw new AppError(httpStatus.BAD_REQUEST, "Driver is already approved");
@@ -126,7 +130,12 @@ const getSingleDriver = async (id: string) => {
   }
 };
 
-const goOnline = async (userId: string, currentLocation :ICurrentLocation) => {
+const goOnline = async (userId: string, currentLocation: ICurrentLocation) => {
+  const driverInfo = await Driver.findOne({ userId });
+  if (!driverInfo) {
+    throw new AppError(httpStatus.NOT_FOUND, "Driver not found");
+  }
+
   const driver = await Driver.findOneAndUpdate(
     { userId },
     {
@@ -139,13 +148,19 @@ const goOnline = async (userId: string, currentLocation :ICurrentLocation) => {
 };
 
 const goOffline = async (userId: string) => {
+
+  const driverInfo = await Driver.findOne({ userId });
+  if (!driverInfo) {
+    throw new AppError(httpStatus.NOT_FOUND, "Driver not found");
+  }
+
   const driver = await Driver.findOneAndUpdate(
     { userId },
     {
       onlineStatus: "OFFLINE",
       currentLocation: {
         type: "Point",
-        coordinates: [], 
+        coordinates: [],
       },
     },
     { new: true }

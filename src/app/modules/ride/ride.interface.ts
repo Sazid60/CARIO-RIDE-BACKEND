@@ -11,7 +11,7 @@ export enum RideStatus {
     PICKED_UP = "PICKED_UP",
     IN_TRANSIT = "IN_TRANSIT",
     COMPLETED = "COMPLETED",
-    CANCELLED = "CANCELLED"
+    CANCELLED = "CANCELLED",
 }
 
 export interface IRide extends Document {
@@ -26,6 +26,7 @@ export interface IRide extends Document {
     requestedAt: Date;
     acceptedAt?: Date;
     pickedUpAt?: Date;
+    startedAt? : Date;
     completedAt?: Date;
     cancelledAt?: Date;
   };

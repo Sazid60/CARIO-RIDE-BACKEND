@@ -46,7 +46,56 @@ const getRidesNearMe = catchAsync(async (req: Request, res: Response) => {
   });
 });
 
+const acceptRide = catchAsync(async (req: Request, res: Response) => {
+  const driver = req.user as JwtPayload;
+  const driverId = driver.userId;
+  const rideId = req.params.id
+
+
+  const acceptedRide = await rideService.acceptRide(driverId, rideId)
+
+  sendResponse(res, {
+    success: true,
+    statusCode: httpStatus.CREATED,
+    message: "Ride Accepted successfully",
+    data: acceptedRide.data
+  });
+});
+
+const pickupRider = catchAsync(async (req: Request, res: Response) => {
+  const driver = req.user as JwtPayload;
+  const driverId = driver.userId;
+  const rideId = req.params.id
+
+  const pickedUpRider = await rideService.pickupRider(driverId, rideId)
+
+  sendResponse(res, {
+    success: true,
+    statusCode: httpStatus.CREATED,
+    message: "Rider PickedUp successfully",
+    data: pickedUpRider.data
+  });
+});
+
+const startRide = catchAsync(async (req: Request, res: Response) => {
+  const driver = req.user as JwtPayload;
+  const driverId = driver.userId;
+  const rideId = req.params.id
+
+  const rideInfo = await rideService.startRide(driverId, rideId)
+
+  sendResponse(res, {
+    success: true,
+    statusCode: httpStatus.CREATED,
+    message: "Ride Has Been Started !",
+    data: rideInfo.data
+  });
+});
+
 export const rideController = {
   createRide,
-  getRidesNearMe
+  getRidesNearMe,
+  acceptRide,
+  pickupRider,
+  startRide
 };
