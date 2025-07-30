@@ -20,6 +20,7 @@ export enum RiderStatus {
   IDLE = "IDLE",
   REQUESTED = "REQUESTED",
   WAITING = "WAITING",
+  PICKED_UP = "PICKED_UP",
   ON_RIDE = "ON_RIDE"
 }
 

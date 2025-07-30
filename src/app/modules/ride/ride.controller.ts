@@ -92,10 +92,75 @@ const startRide = catchAsync(async (req: Request, res: Response) => {
   });
 });
 
+const completeRide = catchAsync(async (req: Request, res: Response) => {
+  const driver = req.user as JwtPayload;
+  const driverId = driver.userId;
+  const rideId = req.params.id
+
+  const rideInfo = await rideService.completeRide(driverId, rideId)
+
+  sendResponse(res, {
+    success: true,
+    statusCode: httpStatus.CREATED,
+    message: "Ride Has Been Completed !",
+    data: rideInfo.data
+  });
+  
+});
+
+
+const getAllRidesForAdmin = catchAsync(async (req: Request, res: Response) => {
+
+  const rideInfo = await rideService.getAllRidesForAdmin()
+
+  sendResponse(res, {
+    success: true,
+    statusCode: httpStatus.CREATED,
+    message: "All Rides Retrieved For Admin !",
+    data: rideInfo.allRides
+  });
+
+});
+
+const getAllRidesForRider = catchAsync(async (req: Request, res: Response) => {
+
+  const rider = req.user as JwtPayload
+  const riderId = rider.userId
+
+  const rideInfo = await rideService.getAllRidesForRider(riderId)
+
+  sendResponse(res, {
+    success: true,
+    statusCode: httpStatus.CREATED,
+    message: "Rides Made By You are Retrieved!",
+    data: rideInfo.allRides
+  });
+
+});
+const getAllRidesForDriver = catchAsync(async (req: Request, res: Response) => {
+
+  const user = req.user as JwtPayload
+  const userId = user.userId
+
+  const rideInfo = await rideService.getAllRidesForDriver(userId)
+
+  sendResponse(res, {
+    success: true,
+    statusCode: httpStatus.CREATED,
+    message: "Rides Made By You are Retrieved!",
+    data: rideInfo.allRides
+  });
+
+});
+
 export const rideController = {
   createRide,
   getRidesNearMe,
   acceptRide,
   pickupRider,
-  startRide
+  startRide,
+  completeRide,
+  getAllRidesForAdmin,
+  getAllRidesForRider,
+  getAllRidesForDriver 
 };

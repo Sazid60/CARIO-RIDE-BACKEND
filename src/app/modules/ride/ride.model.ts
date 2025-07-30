@@ -6,7 +6,7 @@ import { IRide, RideStatus } from "./ride.interface";
 const rideSchema = new Schema<IRide>(
   {
     riderId: { type: Schema.Types.ObjectId, ref: "User", required: true },
-    driverId: { type: Schema.Types.ObjectId, ref: "User" },
+    driverId: { type: Schema.Types.ObjectId, ref: "Driver" },
     pickupLocation: {
       type: {
         type: String,
@@ -47,6 +47,7 @@ const rideSchema = new Schema<IRide>(
       },
       acceptedAt: Date,
       pickedUpAt: Date,
+      startedAt : Date,
       completedAt: Date,
       cancelledAt: Date,
     },
