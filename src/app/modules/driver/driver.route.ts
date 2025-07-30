@@ -9,7 +9,7 @@ import { driverControllers } from "./driver.controller";
 
 const router = Router()
 
-router.get("/all-drivers", checkAuth(Role.ADMIN, Role.SUPER_ADMIN), driverControllers.getAllDrivers)
+router.get("/all-drivers", checkAuth(Role.ADMIN), driverControllers.getAllDrivers)
 
 router.post("/register",
     checkAuth(...Object.values(Role)),
@@ -45,12 +45,12 @@ router.post(
 );
 
 router.patch("/status/:id",
-    checkAuth(Role.ADMIN, Role.SUPER_ADMIN),
+    checkAuth(Role.ADMIN),
     validateRequest(updateDriverStatusZodSchema),
     driverControllers.updateDriverStatus
 )
 
-router.get("/:id",checkAuth(Role.ADMIN, Role.SUPER_ADMIN), driverControllers.getSingleDriver)
+router.get("/:id",checkAuth(Role.ADMIN), driverControllers.getSingleDriver)
 
 
 export const DriverRoutes = router
