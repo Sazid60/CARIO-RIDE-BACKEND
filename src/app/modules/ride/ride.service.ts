@@ -11,7 +11,6 @@ import { DriverOnlineStatus, DriverRidingStatus, DriverStatus, IDriver } from ".
 import haversine from 'haversine-distance';
 
 
-
 const createRide = async (payload: IRide) => {
   const { pickupLocation, destination } = payload;
 
@@ -489,6 +488,7 @@ const completeRide = async (driverUserId: string, rideId: string) => {
 
     return {
       data: {
+        rideId : ride._id,
         totalIncome: ride.fare,
       },
     };
@@ -692,6 +692,80 @@ const cancelRideByRider = async (userId: string, rideId: string) => {
 
 
 
+export const giveFeedbackAndRateDriver = async (rideId: string, userId: string, feedback: string, rating: number) => {
+  const session = await Ride.startSession();
+  session.startTransaction();
+
+  try {
+    const ride = await Ride.findById(rideId).session(session);
+    if (!ride) throw new AppError(httpStatus.NOT_FOUND, "Ride not found");
+
+    if (!ride.driverId) {
+      throw new AppError(httpStatus.BAD_REQUEST, "No driver assigned to this ride");
+    }
+
+    // console.log(ride.riderId.toString())
+    // console.log(userId)
+
+    if (ride.riderId.toString() !== userId) {
+      throw new AppError(httpStatus.BAD_REQUEST, "You are not authorized to rate this ride");
+    }
+    
+
+    if (ride.rating) {
+      throw new AppError(httpStatus.BAD_REQUEST, "Feedback already submitted");
+    }
+
+    if (ride.rideStatus !== RideStatus.COMPLETED) {
+      throw new AppError(httpStatus.BAD_REQUEST, "Feedback allowed only for completed rides");
+    }
+
+
+    if (rating < 1 || rating > 5) {
+      throw new AppError(httpStatus.BAD_REQUEST, "Rating must be between 1 and 5");
+    }
+
+    const rider = await User.findById(ride.riderId).session(session);
+
+    if (!rider || rider.isBlocked === IsBlocked.BLOCKED) {
+      throw new AppError(httpStatus.BAD_REQUEST, "User is not allowed to submit feedback");
+    }
+
+    ride.feedback = feedback;
+    ride.rating = rating;
+    await ride.save({ session });
+
+    const ratedRides = await Ride.find({
+      driverId: ride.driverId,
+      rating: { $exists: true },
+    }).session(session);
+
+    const totalRatings = ratedRides.length;
+    const totalSum = ratedRides.reduce((sum, r) => sum + (r.rating || 0), 0);
+    const averageRating = totalRatings === 0 ? 0 : parseFloat((totalSum / totalRatings).toFixed(1));
+
+    await Driver.findByIdAndUpdate(
+      ride.driverId,
+      { rating: averageRating },
+      { session }
+    );
+
+    await session.commitTransaction();
+    session.endSession();
+
+    return {
+      rideId: ride._id,
+      driverId: ride.driverId,
+      averageRating,
+    };
+  } catch (error) {
+    await session.abortTransaction();
+    session.endSession();
+    throw error;
+  }
+};
+
+
 export const rideService = {
   createRide,
   getRidesNearMe,
@@ -705,6 +779,7 @@ export const rideService = {
   getSingleRideForRider,
   getDriversNearMe,
   rejectRide,
-  cancelRideByRider
+  cancelRideByRider,
+  giveFeedbackAndRateDriver
 };
 

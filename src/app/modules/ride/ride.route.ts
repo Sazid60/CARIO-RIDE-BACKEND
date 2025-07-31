@@ -1,6 +1,6 @@
 import { Router } from "express";
 import { validateRequest } from "../../middlewares/validateRequest";
-import { createRideZodSchema } from "./ride.validation";
+import { createRideZodSchema, rideFeedbackSchema } from "./ride.validation";
 import { rideController } from "./ride.controller";
 import { checkAuth } from "../../middlewares/checkAuth";
 import { Role } from "../user/user.interface";
@@ -81,6 +81,17 @@ router.patch("/start-ride/:id", checkAuth(Role.DRIVER), rideController.startRide
 
 // COMPLETE THE RIDE
 router.patch("/complete-ride/:id", checkAuth(Role.DRIVER), rideController.completeRide)
+
+
+
+// give feedback 
+
+router.post(
+  "/feedback/:rideId",
+  checkAuth(...Object.values(Role)),
+  validateRequest(rideFeedbackSchema),
+  rideController.giveFeedback
+);
 
 
 export const RideRoutes = router

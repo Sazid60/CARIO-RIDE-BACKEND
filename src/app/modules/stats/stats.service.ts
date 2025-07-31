@@ -85,7 +85,7 @@ const getDriverStats = async (userId: string) => {
     }
     const driverId = driver._id
 
-    
+
     const totalCompletedRidesPromise = Ride.countDocuments({
         driverId: new mongoose.Types.ObjectId(driverId),
         rideStatus: RideStatus.COMPLETED,

@@ -61,6 +61,7 @@ const driverSchema = new Schema<IDriver>(
       enum: Object.values(DriverStatus),
       default: DriverStatus.PENDING,
     },
+    rating: { type: Number, default: 0 },
   },
   {
     versionKey: false,
