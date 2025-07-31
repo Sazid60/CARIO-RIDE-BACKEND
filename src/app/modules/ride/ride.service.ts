@@ -88,6 +88,9 @@ const getRidesNearMe = async (userId: string) => {
   });
 
   const nearByRides = requestedRides.filter((ride) => {
+    if (ride.rejectedBy?.some(id => id.toString() === driver._id.toString())) {
+      return false;
+    }
     if (!ride.pickupLocation?.coordinates || !driver.currentLocation?.coordinates) return false;
 
     const [pickupLng, pickupLat] = ride.pickupLocation.coordinates;
@@ -106,7 +109,7 @@ const getRidesNearMe = async (userId: string) => {
   };
 };
 
-export const acceptRide = async (driverUserId: string, rideId: string) => {
+const acceptRide = async (driverUserId: string, rideId: string) => {
   const session = await Ride.startSession();
   session.startTransaction();
 
@@ -178,6 +181,72 @@ export const acceptRide = async (driverUserId: string, rideId: string) => {
     throw error;
   }
 };
+const rejectRide = async (driverUserId: string, rideId: string) => {
+  const session = await Ride.startSession();
+  session.startTransaction();
+
+  try {
+    const driver = await Driver.findOne({ userId: driverUserId }).session(session);
+    if (!driver) {
+      throw new AppError(httpStatus.NOT_FOUND, "Driver not found.");
+    }
+
+    if (driver.driverStatus === DriverStatus.SUSPENDED) {
+      throw new AppError(httpStatus.BAD_REQUEST, "You are suspended. Cannot accept or reject rides.");
+    }
+
+    if (driver.onlineStatus === DriverOnlineStatus.OFFLINE) {
+      throw new AppError(httpStatus.BAD_REQUEST, "First go online, then try to accept or reject!");
+    }
+
+    if (driver.ridingStatus !== DriverRidingStatus.IDLE) {
+      throw new AppError(httpStatus.BAD_REQUEST, "You cannot accept or reject another ride while in a trip.");
+    }
+
+    const ride = await Ride.findById(rideId).session(session);
+    if (!ride) {
+      throw new AppError(httpStatus.NOT_FOUND, "Ride not found.");
+    }
+
+    if (ride.rideStatus !== RideStatus.REQUESTED) {
+      throw new AppError(httpStatus.BAD_REQUEST, `Ride is already ${ride.rideStatus}.`);
+    }
+
+    if (String(driver.userId) === String(ride.riderId)) {
+      throw new AppError(httpStatus.BAD_REQUEST, "You cannot reject your own ride.");
+    }
+
+    const rider = await User.findById(ride.riderId).session(session);
+    if (!rider) {
+      throw new AppError(httpStatus.NOT_FOUND, "Rider not found.");
+    }
+
+
+    if (!ride.rejectedBy.includes(driver._id)) {
+      ride.rejectedBy.push(driver._id);
+    }
+
+    await ride.save({ session });
+
+    driver.rejectedRides += 1;
+    await driver.save({ session });
+
+    const data = {
+      riderName: rider.name,
+      riderPhone: rider.phone
+    };
+
+    await session.commitTransaction();
+    session.endSession();
+
+    return { data };
+  } catch (error) {
+    await session.abortTransaction();
+    session.endSession();
+    throw error;
+  }
+};
+
 
 const pickupRider = async (driverUserId: string, rideId: string) => {
   const session = await Ride.startSession();
@@ -489,21 +558,22 @@ const getDriversNearMe = async (userId: string) => {
 
   const [pickupLng, pickupLat] = latestRide.pickupLocation.coordinates;
 
-const drivers: IDriver[] = await Driver.find(
-  {
-    driverStatus: DriverStatus.APPROVED,
-    onlineStatus: DriverOnlineStatus.ONLINE,
-    ridingStatus: { $ne: DriverRidingStatus.RIDING },
-    currentLocation: { $exists: true, $ne: null },
-  },
-  {
-    vehicle: 1,
-    currentLocation: 1,
-  }
-).populate("userId", "name phone");
+  const drivers: IDriver[] = await Driver.find(
+    {
+      driverStatus: DriverStatus.APPROVED,
+      onlineStatus: DriverOnlineStatus.ONLINE,
+      ridingStatus: { $ne: DriverRidingStatus.RIDING },
+      currentLocation: { $exists: true, $ne: null },
+    },
+    {
+      vehicle: 1,
+      currentLocation: 1,
+    }
+  ).populate("userId", "name phone");
 
 
   const nearbyDrivers = drivers.filter((driver) => {
+    
     if (!driver.currentLocation?.coordinates?.length) return false;
 
     const [driverLng, driverLat] = driver.currentLocation.coordinates;
@@ -534,6 +604,7 @@ export const rideService = {
   getAllRidesForRider,
   getAllRidesForDriver,
   getSingleRideForRider,
-  getDriversNearMe
+  getDriversNearMe,
+  rejectRide
 };
 

@@ -55,6 +55,7 @@ const rideSchema = new Schema<IRide>(
       {
         type: Schema.Types.ObjectId,
         ref: "User",
+        default: [],
       },
     ],
   },

@@ -30,5 +30,5 @@ export interface IRide extends Document {
     completedAt?: Date;
     cancelledAt?: Date;
   };
-  rejectedBy?: Types.ObjectId[];
+  rejectedBy: Types.ObjectId[];
 }

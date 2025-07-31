@@ -61,6 +61,21 @@ const acceptRide = catchAsync(async (req: Request, res: Response) => {
     data: acceptedRide.data
   });
 });
+const rejectRide = catchAsync(async (req: Request, res: Response) => {
+  const driver = req.user as JwtPayload;
+  const driverId = driver.userId;
+  const rideId = req.params.id
+
+
+  const acceptedRide = await rideService.rejectRide(driverId, rideId)
+
+  sendResponse(res, {
+    success: true,
+    statusCode: httpStatus.CREATED,
+    message: "Ride Rejected successfully",
+    data: acceptedRide.data
+  });
+});
 
 const pickupRider = catchAsync(async (req: Request, res: Response) => {
   const driver = req.user as JwtPayload;
@@ -199,5 +214,6 @@ export const rideController = {
   getAllRidesForRider,
   getAllRidesForDriver,
   getSingleRideForRider,
-  getDriversNearMe
+  getDriversNearMe,
+  rejectRide
 };
