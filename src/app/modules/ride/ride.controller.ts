@@ -203,6 +203,22 @@ const getDriversNearMe = catchAsync(async (req: Request, res: Response) => {
 });
 
 
+const cancelRideByRider = catchAsync(async (req: Request, res: Response) => {
+  const user = req.user as JwtPayload;
+  const userId = user.userId;
+
+   const rideId = req.params.id
+
+  const result = await rideService.cancelRideByRider(userId, rideId);
+
+  sendResponse(res, {
+    success: true,
+    statusCode: httpStatus.OK,
+    message: "Your Ride Has Been Cancelled!",
+    data: result.data,
+  });
+});
+
 export const rideController = {
   createRide,
   getRidesNearMe,
@@ -215,5 +231,6 @@ export const rideController = {
   getAllRidesForDriver,
   getSingleRideForRider,
   getDriversNearMe,
-  rejectRide
+  rejectRide,
+  cancelRideByRider
 };

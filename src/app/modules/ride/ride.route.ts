@@ -24,8 +24,6 @@ router.get("/rides-near",
   rideController.getRidesNearMe
 )
 
-
-
 // GET ALL RIDES- Admin
 
 router.get("/all-rides-admin",
@@ -56,16 +54,15 @@ router.get("/drivers-near",
 )
 
 
-// cancel ride - rider/admin/
-
-
-
 // GET MY RIDE  - Rider
 router.get("/my-ride/:id",
   checkAuth(...Object.values(Role)),
   rideController.getSingleRideForRider
 )
 
+// cancel ride - rider
+
+router.patch("/cancel-ride/:id", checkAuth(...Object.values(Role)), rideController.cancelRideByRider)
 
 // reject rides - rider
 

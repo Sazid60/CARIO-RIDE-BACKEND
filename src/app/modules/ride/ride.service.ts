@@ -1,6 +1,6 @@
 
 import { Ride } from "./ride.model";
-import { IRide, RideStatus } from "./ride.interface";
+import { CancelledBy, IRide, RideStatus } from "./ride.interface";
 import { calculateDistanceAndFare } from "../../utils/calculateDistanceAndFare";
 import { IsActive, IUser, RiderStatus } from "../user/user.interface";
 import { User } from "../user/user.model";
@@ -598,6 +598,85 @@ const getDriversNearMe = async (userId: string) => {
   };
 };
 
+const cancelRideByRider = async (userId: string, rideId: string) => {
+  const session = await Ride.startSession();
+  session.startTransaction();
+
+  try {
+    const user = await User.findById(userId).session(session);
+    if (!user) {
+      throw new AppError(httpStatus.NOT_FOUND, "User not found.");
+    }
+
+    const ride = await Ride.findById(rideId).session(session);
+
+    if (!ride) {
+      throw new AppError(httpStatus.NOT_FOUND, "Ride not found.");
+    }
+
+    if (String(ride.riderId) !== String(userId)) {
+      throw new AppError(httpStatus.FORBIDDEN, "You are not authorized to cancel this ride.");
+    }
+
+    if (
+      [
+        RideStatus.ACCEPTED,
+        RideStatus.PICKED_UP,
+        RideStatus.IN_TRANSIT,
+        RideStatus.COMPLETED,
+        RideStatus.CANCELLED,
+      ].includes(ride.rideStatus)
+    ) {
+      throw new AppError(httpStatus.BAD_REQUEST, `You cannot cancel a ride that is already in ${ride.rideStatus} state`);
+    }
+
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+
+    const cancelledCountToday = await Ride.countDocuments({
+      riderId: userId,
+      rideStatus: RideStatus.CANCELLED,
+      cancelledBy: CancelledBy.RIDER,
+      "timestamps.cancelledAt": { $gte: today },
+    }).session(session);
+
+    if (cancelledCountToday >= 3) {
+      throw new AppError(httpStatus.BAD_REQUEST, "You can cancel only 3 rides per day.");
+    }
+    ride.rideStatus = RideStatus.CANCELLED;
+    ride.cancelledBy = CancelledBy.RIDER;
+    ride.timestamps = {
+      ...ride.timestamps,
+      cancelledAt: new Date(),
+    };
+    await ride.save({ session });
+
+    user.riderStatus = RiderStatus.IDLE;
+    await user.save({ session });
+
+    if (ride.driverId) {
+      const driver = await Driver.findById(ride.driverId).session(session);
+      if (driver) {
+        driver.ridingStatus = DriverRidingStatus.IDLE;
+        await driver.save({ session });
+      }
+    }
+
+    await session.commitTransaction();
+    session.endSession();
+
+    return {
+      data: ride,
+    };
+  } catch (error) {
+    await session.abortTransaction();
+    session.endSession();
+    throw error;
+  }
+};
+
+
+
 export const rideService = {
   createRide,
   getRidesNearMe,
@@ -610,6 +689,7 @@ export const rideService = {
   getAllRidesForDriver,
   getSingleRideForRider,
   getDriversNearMe,
-  rejectRide
+  rejectRide,
+  cancelRideByRider
 };
 
