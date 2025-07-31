@@ -68,6 +68,5 @@ const driverSchema = new Schema<IDriver>(
   }
 );
 
-// driverSchema.index({ currentLocation: "2dsphere" });
 
 export const Driver = model<IDriver>("Driver", driverSchema);

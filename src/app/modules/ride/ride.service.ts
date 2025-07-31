@@ -2,7 +2,7 @@
 import { Ride } from "./ride.model";
 import { CancelledBy, IRide, RideStatus } from "./ride.interface";
 import { calculateDistanceAndFare } from "../../utils/calculateDistanceAndFare";
-import { isBlocked, IUser, RiderStatus } from "../user/user.interface";
+import { IsBlocked, IUser, RiderStatus } from "../user/user.interface";
 import { User } from "../user/user.model";
 import httpStatus from 'http-status-codes';
 import AppError from "../../errorHelpers/AppError";
@@ -24,7 +24,7 @@ const createRide = async (payload: IRide) => {
       throw new AppError(httpStatus.NOT_FOUND, "Rider not found.");
     }
 
-    if (rider.isBlocked === isBlocked.BLOCKED) {
+    if (rider.isBlocked === IsBlocked.BLOCKED) {
       throw new AppError(httpStatus.BAD_REQUEST, "You are blocked. Contact admin.");
     }
     if (rider.riderStatus === RiderStatus.REQUESTED || rider.riderStatus === RiderStatus.ON_RIDE) {
@@ -58,7 +58,7 @@ const getRidesNearMe = async (userId: string) => {
     throw new AppError(httpStatus.NOT_FOUND, "User not found.");
   }
 
-  if (user && user.isBlocked === isBlocked.BLOCKED) {
+  if (user && user.isBlocked === IsBlocked.BLOCKED) {
     throw new AppError(httpStatus.BAD_REQUEST, "You are blocked. Contact Admin.");
   }
 
@@ -508,9 +508,17 @@ const getAllRidesForAdmin = async () => {
 }
 const getAllRidesForRider = async (riderId: string) => {
 
-  const allRides = await Ride.find({ riderId: { $eq: riderId } })
+  const myRides = await Ride.find({ riderId: { $eq: riderId } })
+
+  const myRideCounts = await Ride.countDocuments()
+
+  const data = {
+    myRideCounts,
+    myRides
+  }
+
   return {
-    allRides
+    data
   }
 }
 const getAllRidesForDriver = async (userId: string) => {
@@ -523,8 +531,15 @@ const getAllRidesForDriver = async (userId: string) => {
   const driverId = driver._id
 
   const allRides = await Ride.find({ driverId: { $eq: driverId } })
-  return {
+
+  const myRideCounts = await Ride.countDocuments()
+
+  const data = {
+    myRideCounts,
     allRides
+  }
+  return {
+    data
   }
 }
 const getSingleRideForRider = async (rideId: string, riderId: string) => {
@@ -552,7 +567,7 @@ const getDriversNearMe = async (userId: string) => {
     throw new AppError(httpStatus.NOT_FOUND, "User not found.");
   }
 
-  if (user.isBlocked === isBlocked.BLOCKED) {
+  if (user.isBlocked === IsBlocked.BLOCKED) {
     throw new AppError(httpStatus.BAD_REQUEST, "You are blocked. Contact Admin.");
   }
 

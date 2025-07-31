@@ -148,7 +148,7 @@ const getAllRidesForRider = catchAsync(async (req: Request, res: Response) => {
     success: true,
     statusCode: httpStatus.CREATED,
     message: "Rides Made By You are Retrieved!",
-    data: rideInfo.allRides
+    data: rideInfo.data
   });
 
 });
@@ -163,7 +163,7 @@ const getAllRidesForDriver = catchAsync(async (req: Request, res: Response) => {
     success: true,
     statusCode: httpStatus.CREATED,
     message: "Rides Made By You are Retrieved!",
-    data: rideInfo.allRides
+    data: rideInfo.data
   });
 
 });

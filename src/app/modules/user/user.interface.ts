@@ -6,7 +6,7 @@ export enum Role {
   DRIVER = "DRIVER",
 }
 
-export enum isBlocked {
+export enum IsBlocked {
   UNBLOCKED = "UNBLOCKED",
   BLOCKED = "BLOCKED"
 }
@@ -37,7 +37,7 @@ export interface IUser {
     coordinates: [number, number];
   };
 
-  isBlocked?: isBlocked;
+  isBlocked?: IsBlocked;
   isVerified?: boolean;
   role: Role;
   auths: IAuthProvider[];

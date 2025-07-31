@@ -41,14 +41,14 @@ const getAllUsers = async (query: Record<string, string>) => {
         .fields()
         .paginate();
 
-    const [data, meta] = await Promise.all([
+    const [data] = await Promise.all([
         usersData.build(),
         queryBuilder.getMeta()
     ])
 
     return {
         data,
-        meta
+        // meta
     }
 };
 // update User 

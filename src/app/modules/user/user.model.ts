@@ -1,5 +1,5 @@
 import { model, Schema } from "mongoose";
-import { IAuthProvider, isBlocked, IUser, RiderStatus, Role } from "./user.interface";
+import { IAuthProvider, IsBlocked, IUser, RiderStatus, Role } from "./user.interface";
 
 const authProviderSchema = new Schema<IAuthProvider>({
     provider: { type: String, required: true },
@@ -31,8 +31,8 @@ const userSchema = new Schema<IUser>({
     },
     isBlocked: {
         type: String,
-        enum: Object.values(isBlocked),
-        default: isBlocked.UNBLOCKED
+        enum: Object.values(IsBlocked),
+        default: IsBlocked.UNBLOCKED
     },
     riderStatus: {
         type: String,

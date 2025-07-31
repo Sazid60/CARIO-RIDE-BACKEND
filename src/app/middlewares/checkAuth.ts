@@ -8,7 +8,7 @@ import AppError from '../errorHelpers/AppError';
 import { verifyToken } from '../utils/jwt';
 import { envVars } from '../config/env';
 import httpStatus from 'http-status-codes';
-import { isBlocked } from '../modules/user/user.interface';
+import { IsBlocked } from '../modules/user/user.interface';
 import { User } from '../modules/user/user.model';
 
 
@@ -32,7 +32,7 @@ export const checkAuth = (...authRoles: string[]) => async (req: Request, res: R
             throw new AppError(httpStatus.BAD_REQUEST, "User is not verified")
         }
 
-        if (isUserExist.isBlocked === isBlocked.BLOCKED) {
+        if (isUserExist.isBlocked === IsBlocked.BLOCKED) {
             throw new AppError(httpStatus.BAD_REQUEST, `User Is ${isUserExist.isBlocked}`)
         }
 

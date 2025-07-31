@@ -44,7 +44,7 @@ const getAllUsers = catchAsync(async (req: Request, res: Response, next: NextFun
         statusCode: httpStatus.CREATED,
         message: "All Users Retrieved Successfully",
         data: result.data,
-        meta: result.meta
+        // meta: result.meta
     })
 })
 const getSingleUser = catchAsync(async (req: Request, res: Response, next: NextFunction) => {
