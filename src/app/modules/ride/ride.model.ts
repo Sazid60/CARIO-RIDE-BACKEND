@@ -1,7 +1,7 @@
 
 
 import { Schema, model } from "mongoose";
-import { IRide, RideStatus } from "./ride.interface";
+import { CancelledBy, IRide, RideStatus } from "./ride.interface";
 
 const rideSchema = new Schema<IRide>(
   {
@@ -30,10 +30,10 @@ const rideSchema = new Schema<IRide>(
       },
     },
     travelDistance: {
-      type: Number, 
+      type: Number,
     },
     fare: {
-      type: Number, 
+      type: Number,
     },
     rideStatus: {
       type: String,
@@ -47,14 +47,19 @@ const rideSchema = new Schema<IRide>(
       },
       acceptedAt: Date,
       pickedUpAt: Date,
-      startedAt : Date,
+      startedAt: Date,
       completedAt: Date,
       cancelledAt: Date,
+    },
+    cancelledBy: {
+      type: String,
+      enum: Object.values(CancelledBy),
     },
     rejectedBy: [
       {
         type: Schema.Types.ObjectId,
         ref: "User",
+        default: [],
       },
     ],
   },

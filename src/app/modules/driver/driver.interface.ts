@@ -26,20 +26,21 @@ export interface IVehicle {
   vehicleNumber: string;
   vehicleType: VehicleType;
 }
-export interface ICurrentLocation 
-  {
-    type: "Point";
-    coordinates: [number, number];
-  }
+export interface ICurrentLocation {
+  type: "Point";
+  coordinates: [number, number];
+}
 
 
 export interface IDriver {
+  _id: Types.ObjectId;
   userId: Types.ObjectId;
   vehicle: IVehicle;
   onlineStatus: DriverOnlineStatus;
   currentLocation?: ICurrentLocation;
   ridingStatus: DriverRidingStatus;
-  totalRides ?: number,
+  totalRides?: number,
+  rejectedRides: number,
   totalEarning?: number;
   drivingLicense: string;
   driverStatus: DriverStatus;

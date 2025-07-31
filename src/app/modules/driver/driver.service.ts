@@ -3,7 +3,7 @@ import { DriverStatus, ICurrentLocation, IDriver } from "./driver.interface";
 import { Driver } from "./driver.model";
 import httpStatus from 'http-status-codes';
 import { User } from "../user/user.model";
-import { IsActive, Role } from "../user/user.interface";
+import { isBlocked, Role } from "../user/user.interface";
 
 const createDriver = async (payload: IDriver) => {
   const user = await User.findById(payload.userId);
@@ -11,7 +11,7 @@ const createDriver = async (payload: IDriver) => {
     throw new AppError(httpStatus.NOT_FOUND, "User not found!");
   }
 
-  if (user.isActive === IsActive.BLOCKED) {
+  if (user.isBlocked === isBlocked.BLOCKED) {
     throw new AppError(httpStatus.FORBIDDEN, "Your account is blocked. Contact support.");
   }
   if (!user.isVerified) {

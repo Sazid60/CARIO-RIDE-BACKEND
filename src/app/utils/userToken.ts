@@ -1,7 +1,7 @@
 import { JwtPayload } from "jsonwebtoken";
 import { envVars } from "../config/env";
 import AppError from "../errorHelpers/AppError";
-import { IsActive, IUser } from "../modules/user/user.interface";
+import { isBlocked, IUser } from "../modules/user/user.interface";
 import { User } from "../modules/user/user.model";
 import { generateToken, verifyToken } from "./jwt";
 import httpStatus from 'http-status-codes';
@@ -30,8 +30,8 @@ export const createNewAccessTokenWithRefreshToken = async (refreshToken: string)
         throw new AppError(httpStatus.BAD_REQUEST, "User Does Not Exist")
     }
 
-    if (isUserExist.isActive === IsActive.BLOCKED) {
-        throw new AppError(httpStatus.BAD_REQUEST, `User Is ${isUserExist.isActive}`)
+    if (isUserExist.isBlocked === isBlocked.BLOCKED) {
+        throw new AppError(httpStatus.BAD_REQUEST, `User Is ${isUserExist.isBlocked}`)
     }
 
     const jwtPayload = {

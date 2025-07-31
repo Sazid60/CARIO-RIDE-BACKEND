@@ -67,10 +67,27 @@ const getMe = catchAsync(async (req: Request, res: Response, next: NextFunction)
         data: result.data
     })
 })
+
+const updateUserStatus = catchAsync(async (req: Request, res: Response, next: NextFunction) => {
+    const userId = req.params.id;
+    const verifiedToken = req.user as JwtPayload;
+    const payload = req.body;
+
+    const user = await userServices.updateUserStatus(userId, payload, verifiedToken);
+
+    sendResponse(res, {
+        success: true,
+        statusCode: httpStatus.OK,
+        message: "User updated successfully",
+        data: user,
+    });
+});
+
 export const userControllers = {
     createUser,
     getAllUsers,
     updateUser,
     getMe,
-    getSingleUser
+    getSingleUser,
+    updateUserStatus
 }

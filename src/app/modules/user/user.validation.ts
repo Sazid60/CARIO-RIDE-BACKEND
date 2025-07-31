@@ -1,5 +1,5 @@
 import z from "zod";
-import { IsActive, Role } from "./user.interface";
+import { isBlocked, Role } from "./user.interface";
 
 export const createUserZodSchema = z.object({
     name: z
@@ -55,8 +55,8 @@ export const updateUserZodSchema = z.object({
     role: z
         .enum(Object.values(Role) as [string])
         .optional(),
-    isActive: z
-        .enum(Object.values(IsActive) as [string])
+    isBlocked: z
+        .enum(Object.values(isBlocked) as [string])
         .optional(),
     isVerified: z
         .boolean({ invalid_type_error: "isVerified must be true or false" })

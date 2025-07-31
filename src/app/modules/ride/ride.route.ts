@@ -19,43 +19,59 @@ router.post(
 );
 
 // get all the available rides in driver coordinates 
-router.get("/rides-near", 
+router.get("/rides-near",
   checkAuth(Role.DRIVER),
   rideController.getRidesNearMe
 )
 
-
-
 // GET ALL RIDES- Admin
 
-router.get("/all-rides-admin", 
+router.get("/all-rides-admin",
   checkAuth(Role.ADMIN),
   rideController.getAllRidesForAdmin
 )
 
 // GET ALL MY RIDES - riders
 
-router.get("/all-rides-rider", 
-  checkAuth(Role.RIDER),
+router.get("/all-rides-rider",
+  checkAuth(...Object.values(Role)),
   rideController.getAllRidesForRider
 )
 
 // GET ALL MY RIDES - driver
 
-router.get("/all-rides-driver", 
+router.get("/all-rides-driver",
   checkAuth(Role.DRIVER),
   rideController.getAllRidesForDriver
 )
 
+
+
+// GET Rider Near Me - RIDER
+router.get("/drivers-near",
+  checkAuth(...Object.values(Role)),
+  rideController.getDriversNearMe
+)
+
+
 // GET MY RIDE  - Rider
+router.get("/my-ride/:id",
+  checkAuth(...Object.values(Role)),
+  rideController.getSingleRideForRider
+)
 
-// GET Rides Near Me - rider
+// cancel ride - rider
 
+router.patch("/cancel-ride/:id", checkAuth(...Object.values(Role)), rideController.cancelRideByRider)
 
+// reject rides - rider
+
+router.patch("/reject-ride/:id", checkAuth(Role.DRIVER), rideController.rejectRide)
 
 // driver accept ride
 
 router.patch("/accept-ride/:id", checkAuth(Role.DRIVER), rideController.acceptRide)
+
 
 // Pickup the rider
 router.patch("/pickup-rider/:id", checkAuth(Role.DRIVER), rideController.pickupRider)

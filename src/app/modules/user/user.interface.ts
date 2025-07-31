@@ -6,8 +6,8 @@ export enum Role {
   DRIVER = "DRIVER",
 }
 
-export enum IsActive {
-  ACTIVE = "ACTIVE",
+export enum isBlocked {
+  UNBLOCKED = "UNBLOCKED",
   BLOCKED = "BLOCKED"
 }
 
@@ -31,17 +31,17 @@ export interface IUser {
   password?: string;
   phone?: string;
   picture?: string;
-  
+
   location?: {
     type: "Point";
-    coordinates: [number, number]; 
+    coordinates: [number, number];
   };
 
-  isActive?: IsActive;
+  isBlocked?: isBlocked;
   isVerified?: boolean;
   role: Role;
   auths: IAuthProvider[];
-  riderStatus  : RiderStatus,
+  riderStatus: RiderStatus,
 
   createdAt?: Date;
   updatedAt?: Date;
