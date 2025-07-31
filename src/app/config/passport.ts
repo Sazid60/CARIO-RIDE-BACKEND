@@ -3,7 +3,7 @@
 import { Strategy as GoogleStrategy, Profile, VerifyCallback } from "passport-google-oauth20";
 import { envVars } from "./env";
 import { User } from "../modules/user/user.model";
-import { IsActive, Role } from "../modules/user/user.interface";
+import { isBlocked, Role } from "../modules/user/user.interface";
 import passport from "passport";
 import { Strategy as LocalStrategy } from "passport-local";
 import bcryptjs from 'bcryptjs';
@@ -30,8 +30,8 @@ passport.use(
                 }
 
 
-                if (isUserExist.isActive === IsActive.BLOCKED) {
-                    return done(`User Is ${isUserExist.isActive}`)
+                if (isUserExist.isBlocked === isBlocked.BLOCKED) {
+                    return done(`User Is ${isUserExist.isBlocked}`)
                 }
                 const isGoogleAuthenticated = isUserExist.auths.some(providerObjects => providerObjects.provider == "google")
 
@@ -49,7 +49,7 @@ passport.use(
 
             } catch (error) {
                 console.log(error)
-                return done(error) 
+                return done(error)
             }
         }
     )
@@ -68,7 +68,7 @@ passport.use(
 
                 const email = profile.emails?.[0].value
                 if (!email) {
-                    return done(null, false, { message: "No Email Found !" }) 
+                    return done(null, false, { message: "No Email Found !" })
                 }
 
                 let isUserExist = await User.findOne({ email })
@@ -76,8 +76,8 @@ passport.use(
                     return done(null, false, { message: "User is not verified" })
                 }
 
-                if (isUserExist && (isUserExist.isActive === IsActive.BLOCKED)) {
-                    done(`User is ${isUserExist.isActive}`)
+                if (isUserExist && (isUserExist.isBlocked === isBlocked.BLOCKED)) {
+                    done(`User is ${isUserExist.isBlocked}`)
                 }
 
 
@@ -99,7 +99,7 @@ passport.use(
                     )
                 }
 
-                return done(null, isUserExist) 
+                return done(null, isUserExist)
 
             } catch (error) {
                 console.log("Google Strategy Error", error)

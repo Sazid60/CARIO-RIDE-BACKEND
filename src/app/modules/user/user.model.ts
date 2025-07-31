@@ -1,5 +1,5 @@
 import { model, Schema } from "mongoose";
-import { IAuthProvider, IsActive, IUser, RiderStatus, Role } from "./user.interface";
+import { IAuthProvider, isBlocked, IUser, RiderStatus, Role } from "./user.interface";
 
 const authProviderSchema = new Schema<IAuthProvider>({
     provider: { type: String, required: true },
@@ -20,21 +20,21 @@ const userSchema = new Schema<IUser>({
     phone: { type: String },
     picture: { type: String },
     location: {
-      type: {
-        type: String,
-        enum: ["Point"],
-        default: "Point",
-      },
-      coordinates: {
-        type: [Number, Number],
-      },
+        type: {
+            type: String,
+            enum: ["Point"],
+            default: "Point",
+        },
+        coordinates: {
+            type: [Number, Number],
+        },
     },
-    isActive: {
+    isBlocked: {
         type: String,
-        enum: Object.values(IsActive),
-        default: IsActive.ACTIVE
+        enum: Object.values(isBlocked),
+        default: isBlocked.UNBLOCKED
     },
-    riderStatus  : {
+    riderStatus: {
         type: String,
         enum: Object.values(RiderStatus),
         default: RiderStatus.IDLE

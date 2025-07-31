@@ -74,7 +74,7 @@ const updateUser = async (userId: string, payload: Partial<IUser>, decodedToken:
         }
     }
 
-    if (payload.isActive || payload.isVerified) {
+    if (payload.isBlocked || payload.isVerified) {
         if (decodedToken.role === Role.RIDER || decodedToken.role === Role.DRIVER) {
             throw new AppError(httpStatus.FORBIDDEN, "You are not authorized");
         }
@@ -99,10 +99,34 @@ const getMe = async (userId: string) => {
     }
 };
 
+
+export const updateUserStatus = async (userId: string, payload: Partial<IUser>, decodedToken: JwtPayload) => {
+    const ifUserExist = await User.findById(userId);
+
+    if (!ifUserExist) {
+        throw new AppError(httpStatus.NOT_FOUND, "User not found");
+    }
+
+    if (decodedToken.userId.toString() === ifUserExist._id.toString()) {
+        throw new AppError(httpStatus.FORBIDDEN,"You cannot change your own block status");
+    }
+
+    if (payload.isBlocked === ifUserExist.isBlocked) {
+        throw new AppError(httpStatus.BAD_REQUEST, `User is already ${payload.isBlocked ? "blocked" : "unblocked"}`);
+    }
+
+    const updatedUser = await User.findByIdAndUpdate(userId, payload, {
+        new: true,
+        runValidators: true,
+    });
+
+    return updatedUser;
+};
 export const userServices = {
     createUser,
     getAllUsers,
     updateUser,
     getSingleUser,
-    getMe
+    getMe,
+    updateUserStatus
 }

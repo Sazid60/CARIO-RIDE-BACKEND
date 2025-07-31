@@ -2,7 +2,7 @@
 import { Ride } from "./ride.model";
 import { CancelledBy, IRide, RideStatus } from "./ride.interface";
 import { calculateDistanceAndFare } from "../../utils/calculateDistanceAndFare";
-import { IsActive, IUser, RiderStatus } from "../user/user.interface";
+import { isBlocked, IUser, RiderStatus } from "../user/user.interface";
 import { User } from "../user/user.model";
 import httpStatus from 'http-status-codes';
 import AppError from "../../errorHelpers/AppError";
@@ -24,7 +24,7 @@ const createRide = async (payload: IRide) => {
       throw new AppError(httpStatus.NOT_FOUND, "Rider not found.");
     }
 
-    if (rider.isActive === IsActive.BLOCKED) {
+    if (rider.isBlocked === isBlocked.BLOCKED) {
       throw new AppError(httpStatus.BAD_REQUEST, "You are blocked. Contact admin.");
     }
     if (rider.riderStatus === RiderStatus.REQUESTED || rider.riderStatus === RiderStatus.ON_RIDE) {
@@ -58,7 +58,7 @@ const getRidesNearMe = async (userId: string) => {
     throw new AppError(httpStatus.NOT_FOUND, "User not found.");
   }
 
-  if (user && user.isActive === IsActive.BLOCKED) {
+  if (user && user.isBlocked === isBlocked.BLOCKED) {
     throw new AppError(httpStatus.BAD_REQUEST, "You are blocked. Contact Admin.");
   }
 
@@ -552,7 +552,7 @@ const getDriversNearMe = async (userId: string) => {
     throw new AppError(httpStatus.NOT_FOUND, "User not found.");
   }
 
-  if (user.isActive === IsActive.BLOCKED) {
+  if (user.isBlocked === isBlocked.BLOCKED) {
     throw new AppError(httpStatus.BAD_REQUEST, "You are blocked. Contact Admin.");
   }
 
