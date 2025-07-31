@@ -140,6 +140,11 @@ const acceptRide = async (driverUserId: string, rideId: string) => {
     }
 
 
+    if (ride.rejectedBy?.some((id) => id.toString() === driver._id.toString())) {
+      throw new AppError(httpStatus.BAD_REQUEST, "You have already rejected this ride.");
+    }
+
+
     if (String(driver.userId) === String(ride.riderId)) {
       throw new AppError(httpStatus.BAD_REQUEST, "You cannot accept your own ride.");
     }
@@ -573,7 +578,7 @@ const getDriversNearMe = async (userId: string) => {
 
 
   const nearbyDrivers = drivers.filter((driver) => {
-    
+
     if (!driver.currentLocation?.coordinates?.length) return false;
 
     const [driverLng, driverLat] = driver.currentLocation.coordinates;
