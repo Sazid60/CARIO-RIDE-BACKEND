@@ -36,7 +36,7 @@ router.get("/all-rides-admin",
 // GET ALL MY RIDES - riders
 
 router.get("/all-rides-rider", 
-  checkAuth(Role.RIDER),
+  checkAuth(...Object.values(Role)),
   rideController.getAllRidesForRider
 )
 
@@ -48,8 +48,22 @@ router.get("/all-rides-driver",
 )
 
 // GET MY RIDE  - Rider
+router.get("/my-ride/:id", 
+  checkAuth(...Object.values(Role)),
+  rideController.getSingleRideForRider
+)
 
-// GET Rides Near Me - rider
+// GET Rider Near Me - RIDER
+router.get("/drivers-near", 
+  checkAuth(...Object.values(Role)),
+  rideController.getDriversNearMe
+)
+
+
+
+// reject rides - rider
+
+// cancel ride - rider/admin/
 
 
 

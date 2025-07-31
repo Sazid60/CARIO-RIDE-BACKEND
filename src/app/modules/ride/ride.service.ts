@@ -54,6 +54,10 @@ const createRide = async (payload: IRide) => {
 const getRidesNearMe = async (userId: string) => {
   const user: IUser | null = await User.findById(userId);
 
+  if (!user) {
+    throw new AppError(httpStatus.NOT_FOUND, "User not found.");
+  }
+
   if (user && user.isActive === IsActive.BLOCKED) {
     throw new AppError(httpStatus.BAD_REQUEST, "You are blocked. Contact Admin.");
   }
@@ -421,34 +425,103 @@ const completeRide = async (driverUserId: string, rideId: string) => {
   }
 };
 
-const getAllRidesForAdmin = async() =>{
+const getAllRidesForAdmin = async () => {
   const allRides = await Ride.find({})
 
   return {
     allRides
   }
 }
-const getAllRidesForRider = async(riderId : string) =>{
+const getAllRidesForRider = async (riderId: string) => {
 
-  const allRides = await Ride.find({ riderId : {$eq :riderId}})
+  const allRides = await Ride.find({ riderId: { $eq: riderId } })
   return {
     allRides
   }
 }
-const getAllRidesForDriver = async(userId : string) =>{
-  const driver = await Driver.findOne({userId}) 
+const getAllRidesForDriver = async (userId: string) => {
+  const driver = await Driver.findOne({ userId })
 
-  if(!driver){
+  if (!driver) {
     throw new AppError(httpStatus.BAD_REQUEST, "Driver InFormation Not Found !")
   }
-  
-  const driverId= driver._id
 
-  const allRides = await Ride.find({ driverId : {$eq : driverId}})
+  const driverId = driver._id
+
+  const allRides = await Ride.find({ driverId: { $eq: driverId } })
   return {
     allRides
   }
 }
+const getSingleRideForRider = async (rideId: string, riderId: string) => {
+
+  const data = await Ride.findById(rideId)
+
+  if (!data) {
+    throw new AppError(httpStatus.NOT_FOUND, "Ride Information Not Found")
+  }
+
+
+  if (String(data.riderId) !== riderId) {
+    throw new AppError(httpStatus.BAD_REQUEST, "This Ride Is Not Yours!")
+  }
+
+  return {
+    data
+  }
+}
+
+
+const getDriversNearMe = async (userId: string) => {
+  const user: IUser | null = await User.findById(userId);
+  if (!user) {
+    throw new AppError(httpStatus.NOT_FOUND, "User not found.");
+  }
+
+  if (user.isActive === IsActive.BLOCKED) {
+    throw new AppError(httpStatus.BAD_REQUEST, "You are blocked. Contact Admin.");
+  }
+
+  const latestRide = await Ride.findOne({ riderId: userId }).sort({ createdAt: -1 });
+  if (!latestRide || !latestRide.pickupLocation?.coordinates?.length) {
+    throw new AppError(httpStatus.BAD_REQUEST, "Pickup location not found for this rider.");
+  }
+
+  const [pickupLng, pickupLat] = latestRide.pickupLocation.coordinates;
+
+const drivers: IDriver[] = await Driver.find(
+  {
+    driverStatus: DriverStatus.APPROVED,
+    onlineStatus: DriverOnlineStatus.ONLINE,
+    ridingStatus: { $ne: DriverRidingStatus.RIDING },
+    currentLocation: { $exists: true, $ne: null },
+  },
+  {
+    vehicle: 1,
+    currentLocation: 1,
+  }
+).populate("userId", "name phone");
+
+
+  const nearbyDrivers = drivers.filter((driver) => {
+    if (!driver.currentLocation?.coordinates?.length) return false;
+
+    const [driverLng, driverLat] = driver.currentLocation.coordinates;
+
+    const distanceInMeters = haversine(
+      { lat: pickupLat, lon: pickupLng },
+      { lat: driverLat, lon: driverLng }
+    );
+
+    return distanceInMeters <= 1000;
+  });
+
+  return {
+    success: true,
+    count: nearbyDrivers.length,
+    data: nearbyDrivers,
+  };
+};
 
 export const rideService = {
   createRide,
@@ -459,6 +532,8 @@ export const rideService = {
   completeRide,
   getAllRidesForAdmin,
   getAllRidesForRider,
-  getAllRidesForDriver 
+  getAllRidesForDriver,
+  getSingleRideForRider,
+  getDriversNearMe
 };
 

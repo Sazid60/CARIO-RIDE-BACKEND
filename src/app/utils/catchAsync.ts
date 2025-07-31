@@ -14,12 +14,3 @@ export const catchAsync = (fn: AsyncHandler) => (req: Request, res: Response, ne
     })
 }
 
-// steps
-/**
- * catch async receives the request response function
- * returns a function and the return function receives req: Request, res: Response, next: NextFunction as function parameter and these are coming from catchAsync received function
- * As the return function just resolves promises so void return is said in type 
- * Promise.resolve(fn(req, res, next)) these are coming from parameter of the return function
- * This avoids needing try/catch in every route handler and lets Express handle errors globally.
- * 
- * */

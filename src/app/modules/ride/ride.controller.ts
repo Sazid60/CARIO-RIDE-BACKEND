@@ -105,7 +105,7 @@ const completeRide = catchAsync(async (req: Request, res: Response) => {
     message: "Ride Has Been Completed !",
     data: rideInfo.data
   });
-  
+
 });
 
 
@@ -152,6 +152,41 @@ const getAllRidesForDriver = catchAsync(async (req: Request, res: Response) => {
   });
 
 });
+const getSingleRideForRider = catchAsync(async (req: Request, res: Response) => {
+  const rideId = req.params.id
+  const riderInfo = req.user as JwtPayload
+
+  const riderId = riderInfo.userId
+
+  const result = await rideService.getSingleRideForRider(rideId, riderId)
+
+  sendResponse(res, {
+    success: true,
+    statusCode: httpStatus.CREATED,
+    message: "Your Ride Information Retrieved!",
+    data: result.data
+  });
+
+});
+
+
+const getDriversNearMe = catchAsync(async (req: Request, res: Response) => {
+  const user = req.user as JwtPayload;
+  const userId = user.userId;
+
+  const result = await rideService.getDriversNearMe(userId);
+
+  sendResponse(res, {
+    success: true,
+    statusCode: httpStatus.OK,
+    message:
+      result.count === 0
+        ? "Please wait. For now, there is no driver available near you."
+        : "Available Drivers Retrieved Successfully!",
+    data: result.data,
+  });
+});
+
 
 export const rideController = {
   createRide,
@@ -162,5 +197,7 @@ export const rideController = {
   completeRide,
   getAllRidesForAdmin,
   getAllRidesForRider,
-  getAllRidesForDriver 
+  getAllRidesForDriver,
+  getSingleRideForRider,
+  getDriversNearMe
 };
