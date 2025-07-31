@@ -2,7 +2,7 @@
 /* eslint-disable @typescript-eslint/no-non-null-assertion */
 /* eslint-disable @typescript-eslint/no-unused-vars */
 import AppError from '../../errorHelpers/AppError';
-import { IAuthProvider, isBlocked, IUser } from "../user/user.interface"
+import { IAuthProvider, IsBlocked, IUser } from "../user/user.interface"
 import httpStatus from 'http-status-codes';
 import { User } from "../user/user.model";
 import { generateToken, verifyToken } from "../../utils/jwt";
@@ -76,7 +76,7 @@ const forgotPassword = async (email: string) => {
     if (!isUserExist.isVerified) {
         throw new AppError(httpStatus.BAD_REQUEST, "User is not verified")
     }
-    if (isUserExist.isBlocked === isBlocked.BLOCKED) {
+    if (isUserExist.isBlocked === IsBlocked.BLOCKED) {
         throw new AppError(httpStatus.BAD_REQUEST, `User is ${isUserExist.isBlocked}`)
     }
 

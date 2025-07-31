@@ -44,4 +44,5 @@ export interface IDriver {
   totalEarning?: number;
   drivingLicense: string;
   driverStatus: DriverStatus;
+  rating: number 
 }

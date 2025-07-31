@@ -3,7 +3,7 @@
 import { Strategy as GoogleStrategy, Profile, VerifyCallback } from "passport-google-oauth20";
 import { envVars } from "./env";
 import { User } from "../modules/user/user.model";
-import { isBlocked, Role } from "../modules/user/user.interface";
+import { IsBlocked, Role } from "../modules/user/user.interface";
 import passport from "passport";
 import { Strategy as LocalStrategy } from "passport-local";
 import bcryptjs from 'bcryptjs';
@@ -30,7 +30,7 @@ passport.use(
                 }
 
 
-                if (isUserExist.isBlocked === isBlocked.BLOCKED) {
+                if (isUserExist.isBlocked === IsBlocked.BLOCKED) {
                     return done(`User Is ${isUserExist.isBlocked}`)
                 }
                 const isGoogleAuthenticated = isUserExist.auths.some(providerObjects => providerObjects.provider == "google")
@@ -76,7 +76,7 @@ passport.use(
                     return done(null, false, { message: "User is not verified" })
                 }
 
-                if (isUserExist && (isUserExist.isBlocked === isBlocked.BLOCKED)) {
+                if (isUserExist && (isUserExist.isBlocked === IsBlocked.BLOCKED)) {
                     done(`User is ${isUserExist.isBlocked}`)
                 }
 

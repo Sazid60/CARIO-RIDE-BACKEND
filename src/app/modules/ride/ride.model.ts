@@ -62,8 +62,15 @@ const rideSchema = new Schema<IRide>(
         default: [],
       },
     ],
+    feedback : {
+      type : String
+    },
+    rating: { type: Number }
   },
-  { timestamps: true }
+  {
+    versionKey: false,
+    timestamps: true
+  }
 );
 
 export const Ride = model<IRide>("Ride", rideSchema);

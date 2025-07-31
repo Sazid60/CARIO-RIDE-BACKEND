@@ -61,6 +61,7 @@ const driverSchema = new Schema<IDriver>(
       enum: Object.values(DriverStatus),
       default: DriverStatus.PENDING,
     },
+    rating: { type: Number, default: 0 },
   },
   {
     versionKey: false,
@@ -68,6 +69,5 @@ const driverSchema = new Schema<IDriver>(
   }
 );
 
-// driverSchema.index({ currentLocation: "2dsphere" });
 
 export const Driver = model<IDriver>("Driver", driverSchema);

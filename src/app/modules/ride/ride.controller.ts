@@ -148,7 +148,7 @@ const getAllRidesForRider = catchAsync(async (req: Request, res: Response) => {
     success: true,
     statusCode: httpStatus.CREATED,
     message: "Rides Made By You are Retrieved!",
-    data: rideInfo.allRides
+    data: rideInfo.data
   });
 
 });
@@ -163,7 +163,7 @@ const getAllRidesForDriver = catchAsync(async (req: Request, res: Response) => {
     success: true,
     statusCode: httpStatus.CREATED,
     message: "Rides Made By You are Retrieved!",
-    data: rideInfo.allRides
+    data: rideInfo.data
   });
 
 });
@@ -207,7 +207,7 @@ const cancelRideByRider = catchAsync(async (req: Request, res: Response) => {
   const user = req.user as JwtPayload;
   const userId = user.userId;
 
-   const rideId = req.params.id
+  const rideId = req.params.id
 
   const result = await rideService.cancelRideByRider(userId, rideId);
 
@@ -216,6 +216,24 @@ const cancelRideByRider = catchAsync(async (req: Request, res: Response) => {
     statusCode: httpStatus.OK,
     message: "Your Ride Has Been Cancelled!",
     data: result.data,
+  });
+});
+
+
+const giveFeedback = catchAsync(async (req: Request, res: Response) => {
+  const { rideId } = req.params;
+  const { feedback, rating } = req.body;
+  const user = req.user as JwtPayload
+  const userId = user.userId
+
+
+  const result = await rideService.giveFeedbackAndRateDriver(rideId, userId, feedback, rating);
+
+  sendResponse(res, {
+    success: true,
+    statusCode: httpStatus.OK,
+    message: "Feedback submitted successfully",
+    data: result,
   });
 });
 
@@ -232,5 +250,6 @@ export const rideController = {
   getSingleRideForRider,
   getDriversNearMe,
   rejectRide,
-  cancelRideByRider
+  cancelRideByRider,
+  giveFeedback
 };

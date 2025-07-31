@@ -1,4 +1,4 @@
-import { Document, Types } from "mongoose";
+import { Types } from "mongoose";
 
 export interface ILocation {
   type: "Point";
@@ -18,7 +18,7 @@ export enum CancelledBy {
   DRIVER = "DRIVER"
 }
 
-export interface IRide extends Document {
+export interface IRide {
   riderId: Types.ObjectId;
   driverId?: Types.ObjectId;
   pickupLocation: ILocation;
@@ -36,4 +36,6 @@ export interface IRide extends Document {
     cancelledAt?: Date;
   };
   rejectedBy: Types.ObjectId[];
+  feedback?: string
+  rating?: number
 }
