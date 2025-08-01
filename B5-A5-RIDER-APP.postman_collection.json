@@ -1,0 +1,833 @@
+{
+	"info": {
+		"_postman_id": "c9365397-92e8-49cb-b8ed-16c33861b3a4",
+		"name": "B5-A5-RIDER-APP",
+		"schema": "https://schema.getpostman.com/json/collection/v2.0.0/collection.json",
+		"_exporter_id": "39770401"
+	},
+	"item": [
+		{
+			"name": "USER",
+			"item": [
+				{
+					"name": "USER-WORKS",
+					"item": [
+						{
+							"name": "create-user",
+							"request": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n  \"name\": \"Rider\",\r\n  \"email\": \"shahnawazsazid69@gmail.com\",\r\n  \"password\": \"Rider@123\",\r\n  \"location\": {\r\n    \"type\": \"Point\",\r\n    \"coordinates\": [90.4125, 23.8103]\r\n  },\r\n  \"phone\": \"+8801787654321\"\r\n}\r\n",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": "https://b5-a5-sazid.vercel.app/api/v1/users/register"
+							},
+							"response": []
+						},
+						{
+							"name": "get-me",
+							"protocolProfileBehavior": {
+								"disableBodyPruning": true
+							},
+							"request": {
+								"method": "GET",
+								"header": [
+									{
+										"key": "Authorization",
+										"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2ODhjZTk0OGQ5MTExZTI4YmRjMjMzMWYiLCJlbWFpbCI6InNoYWhuYXdhenNhemlkNjlAZ21haWwuY29tIiwicm9sZSI6IlJJREVSIiwiaWF0IjoxNzU0MDY1MjkxLCJleHAiOjE3NTQxNTE2OTF9.Jkti-9Ypo3tWequ6XxESnW2Auke6F1qtv8OCZg06N1U",
+										"type": "text"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"email\": \"shahnawazsazid60@gmail.com\",\r\n    \"password\": \"Shakil33@\"\r\n}"
+								},
+								"url": "https://b5-a5-sazid.vercel.app/api/v1/users/me"
+							},
+							"response": []
+						},
+						{
+							"name": "update-user",
+							"request": {
+								"method": "PATCH",
+								"header": [
+									{
+										"key": "Authorization",
+										"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2ODhjZTk0OGQ5MTExZTI4YmRjMjMzMWYiLCJlbWFpbCI6InNoYWhuYXdhenNhemlkNjlAZ21haWwuY29tIiwicm9sZSI6IlJJREVSIiwiaWF0IjoxNzU0MDY1MjkxLCJleHAiOjE3NTQxNTE2OTF9.Jkti-9Ypo3tWequ6XxESnW2Auke6F1qtv8OCZg06N1U",
+										"type": "text"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"phone\": \"+8801639768727\",\r\n    \"location\": {\r\n        \"type\": \"Point\",\r\n        \"coordinates\": [\r\n            90.4125,\r\n            23.8103\r\n        ]\r\n    }\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": "https://b5-a5-sazid.vercel.app/api/v1/users/688ce948d9111e28bdc2331f"
+							},
+							"response": []
+						}
+					]
+				},
+				{
+					"name": "ADMIN-WORKS",
+					"item": [
+						{
+							"name": "get-all-users",
+							"request": {
+								"method": "GET",
+								"header": [
+									{
+										"key": "Authorization",
+										"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2ODhjZThiM2FlMzNlZDA4ODdjNzkzNTgiLCJlbWFpbCI6ImFkbWluQGdtYWlsLmNvbSIsInJvbGUiOiJBRE1JTiIsImlhdCI6MTc1NDA2NTc3MiwiZXhwIjoxNzU0MTUyMTcyfQ.hTX2VXWYK20zvA7fViSZDvarKfhacA_tA2Go0lAqtMA",
+										"type": "text"
+									}
+								],
+								"url": "https://b5-a5-sazid.vercel.app/api/v1/users/all-users"
+							},
+							"response": []
+						},
+						{
+							"name": "get-single-user",
+							"request": {
+								"method": "GET",
+								"header": [
+									{
+										"key": "Authorization",
+										"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2ODhjZThiM2FlMzNlZDA4ODdjNzkzNTgiLCJlbWFpbCI6ImFkbWluQGdtYWlsLmNvbSIsInJvbGUiOiJBRE1JTiIsImlhdCI6MTc1NDA2NTc3MiwiZXhwIjoxNzU0MTUyMTcyfQ.hTX2VXWYK20zvA7fViSZDvarKfhacA_tA2Go0lAqtMA",
+										"type": "text"
+									}
+								],
+								"url": "https://b5-a5-sazid.vercel.app/api/v1/users/688ce8b3ae33ed0887c79358"
+							},
+							"response": []
+						},
+						{
+							"name": "BLOCK/UNBLOCK-USER",
+							"request": {
+								"method": "PATCH",
+								"header": [
+									{
+										"key": "Authorization",
+										"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2ODhjZThiM2FlMzNlZDA4ODdjNzkzNTgiLCJlbWFpbCI6ImFkbWluQGdtYWlsLmNvbSIsInJvbGUiOiJBRE1JTiIsImlhdCI6MTc1NDA2NTc3MiwiZXhwIjoxNzU0MTUyMTcyfQ.hTX2VXWYK20zvA7fViSZDvarKfhacA_tA2Go0lAqtMA",
+										"type": "text"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"isBlocked\" : \"BLOCKED\"\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": "https://b5-a5-sazid.vercel.app/api/v1/users/change-status/688ce948d9111e28bdc2331f"
+							},
+							"response": []
+						}
+					]
+				}
+			]
+		},
+		{
+			"name": "AUTH",
+			"item": [
+				{
+					"name": "USER-WORKS",
+					"item": [
+						{
+							"name": "login",
+							"request": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "Authorization",
+										"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2ODczOGQxMjZkZDMyNTE1OWQwYzFiYjIiLCJlbWFpbCI6InN1cGVyQGdtYWlsLmNvbSIsInJvbGUiOiJTVVBFUl9BRE1JTiIsImlhdCI6MTc1MjQxMjE1OSwiZXhwIjoxNzU1MDA0MTU5fQ.fIzSA7y-BzLckfHZb_AY_xjthqL65rfBE6GbcWOGEiU",
+										"type": "text"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "// {\r\n//     \"email\": \"admin@gmail.com\",\r\n//     \"password\": \"Admin123@\"\r\n// }\r\n\r\n// {\r\n//   \"email\": \"rider@gmail.com\",\r\n//   \"password\": \"Rider123@\"\r\n// }\r\n{\r\n  \"email\": \"driver@gmail.com\",\r\n  \"password\": \"Driver@123\"\r\n}\r\n\r\n//  {\r\n//   \"email\": \"shahnawazsazid69@gmail.com\",\r\n//   \"password\": \"Rider@123\"\r\n//  }\r\n\r\n",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": "https://b5-a5-sazid.vercel.app/api/v1/auth/login"
+							},
+							"response": []
+						},
+						{
+							"name": "Refresh-Token",
+							"request": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "Authorization",
+										"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2ODhjZThmOWFlMzNlZDA4ODdjNzkzNWIiLCJlbWFpbCI6ImRyaXZlckBnbWFpbC5jb20iLCJyb2xlIjoiUklERVIiLCJpYXQiOjE3NTQwNjcxMjgsImV4cCI6MTc1NDE1MzUyOH0._oV8aQcOGEU2sayQ0jE0UpzD4xHEvIRBQ25HVY7wH-A",
+										"type": "text",
+										"disabled": true
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"email\": \"driver@gmail.com\",\r\n    \"password\": \"Driver@123\"\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": "https://b5-a5-sazid.vercel.app/api/v1/auth/refresh-token"
+							},
+							"response": []
+						},
+						{
+							"name": "logout",
+							"request": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "Authorization",
+										"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2ODhjZThiM2FlMzNlZDA4ODdjNzkzNTgiLCJlbWFpbCI6ImFkbWluQGdtYWlsLmNvbSIsInJvbGUiOiJBRE1JTiIsImlhdCI6MTc1NDA2NjMyOCwiZXhwIjoxNzU0MTUyNzI4fQ.ZCblNAlhcEeRs9ymZJtT8wP51hm8js9IG350eXlrUqk",
+										"type": "text"
+									}
+								],
+								"url": "https://b5-a5-sazid.vercel.app/api/v1/auth/logout"
+							},
+							"response": []
+						},
+						{
+							"name": "change-password",
+							"request": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "Authorization",
+										"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2ODhjZTkxN2Q5MTExZTI4YmRjMjMzMWMiLCJlbWFpbCI6InJpZGVyQGdtYWlsLmNvbSIsInJvbGUiOiJSSURFUiIsImlhdCI6MTc1NDA2NjUyOSwiZXhwIjoxNzU0MTUyOTI5fQ.K78jeGhDiUsqYey_RUhDSZMxiWsO9edKesopOBD3KP8",
+										"type": "text"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"oldPassword\" : \"Rider@123\",\r\n    \"newPassword\" : \"Rider123@\"\r\n}\r\n",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": "https://b5-a5-sazid.vercel.app/api/v1/auth/change-password"
+							},
+							"response": []
+						},
+						{
+							"name": "set-password",
+							"request": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "Authorization",
+										"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2ODg4NDZlMWNmNWUzNmRiMTYwNmE4MjYiLCJlbWFpbCI6InNoYWhuYXdhenNhemlkNjlAZ21haWwuY29tIiwicm9sZSI6IlJJREVSIiwiaWF0IjoxNzUzNzY2ODcwLCJleHAiOjE3NTM4NTMyNzB9.BVPk7H7t7gxFP5Ky_rAHWparFTrmgNpJ16XhHaTlJVY",
+										"type": "text"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"password\" : \"Shakil33@\"\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": "https://b5-a5-sazid.vercel.app/api/v1/auth/set-password"
+							},
+							"response": []
+						},
+						{
+							"name": "forgot-password",
+							"request": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "Authorization",
+										"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2ODhjZTk0OGQ5MTExZTI4YmRjMjMzMWYiLCJlbWFpbCI6InNoYWhuYXdhenNhemlkNjlAZ21haWwuY29tIiwicm9sZSI6IlJJREVSIiwiaWF0IjoxNzU0MDY2ODEzLCJleHAiOjE3NTQxNTMyMTN9.h8F84BwNWAnd2B-nmJ_B3r0Vbw0DN1dtHqjXdOwXRqo",
+										"type": "text"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n\"email\" : \"shahnawazsazid69@gmail.com\"\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": "https://b5-a5-sazid.vercel.app/api/v1/auth/forgot-password"
+							},
+							"response": []
+						},
+						{
+							"name": "RESET-PASSWORD",
+							"request": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "Authorization",
+										"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2ODhjZTk0OGQ5MTExZTI4YmRjMjMzMWYiLCJlbWFpbCI6InNoYWhuYXdhenNhemlkNjlAZ21haWwuY29tIiwicm9sZSI6IlJJREVSIiwiaWF0IjoxNzU0MDY2ODU0LCJleHAiOjE3NTQwNjc0NTR9.8-IyMpQIAkKQj2wd4wMDJ0lOaWAf8yoVdrMjQBucjcc",
+										"type": "text"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n     \"id\" : \"688ce948d9111e28bdc2331f\",\r\n    \"newPassword\" : \"Rider123@\"\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": "https://b5-a5-sazid.vercel.app/api/v1/auth/reset-password"
+							},
+							"response": []
+						}
+					]
+				}
+			]
+		},
+		{
+			"name": "DRIVER",
+			"item": [
+				{
+					"name": "ADMIN-WORKS",
+					"item": [
+						{
+							"name": "ADMIN-APPROVE-DRIVER (ADMIN)",
+							"request": {
+								"method": "PATCH",
+								"header": [
+									{
+										"key": "Authorization",
+										"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2ODhjZThiM2FlMzNlZDA4ODdjNzkzNTgiLCJlbWFpbCI6ImFkbWluQGdtYWlsLmNvbSIsInJvbGUiOiJBRE1JTiIsImlhdCI6MTc1NDA2ODA2MiwiZXhwIjoxNzU0MTU0NDYyfQ.LalxO33K_LAPsN2I0J5OoE2N0sj0KRxAbSDjBOXvwqM",
+										"type": "text"
+									},
+									{
+										"key": "",
+										"value": "",
+										"type": "text"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n  \"driverStatus\": \"APPROVED\"\r\n}\r\n",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": "https://b5-a5-sazid.vercel.app/api/v1/drivers/status/688cf801d38ee39b116d95ea"
+							},
+							"response": []
+						},
+						{
+							"name": "GET-ALL-DRIVERS-ADMIN",
+							"protocolProfileBehavior": {
+								"disableBodyPruning": true
+							},
+							"request": {
+								"method": "GET",
+								"header": [
+									{
+										"key": "Authorization",
+										"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2ODhjZThiM2FlMzNlZDA4ODdjNzkzNTgiLCJlbWFpbCI6ImFkbWluQGdtYWlsLmNvbSIsInJvbGUiOiJBRE1JTiIsImlhdCI6MTc1NDA2ODA2MiwiZXhwIjoxNzU0MTU0NDYyfQ.LalxO33K_LAPsN2I0J5OoE2N0sj0KRxAbSDjBOXvwqM",
+										"type": "text"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n  \"driverStatus\": \"APPROVED\"\r\n}\r\n"
+								},
+								"url": "https://b5-a5-sazid.vercel.app/api/v1/drivers/all-drivers"
+							},
+							"response": []
+						},
+						{
+							"name": "GET-SINGLE-DRIVER-ADMIN",
+							"protocolProfileBehavior": {
+								"disableBodyPruning": true
+							},
+							"request": {
+								"method": "GET",
+								"header": [
+									{
+										"key": "Authorization",
+										"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2ODhjZThiM2FlMzNlZDA4ODdjNzkzNTgiLCJlbWFpbCI6ImFkbWluQGdtYWlsLmNvbSIsInJvbGUiOiJBRE1JTiIsImlhdCI6MTc1NDA2ODA2MiwiZXhwIjoxNzU0MTU0NDYyfQ.LalxO33K_LAPsN2I0J5OoE2N0sj0KRxAbSDjBOXvwqM",
+										"type": "text"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n  \"driverStatus\": \"APPROVED\"\r\n}\r\n"
+								},
+								"url": "https://b5-a5-sazid.vercel.app/api/v1/drivers/688cf4e7fb36356243740aa1"
+							},
+							"response": []
+						}
+					]
+				},
+				{
+					"name": "DRIVER-WORKS",
+					"item": [
+						{
+							"name": "REGISTER-DRIVER",
+							"request": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "Authorization",
+										"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2ODhjZThmOWFlMzNlZDA4ODdjNzkzNWIiLCJlbWFpbCI6ImRyaXZlckBnbWFpbC5jb20iLCJyb2xlIjoiUklERVIiLCJpYXQiOjE3NTQwNjg5ODEsImV4cCI6MTc1NDE1NTM4MX0.g0-CEoXmj1HC_6MnPw7sm_aaaBc5r13g0Z_hBsNd3JA",
+										"type": "text"
+									}
+								],
+								"body": {
+									"mode": "formdata",
+									"formdata": [
+										{
+											"key": "data",
+											"value": "{\n  \"vehicle\": {\n    \"vehicleNumber\": \"ABC-1234\",\n    \"vehicleType\": \"BIKE\"\n  }\n}\n",
+											"type": "text"
+										},
+										{
+											"key": "file",
+											"type": "file",
+											"src": "/C:/Users/User/Desktop/archive/456-in-squid-game-season-2-ol-1920x1080.jpg"
+										}
+									]
+								},
+								"url": "https://b5-a5-sazid.vercel.app/api/v1/drivers/register"
+							},
+							"response": []
+						},
+						{
+							"name": "GET-MY-PROFILE-DRIVER",
+							"protocolProfileBehavior": {
+								"disableBodyPruning": true
+							},
+							"request": {
+								"method": "GET",
+								"header": [
+									{
+										"key": "Authorization",
+										"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2ODhhMGEzOGJkNzcwZjhmMGY5MzY3NGIiLCJlbWFpbCI6ImRyaXZlci0xQGdtYWlsLmNvbSIsInJvbGUiOiJEUklWRVIiLCJpYXQiOjE3NTM4Nzc3ODYsImV4cCI6MTc1Mzk2NDE4Nn0.7HVcRYrfqoZdSLPfvxqjDhaAxCkZnKbVXNznI8suBg8",
+										"type": "text"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "\r\n"
+								},
+								"url": "http://localhost:5000/api/v1/drivers/me"
+							},
+							"response": []
+						},
+						{
+							"name": "UPDATE-MY-PROFILE-DRIVER",
+							"request": {
+								"method": "PATCH",
+								"header": [
+									{
+										"key": "Authorization",
+										"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2ODhjYjA5YzRjY2QyM2MzZjJiNmM5NjQiLCJlbWFpbCI6InNoYWhuYXdhenNhemlkNjBAZ21haWwuY29tIiwicm9sZSI6IlJJREVSIiwiaWF0IjoxNzU0MDU1NzY1LCJleHAiOjE3NTQxNDIxNjV9.q0rCJxSrWtYPEJny7KPhw72A_F5og9_s1QW3JNzE3wI",
+										"type": "text"
+									}
+								],
+								"body": {
+									"mode": "formdata",
+									"formdata": [
+										{
+											"key": "data",
+											"value": "{            \n\"vehicle\": {\n                \"vehicleNumber\": \"ABC-1233\",\n                \"vehicleType\": \"CAR\"\n }, \n\n\n\"totalEarning\" : 200\n0\n}",
+											"type": "text"
+										},
+										{
+											"key": "file",
+											"type": "file",
+											"src": "/C:/Users/User/Pictures/Saved Pictures/call-of-duty-modern-warfare-2-2022-games-call-of-duty-3840x2160-8565.jpg"
+										}
+									]
+								},
+								"url": "http://localhost:5000/api/v1/drivers/update-my-driver-profile"
+							},
+							"response": []
+						},
+						{
+							"name": "GO-ONLINE",
+							"request": {
+								"method": "PATCH",
+								"header": [
+									{
+										"key": "Authorization",
+										"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2ODhjZThmOWFlMzNlZDA4ODdjNzkzNWIiLCJlbWFpbCI6ImRyaXZlckBnbWFpbC5jb20iLCJyb2xlIjoiRFJJVkVSIiwiaWF0IjoxNzU0MDY5MDkyLCJleHAiOjE3NTQxNTU0OTJ9.asDZoo3HJiuTDrr9-YDXVS_HTe0p4to42aRwTHOtlNc",
+										"type": "text"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"type\": \"Point\",\r\n    \"coordinates\": [90.4015,23.751]\r\n}\r\n",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": "https://b5-a5-sazid.vercel.app/api/v1/drivers/go-online"
+							},
+							"response": []
+						},
+						{
+							"name": "GO-OFFLINE",
+							"request": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "Authorization",
+										"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2ODhjZThmOWFlMzNlZDA4ODdjNzkzNWIiLCJlbWFpbCI6ImRyaXZlckBnbWFpbC5jb20iLCJyb2xlIjoiRFJJVkVSIiwiaWF0IjoxNzU0MDY5MDkyLCJleHAiOjE3NTQxNTU0OTJ9.asDZoo3HJiuTDrr9-YDXVS_HTe0p4to42aRwTHOtlNc",
+										"type": "text"
+									}
+								],
+								"url": "https://b5-a5-sazid.vercel.app/api/v1/drivers/go-offline"
+							},
+							"response": []
+						}
+					]
+				}
+			]
+		},
+		{
+			"name": "RIDE",
+			"item": [
+				{
+					"name": "RIDER-WORKS",
+					"item": [
+						{
+							"name": "REQUEST-RIDE- (RIDER)",
+							"request": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "Authorization",
+										"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2ODhjZTkxN2Q5MTExZTI4YmRjMjMzMWMiLCJlbWFpbCI6InJpZGVyQGdtYWlsLmNvbSIsInJvbGUiOiJSSURFUiIsImlhdCI6MTc1NDA2ODAyNywiZXhwIjoxNzU0MTU0NDI3fQ.kReUR8ZmyHQ2-3Fsiqo3ZFz8mtvju12g6vhcGw1FW7U",
+										"type": "text"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n\"pickupLocation\": {\r\n    \"type\": \"Point\",\r\n    \"coordinates\": [90.401500, 23.751000]\r\n  },\r\n  \"destination\": {\r\n    \"type\": \"Point\",\r\n    \"coordinates\": [90.391480, 23.750960]\r\n  }\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": "https://b5-a5-sazid.vercel.app/api/v1/rides/request"
+							},
+							"response": []
+						},
+						{
+							"name": "CANCEL-RIDE-RIDER",
+							"request": {
+								"method": "PATCH",
+								"header": [
+									{
+										"key": "Authorization",
+										"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2ODhjZTkxN2Q5MTExZTI4YmRjMjMzMWMiLCJlbWFpbCI6InJpZGVyQGdtYWlsLmNvbSIsInJvbGUiOiJSSURFUiIsImlhdCI6MTc1NDA2ODAyNywiZXhwIjoxNzU0MTU0NDI3fQ.kReUR8ZmyHQ2-3Fsiqo3ZFz8mtvju12g6vhcGw1FW7U",
+										"type": "text"
+									}
+								],
+								"url": "https://b5-a5-sazid.vercel.app/api/v1/rides/cancel-ride/688cfa6fd38ee39b116d9634"
+							},
+							"response": []
+						},
+						{
+							"name": "GET-DRIVERS-NEAR-ME",
+							"request": {
+								"method": "GET",
+								"header": [
+									{
+										"key": "Authorization",
+										"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2ODhjZTkxN2Q5MTExZTI4YmRjMjMzMWMiLCJlbWFpbCI6InJpZGVyQGdtYWlsLmNvbSIsInJvbGUiOiJSSURFUiIsImlhdCI6MTc1NDA2ODAyNywiZXhwIjoxNzU0MTU0NDI3fQ.kReUR8ZmyHQ2-3Fsiqo3ZFz8mtvju12g6vhcGw1FW7U",
+										"type": "text"
+									}
+								],
+								"url": "https://b5-a5-sazid.vercel.app/api/v1/rides/drivers-near"
+							},
+							"response": []
+						},
+						{
+							"name": "GET-MY-RIDE-INFO-RIDER",
+							"request": {
+								"method": "GET",
+								"header": [
+									{
+										"key": "Authorization",
+										"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2ODhjZTkxN2Q5MTExZTI4YmRjMjMzMWMiLCJlbWFpbCI6InJpZGVyQGdtYWlsLmNvbSIsInJvbGUiOiJSSURFUiIsImlhdCI6MTc1NDA2ODAyNywiZXhwIjoxNzU0MTU0NDI3fQ.kReUR8ZmyHQ2-3Fsiqo3ZFz8mtvju12g6vhcGw1FW7U",
+										"type": "text"
+									}
+								],
+								"url": "https://b5-a5-sazid.vercel.app/api/v1/rides/my-ride/688cf90bd38ee39b116d95fe"
+							},
+							"response": []
+						},
+						{
+							"name": "GET-ALL-MY-RIDES-RIDER",
+							"request": {
+								"method": "GET",
+								"header": [
+									{
+										"key": "Authorization",
+										"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2ODhjZTkxN2Q5MTExZTI4YmRjMjMzMWMiLCJlbWFpbCI6InJpZGVyQGdtYWlsLmNvbSIsInJvbGUiOiJSSURFUiIsImlhdCI6MTc1NDA2ODAyNywiZXhwIjoxNzU0MTU0NDI3fQ.kReUR8ZmyHQ2-3Fsiqo3ZFz8mtvju12g6vhcGw1FW7U",
+										"type": "text"
+									}
+								],
+								"url": "https://b5-a5-sazid.vercel.app/api/v1/rides/all-rides-rider"
+							},
+							"response": []
+						},
+						{
+							"name": "RATE-AND-FEEDBACK-RIDE",
+							"request": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "Authorization",
+										"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2ODhjZTkxN2Q5MTExZTI4YmRjMjMzMWMiLCJlbWFpbCI6InJpZGVyQGdtYWlsLmNvbSIsInJvbGUiOiJSSURFUiIsImlhdCI6MTc1NDA2ODAyNywiZXhwIjoxNzU0MTU0NDI3fQ.kReUR8ZmyHQ2-3Fsiqo3ZFz8mtvju12g6vhcGw1FW7U",
+										"type": "text"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"feedback\" : \"Vey Nice\",\r\n    \"rating\" : 4.5\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": "https://b5-a5-sazid.vercel.app/api/v1/rides/feedback/688d0ca1ef2ee7a54fb72d5f"
+							},
+							"response": []
+						}
+					]
+				},
+				{
+					"name": "DRIVER-WORKS",
+					"item": [
+						{
+							"name": "GET-RIDES-NEAR-ME-DRIVER",
+							"protocolProfileBehavior": {
+								"disableBodyPruning": true
+							},
+							"request": {
+								"method": "GET",
+								"header": [
+									{
+										"key": "Authorization",
+										"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2ODhjZThmOWFlMzNlZDA4ODdjNzkzNWIiLCJlbWFpbCI6ImRyaXZlckBnbWFpbC5jb20iLCJyb2xlIjoiRFJJVkVSIiwiaWF0IjoxNzU0MDY5MDkyLCJleHAiOjE3NTQxNTU0OTJ9.asDZoo3HJiuTDrr9-YDXVS_HTe0p4to42aRwTHOtlNc",
+										"type": "text"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": ""
+								},
+								"url": "https://b5-a5-sazid.vercel.app/api/v1/rides/rides-near"
+							},
+							"response": []
+						},
+						{
+							"name": "RJECT-RIDE-DRIVER",
+							"request": {
+								"method": "PATCH",
+								"header": [
+									{
+										"key": "Authorization",
+										"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2ODhjZThmOWFlMzNlZDA4ODdjNzkzNWIiLCJlbWFpbCI6ImRyaXZlckBnbWFpbC5jb20iLCJyb2xlIjoiRFJJVkVSIiwiaWF0IjoxNzU0MDY5MDkyLCJleHAiOjE3NTQxNTU0OTJ9.asDZoo3HJiuTDrr9-YDXVS_HTe0p4to42aRwTHOtlNc",
+										"type": "text"
+									}
+								],
+								"url": "https://b5-a5-sazid.vercel.app/api/v1/rides/reject-ride/688cf90bd38ee39b116d95fe"
+							},
+							"response": []
+						},
+						{
+							"name": "ACCEPT-RIDE-DRIVER",
+							"request": {
+								"method": "PATCH",
+								"header": [
+									{
+										"key": "Authorization",
+										"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2ODhjZThmOWFlMzNlZDA4ODdjNzkzNWIiLCJlbWFpbCI6ImRyaXZlckBnbWFpbC5jb20iLCJyb2xlIjoiRFJJVkVSIiwiaWF0IjoxNzU0MDY5MDkyLCJleHAiOjE3NTQxNTU0OTJ9.asDZoo3HJiuTDrr9-YDXVS_HTe0p4to42aRwTHOtlNc",
+										"type": "text"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": ""
+								},
+								"url": "https://b5-a5-sazid.vercel.app/api/v1/rides/accept-ride/688d0ca1ef2ee7a54fb72d5f"
+							},
+							"response": []
+						},
+						{
+							"name": "PICKUP-THE-RIDER-DRIVER",
+							"request": {
+								"method": "PATCH",
+								"header": [
+									{
+										"key": "Authorization",
+										"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2ODhjZThmOWFlMzNlZDA4ODdjNzkzNWIiLCJlbWFpbCI6ImRyaXZlckBnbWFpbC5jb20iLCJyb2xlIjoiRFJJVkVSIiwiaWF0IjoxNzU0MDY5MDkyLCJleHAiOjE3NTQxNTU0OTJ9.asDZoo3HJiuTDrr9-YDXVS_HTe0p4to42aRwTHOtlNc",
+										"type": "text"
+									}
+								],
+								"url": "https://b5-a5-sazid.vercel.app/api/v1/rides/pickup-rider/688d0ca1ef2ee7a54fb72d5f"
+							},
+							"response": []
+						},
+						{
+							"name": "START-THE-RIDE-DRIVER",
+							"request": {
+								"method": "PATCH",
+								"header": [
+									{
+										"key": "Authorization",
+										"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2ODhjZThmOWFlMzNlZDA4ODdjNzkzNWIiLCJlbWFpbCI6ImRyaXZlckBnbWFpbC5jb20iLCJyb2xlIjoiRFJJVkVSIiwiaWF0IjoxNzU0MDY5MDkyLCJleHAiOjE3NTQxNTU0OTJ9.asDZoo3HJiuTDrr9-YDXVS_HTe0p4to42aRwTHOtlNc",
+										"type": "text"
+									}
+								],
+								"url": "https://b5-a5-sazid.vercel.app/api/v1/rides/start-ride/688d0ca1ef2ee7a54fb72d5f"
+							},
+							"response": []
+						},
+						{
+							"name": "COMPLETE-THE-RIDE-DRIVER",
+							"request": {
+								"method": "PATCH",
+								"header": [
+									{
+										"key": "Authorization",
+										"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2ODhjZThmOWFlMzNlZDA4ODdjNzkzNWIiLCJlbWFpbCI6ImRyaXZlckBnbWFpbC5jb20iLCJyb2xlIjoiRFJJVkVSIiwiaWF0IjoxNzU0MDY5MDkyLCJleHAiOjE3NTQxNTU0OTJ9.asDZoo3HJiuTDrr9-YDXVS_HTe0p4to42aRwTHOtlNc",
+										"type": "text"
+									}
+								],
+								"url": "https://b5-a5-sazid.vercel.app/api/v1/rides/complete-ride/688d0ca1ef2ee7a54fb72d5f"
+							},
+							"response": []
+						},
+						{
+							"name": "GET-ALL-MY-RIDES-DRIVER",
+							"request": {
+								"method": "GET",
+								"header": [
+									{
+										"key": "Authorization",
+										"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2ODhjZThmOWFlMzNlZDA4ODdjNzkzNWIiLCJlbWFpbCI6ImRyaXZlckBnbWFpbC5jb20iLCJyb2xlIjoiRFJJVkVSIiwiaWF0IjoxNzU0MDY5MDkyLCJleHAiOjE3NTQxNTU0OTJ9.asDZoo3HJiuTDrr9-YDXVS_HTe0p4to42aRwTHOtlNc",
+										"type": "text"
+									}
+								],
+								"url": "https://b5-a5-sazid.vercel.app/api/v1/rides/all-rides-driver"
+							},
+							"response": []
+						}
+					]
+				},
+				{
+					"name": "ADMIN-WORKS",
+					"item": [
+						{
+							"name": "GET-ALL-RIDES-ADMIN",
+							"protocolProfileBehavior": {
+								"disableBodyPruning": true
+							},
+							"request": {
+								"method": "GET",
+								"header": [
+									{
+										"key": "Authorization",
+										"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2ODhjZThiM2FlMzNlZDA4ODdjNzkzNTgiLCJlbWFpbCI6ImFkbWluQGdtYWlsLmNvbSIsInJvbGUiOiJBRE1JTiIsImlhdCI6MTc1NDA2ODA2MiwiZXhwIjoxNzU0MTU0NDYyfQ.LalxO33K_LAPsN2I0J5OoE2N0sj0KRxAbSDjBOXvwqM",
+										"type": "text"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": ""
+								},
+								"url": "https://b5-a5-sazid.vercel.app/api/v1/rides/all-rides-admin"
+							},
+							"response": []
+						}
+					]
+				}
+			]
+		},
+		{
+			"name": "STATISTICS",
+			"item": [
+				{
+					"name": "ADMIN-WORKS",
+					"item": [
+						{
+							"name": "GENERATE-RIDES-REPORTS-ADMIN",
+							"request": {
+								"method": "GET",
+								"header": [
+									{
+										"key": "Authorization",
+										"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2ODhjZThiM2FlMzNlZDA4ODdjNzkzNTgiLCJlbWFpbCI6ImFkbWluQGdtYWlsLmNvbSIsInJvbGUiOiJBRE1JTiIsImlhdCI6MTc1NDA2ODA2MiwiZXhwIjoxNzU0MTU0NDYyfQ.LalxO33K_LAPsN2I0J5OoE2N0sj0KRxAbSDjBOXvwqM",
+										"type": "text"
+									}
+								],
+								"url": "https://b5-a5-sazid.vercel.app/api/v1/stats/earning-history"
+							},
+							"response": []
+						}
+					]
+				},
+				{
+					"name": "DRIVER-WORKS",
+					"item": [
+						{
+							"name": "GENERATE-DRIVER-REPORTS-DRIVER",
+							"request": {
+								"method": "GET",
+								"header": [
+									{
+										"key": "Authorization",
+										"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2ODhjZThmOWFlMzNlZDA4ODdjNzkzNWIiLCJlbWFpbCI6ImRyaXZlckBnbWFpbC5jb20iLCJyb2xlIjoiRFJJVkVSIiwiaWF0IjoxNzU0MDY5MDkyLCJleHAiOjE3NTQxNTU0OTJ9.asDZoo3HJiuTDrr9-YDXVS_HTe0p4to42aRwTHOtlNc",
+										"type": "text"
+									}
+								],
+								"url": "https://b5-a5-sazid.vercel.app/api/v1/stats/my-earning-history"
+							},
+							"response": []
+						}
+					]
+				}
+			]
+		}
+	]
+}

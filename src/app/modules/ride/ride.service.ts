@@ -169,6 +169,7 @@ const acceptRide = async (driverUserId: string, rideId: string) => {
 
 
     const data = {
+      rideId : ride._id,
       riderName: rider.name,
       riderPhone: rider.phone
     }
@@ -323,6 +324,7 @@ const pickupRider = async (driverUserId: string, rideId: string) => {
 
     return {
       data: {
+        rideId : ride._id,
         riderDestination: ride.destination,
         totalFare: ride.fare,
       },
@@ -404,6 +406,7 @@ const startRide = async (driverUserId: string, rideId: string) => {
 
     return {
       data: {
+        rideId : ride._id,
         riderDestination: ride.destination,
         totalFare: ride.fare,
       },
