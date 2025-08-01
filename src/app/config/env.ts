@@ -43,9 +43,6 @@ const loadEnvVariables = (): EnvConfig => {
         "SMTP_HOST",
         "SMTP_USER",
         "SMTP_FROM",
-        "REDIS_PORT",
-        "REDIS_USERNAME",
-        "REDIS_PASSWORD",
     ];
 
     requiredEnvVariables.forEach(key => {

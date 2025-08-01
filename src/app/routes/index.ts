@@ -10,7 +10,7 @@ export const router = Router()
 
 const moduleRoutes = [
     {
-        path: "/user",
+        path: "/users",
         route: UserRoutes
     },
     {
@@ -18,11 +18,11 @@ const moduleRoutes = [
         route: AuthRoutes
     },
     {
-        path: "/driver",
+        path: "/drivers",
         route: DriverRoutes
     },
     {
-        path: "/ride",
+        path: "/rides",
         route: RideRoutes
     },
     {

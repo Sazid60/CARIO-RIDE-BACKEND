@@ -22,7 +22,7 @@ router.get("/me", checkAuth(Role.DRIVER), driverControllers.getMe)
 // update rider profile 
 
 router.patch(
-  "/me",
+  "/update-my-driver-profile",
   checkAuth(Role.DRIVER),
   multerUpload.single("file"),          
   validateRequest(updateDriverProfileZodSchema), 
