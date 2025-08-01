@@ -126,7 +126,7 @@ const acceptRide = async (driverUserId: string, rideId: string) => {
     }
 
     if (driver.ridingStatus !== DriverRidingStatus.IDLE) {
-      throw new AppError(httpStatus.BAD_REQUEST, "You can Not Accept another Ride While In a Trip");
+      throw new AppError(httpStatus.BAD_REQUEST, "You can Not Accept another Ride While Engaged In a Trip Already");
     }
 
     const ride = await Ride.findById(rideId).session(session);
@@ -204,7 +204,7 @@ const rejectRide = async (driverUserId: string, rideId: string) => {
     }
 
     if (driver.ridingStatus !== DriverRidingStatus.IDLE) {
-      throw new AppError(httpStatus.BAD_REQUEST, "You cannot accept or reject another ride while in a trip.");
+      throw new AppError(httpStatus.BAD_REQUEST, "You cannot accept or reject another ride while already in a trip.");
     }
 
     const ride = await Ride.findById(rideId).session(session);
@@ -573,7 +573,7 @@ const getDriversNearMe = async (userId: string) => {
 
   const latestRide = await Ride.findOne({ riderId: userId }).sort({ createdAt: -1 });
   if (!latestRide || !latestRide.pickupLocation?.coordinates?.length) {
-    throw new AppError(httpStatus.BAD_REQUEST, "Pickup location not found for this rider.");
+    throw new AppError(httpStatus.BAD_REQUEST, "Your location not found.");
   }
 
   const [pickupLng, pickupLat] = latestRide.pickupLocation.coordinates;
