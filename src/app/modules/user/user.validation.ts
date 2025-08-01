@@ -72,3 +72,25 @@ export const updateUserZodSchema = z.object({
         })
         .optional(),
 })
+export const updateOwnProfileUserZodSchema = z.object({
+    name: z
+        .string({ invalid_type_error: "Name must be string" })
+        .min(2, { message: "Name must be at least 2 characters long." })
+        .max(50, { message: "Name cannot exceed 50 characters." }).optional(),
+    phone: z
+        .string({ invalid_type_error: "Phone Number must be string" })
+        .regex(/^(?:\+8801\d{9}|01\d{9})$/, {
+            message: "Phone number must be valid for Bangladesh. Format: +8801XXXXXXXXX or 01XXXXXXXXX",
+        })
+        .optional(),
+    location: z
+        .object({
+            type: z.literal("Point"),
+            coordinates: z
+                .tuple([z.number(), z.number()])
+                .refine((coords) => coords.length === 2, {
+                    message: "Coordinates must be [longitude, latitude]",
+                }),
+        })
+        .optional(),
+})
