@@ -37,17 +37,17 @@ Built using typescript, Express.js and MongoDB, Mongoose, the system implements 
 
 #### **_Rider Capabilities_**
 
-- Request Ride only if any other ride is not ongoing and the user is not blocked
+- Request Ride only if any other ride is not ongoing and the user is not blocked (fare and distance will be dynamically created)
 - cancel rides only before driver accepts the ride
 - View ride history(cancelled, Requested and completed rides)
 - View specific ride info
 - Discover nearby drivers using location data
-- Submit feedback and ratings after ride completion
+- Submit feedback and ratings after ride completion rating will be added and dynamically change the average rating of the rider as well.
 
 #### **_Driver Capabilities_**
 
 - Accept or reject ride requests
-- Update ride status through: Picked Up → In Transit → Completed
+- Update ride status through: Picked Up → In Transit → Completed (if completed driver currentLocation will be dynamically update with the destination Location )
 - Go online taking the current location
 - Go offline removing the current location
 - View ride and earnings history
@@ -210,7 +210,7 @@ npm run dev
 
 ## USER AND AUTH RELATED API
 
-### **_Create User (Register)_**
+- ### **_Create User (Register)_**
 
 **_Endpoint:_**
 
@@ -247,7 +247,7 @@ https://b5-a5-sazid.vercel.app/api/v1/users/register
 }
 ```
 
-### **_User Login (Credentials Login)_**
+- ### **_User Login (Credentials Login)_**
 
 **_Endpoint:_**
 
@@ -278,7 +278,7 @@ https://b5-a5-sazid.vercel.app/api/v1/auth/login
 }
 ```
 
-### **_User Login (Google Login)_**
+- ### **_User Login (Google Login)_**
 
 ```
 https://b5-a5-sazid.vercel.app/api/v1/auth/google
@@ -288,7 +288,7 @@ https://b5-a5-sazid.vercel.app/api/v1/auth/google
 
 **_Special Notes:_** `As There Is No Frontend The token will not be set using the google login for now! You have to set Password Additionally If You have Logged In usinmg google ! `
 
-### **_Set Password For Google Logged in User_**
+- ### **_Set Password For Google Logged in User_**
 
 **_Endpoint:_**
 
@@ -318,7 +318,7 @@ https://b5-a5-sazid.vercel.app/api/v1/auth/set-password
 }
 ```
 
-### **_Forgot Password_**
+- ### **_Forgot Password_**
 
 **_Endpoint:_**
 
@@ -348,7 +348,7 @@ https://b5-a5-sazid.vercel.app/api/v1/auth/forgot-password
 }
 ```
 
-### **_Reset Password_**
+- ### **_Reset Password_**
 
 **_Endpoint:_**
 
@@ -379,7 +379,7 @@ https://b5-a5-sazid.vercel.app/api/v1/auth/reset-password
 }
 ```
 
-### **_Change Password_**
+- ### **_Change Password_**
 
 **_Endpoint:_**
 
@@ -410,7 +410,7 @@ https://b5-a5-sazid.vercel.app/api/v1/auth/change-password
 }
 ```
 
-### **_Get Your Own Profile_**
+- ### **_Get Your Own Profile_**
 
 **_Endpoint:_**
 
@@ -434,7 +434,7 @@ https://b5-a5-sazid.vercel.app/api/v1/users/me
 
 **_Required Fields:_** N/A
 
-### **_Update User_**
+- ### **_Update User_**
 
 **_Endpoint:_**
 
@@ -473,7 +473,7 @@ https://b5-a5-sazid.vercel.app/api/v1/users/688ce948d9111e28bdc2331f
 }
 ```
 
-### **_Get All Users List_**
+- ### **_Get All Users List_**
 
 **_Endpoint:_**
 
@@ -497,7 +497,7 @@ https://b5-a5-sazid.vercel.app/api/v1/users/all-users
 
 **_Required Fields:_** N/A
 
-### **_Get Single User Information_**
+- ### **_Get Single User Information_**
 
 **_Endpoint:_**
 
@@ -521,7 +521,7 @@ https://b5-a5-sazid.vercel.app/api/v1/users/688ce8b3ae33ed0887c79358
 
 **_Required Fields:_** N/A
 
-### **Block/Unblock User**
+- ### **_Block/Unblock User_**
 
 **_Endpoint:_**
 
@@ -553,7 +553,7 @@ https://b5-a5-sazid.vercel.app/api/v1/users/change-status/688ce948d9111e28bdc233
 }
 ```
 
-### **_Refresh Token_**
+- ### **_Refresh Token_**
 
 **_Endpoint:_**
 
@@ -584,7 +584,7 @@ https://b5-a5-sazid.vercel.app/api/v1/auth/refresh-token
 }
 ```
 
-### **_Logout User_**
+- ### **_Logout User_**
 
 **_Endpoint:_**
 
@@ -608,12 +608,9 @@ https://b5-a5-sazid.vercel.app/api/v1/auth/logout
 
 **_Required Fields:_** N/A
 
+## DRIVER MODEL RELATED API
 
-
-
-## DRIVER RELATED API 
-
-### **_Register as a Driver_**
+- ### **_Register as a Driver_**
 
 **_Endpoint:_**
 
@@ -631,15 +628,14 @@ https://b5-a5-sazid.vercel.app/api/v1/drivers/register
 
 **_Access:_** Every User has This Route Access
 
-**_Description:_** If a user/rider Want He can register as a driver. A user have to give `vehicle information` and upload his `drivingLicense`. 
+**_Description:_** If a user/rider Want He can register as a driver. A user have to give `vehicle information` and upload his `drivingLicense`.
 
-**_Special Notes:_** You have to set the login access token in header authorization to access this route. And remember you have to put the information in form data and upload an image of driving license. 
+**_Special Notes:_** You have to set the login access token in header authorization to access this route. And remember you have to put the information in form data and upload an image of driving license.
 
-**_Required Fields:_** 
+**_Required Fields:_**
 
-```json 
-
-// add in form data - > data 
+```json
+// add in form data - > data
 {
   "vehicle": {
     "vehicleNumber": "ABC-1234",
@@ -647,12 +643,10 @@ https://b5-a5-sazid.vercel.app/api/v1/drivers/register
   }
 }
 
-// upload driving license image in form data -> file 
-
+// upload driving license image in form data -> file
 ```
 
-
-### **_Admin Approve The Driver_**
+- ### **_Admin Approve The Driver_**
 
 **_Endpoint:_**
 
@@ -670,23 +664,22 @@ https://b5-a5-sazid.vercel.app/api/v1/drivers/status/:id
 https://b5-a5-sazid.vercel.app/api/v1/drivers/status/688cf801d38ee39b116d95ea
 ```
 
-**_Access:_** Only `Admin` has The Access of This Route 
+**_Access:_** Only `Admin` has The Access of This Route
 
-**_Description:_** If Admin hits this route with te status in the body admin can `APPROVED`, `SUSPENDED` a driver.  
+**_Description:_** If Admin hits this route with te status in the body admin can `APPROVED`, `SUSPENDED` a driver.
 
-**_Special Notes:_** You have to set the login access token in header authorization to access this route. 
+**_Special Notes:_** You have to set the login access token in header authorization to access this route.
 
-**_Required Fields:_** 
+**_Required Fields:_**
 
-```json 
-
+```json
 {
-  "driverStatus": "APPROVED" 
+  "driverStatus": "APPROVED"
   // SUSPENDED
 }
-
 ```
-### **See Single Driver Information**
+
+- ### **_See Single Driver Information_**
 
 **_Endpoint:_**
 
@@ -704,17 +697,15 @@ https://b5-a5-sazid.vercel.app/api/v1/drivers/status/688cf801d38ee39b116d95ea
 https://b5-a5-sazid.vercel.app/api/v1/drivers/688cf4e7fb36356243740aa1
 ```
 
-**_Access:_** Only `Admin` has The Access of This Route 
+**_Access:_** Only `Admin` has The Access of This Route
 
-**_Description:_** This will give the single driver information 
+**_Description:_** This will give the single driver information
 
-**_Special Notes:_** You have to set the login access token in header authorization to access this route. 
+**_Special Notes:_** You have to set the login access token in header authorization to access this route.
 
 **_Required Fields:_** N/A
 
-
-
-### **See All Drivers List**
+- ### **See All Drivers List**
 
 **_Endpoint:_**
 
@@ -724,27 +715,23 @@ https://b5-a5-sazid.vercel.app/api/v1/drivers/688cf4e7fb36356243740aa1
 
 **_Method:_** `GET`
 
-
 **_URL:_**
 
 ```
 https://b5-a5-sazid.vercel.app/api/v1/drivers/all-drivers
 ```
 
-**_Access:_** Only `Admin` has The Access of This Route 
+**_Access:_** Only `Admin` has The Access of This Route
 
 **_Description:_** Admin can see all the Drivers by hitting this route
 
-**_Special Notes:_** You have to set the login access token in header authorization to access this route. 
+**_Special Notes:_** You have to set the login access token in header authorization to access this route.
 
 **_Required Fields:_** N/A
 
-
-
 #### **_After Approval The User Who have Requested to be a driver will have to login gain or refresh the token asd Token do not get automatically refreshed_**
 
-
-### **See My Own Driver Profile**
+- ### **_See My Own Driver Profile_**
 
 **_Endpoint:_**
 
@@ -754,24 +741,21 @@ https://b5-a5-sazid.vercel.app/api/v1/drivers/all-drivers
 
 **_Method:_** `GET`
 
-
 **_URL:_**
 
 ```
 https://b5-a5-sazid.vercel.app/api/v1/drivers/me
 ```
 
-**_Access:_** Only `Driver` has The Access of This Route 
+**_Access:_** Only `Driver` has The Access of This Route
 
-**_Description:_** This will give the single driver information 
+**_Description:_** This will give the single driver information
 
-**_Special Notes:_** You have to set the login access token in header authorization to access this route. 
+**_Special Notes:_** You have to set the login access token in header authorization to access this route.
 
 **_Required Fields:_** N/A
 
-
-
-### **Update My Driver Profile**
+- ### **_Update My Driver Profile_**
 
 **_Endpoint:_**
 
@@ -781,24 +765,22 @@ https://b5-a5-sazid.vercel.app/api/v1/drivers/me
 
 **_Method:_** `PATCH`
 
-
 **_URL:_**
 
 ```
 https://b5-a5-sazid.vercel.app/api/v1/drivers/update-my-driver-profile
 ```
 
-**_Access:_** Only `Driver` has The Access of This Route 
+**_Access:_** Only `Driver` has The Access of This Route
 
-**_Description:_**  Driver can Update his vehicle information and Driving License from here. 
+**_Description:_** Driver can Update his vehicle information and Driving License from here.
 
-**_Special Notes:_** You have to set the login access token in header authorization to access this route. And remember you have to put the information in form data and upload an image of driving license. 
+**_Special Notes:_** You have to set the login access token in header authorization to access this route. And remember you have to put the information in form data and upload an image of driving license.
 
-**_Required Fields:_** 
+**_Required Fields:_**
 
-```json 
-
-// add in form data - > data 
+```json
+// add in form data - > data
 {
   "vehicle": {
     "vehicleNumber": "ABC-1234",
@@ -806,10 +788,10 @@ https://b5-a5-sazid.vercel.app/api/v1/drivers/update-my-driver-profile
   }
 }
 
-// upload driving license image in form data -> file 
-
+// upload driving license image in form data -> file
 ```
-### **Driver Going Online**
+
+- ### **_Driver Going Online_**
 
 **_Endpoint:_**
 
@@ -819,30 +801,28 @@ https://b5-a5-sazid.vercel.app/api/v1/drivers/update-my-driver-profile
 
 **_Method:_** `PATCH`
 
-
 **_URL:_**
 
 ```
 https://b5-a5-sazid.vercel.app/api/v1/drivers/go-online
 ```
 
-**_Access:_** Only `Driver` has The Access of This Route 
+**_Access:_** Only `Driver` has The Access of This Route
 
-**_Description:_**  Driver have to put the location coordinate to go online this will be set as current Location. 
+**_Description:_** Driver have to put the location coordinate to go online this will be set as current Location.
 
-**_Special Notes:_** You have to set the login access token in header authorization to access this route. 
+**_Special Notes:_** You have to set the login access token in header authorization to access this route.
 
-**_Required Fields:_** 
+**_Required Fields:_**
 
-```json 
-
+```json
 {
-    "type": "Point",
-    "coordinates": [90.4015,23.751]
+  "type": "Point",
+  "coordinates": [90.4015, 23.751]
 }
-
 ```
-### **Driver Going Offline**
+
+- ### **Driver Going Offline**
 
 **_Endpoint:_**
 
@@ -852,17 +832,466 @@ https://b5-a5-sazid.vercel.app/api/v1/drivers/go-online
 
 **_Method:_** `PATCH`
 
-
 **_URL:_**
 
 ```
 https://b5-a5-sazid.vercel.app/api/v1/drivers/go-offline
 ```
 
-**_Access:_** Only `Driver` has The Access of This Route 
+**_Access:_** Only `Driver` has The Access of This Route
 
-**_Description:_**  If Driver Hits This Route Driver status will be Offline and the Current Location will be removed. 
+**_Description:_** If Driver Hits This Route Driver status will be Offline and the Current Location will be removed And neo one can see this driver.
 
-**_Special Notes:_** You have to set the login access token in header authorization to access this route. 
+**_Special Notes:_** You have to set the login access token in header authorization to access this route.
 
-**_Required Fields:_**  N/A
+**_Required Fields:_** N/A
+
+## RIDE MODEL RELATED API
+
+- ### **_Rider Request a Ride_**
+
+**_Endpoint:_**
+
+```
+/api/v1/rides/request
+```
+
+**_Method:_** `POST`
+
+**_URL:_**
+
+```
+https://b5-a5-sazid.vercel.app/api/v1/rides/request
+```
+
+**_Access:_** Only `RIDER` has The Access of This Route
+
+**_Description:_** If The ride is requested the distance between pickup location and destination will be calculated accordingly the distance and the base ride price.
+
+**_Special Notes:_** You have to set the login access token in header authorization to access this route. the base fare price is kept `baseFarePerKm = 100`
+
+**_Required Fields:_**
+
+```json
+{
+  "pickupLocation": {
+    "type": "Point",
+    "coordinates": [90.4015, 23.751]
+  },
+  "destination": {
+    "type": "Point",
+    "coordinates": [90.39148, 23.75096]
+  }
+}
+```
+
+- ### **Rider Cancel a Ride**
+
+**_Endpoint:_**
+
+```
+/api/v1/rides/cancel-ride/:id
+```
+
+**_Method:_** `PATCH`
+
+**_This Id Will be the \_id of a Ride from the Ride collection_**
+
+**_URL:_**
+
+```
+https://b5-a5-sazid.vercel.app/api/v1/rides/cancel-ride/688cfa6fd38ee39b116d9634
+```
+
+**_Access:_** Only `RIDER` has The Access of This Route
+
+**_Description:_** A Rider can cancel a ride he has created. The logic is `if the ride is already accepted the rid can not be cancelled`. `And a rider can not cancel more than 3 rides in a day `
+
+**_Special Notes:_** You have to set the login access token in header authorization to access this route.
+
+**_Required Fields:_** N/A
+
+- ### **_See Drivers Around Me_**
+
+**_Endpoint:_**
+
+```
+/api/v1/rides/drivers-near
+```
+
+**_Method:_** `GET`
+
+**_URL:_**
+
+```
+https://b5-a5-sazid.vercel.app/api/v1/rides/drivers-near
+```
+
+**_Access:_** Only `RIDER` has The Access of This Route
+
+**_Description:_** A rider can see the drivers around his pickup location (within 1 km). This pickup location will match the current location of driver who are with in 1 km of the pickup location.
+
+**_Special Notes:_** You have to set the login access token in header authorization to access this route.
+
+**_Required Fields:_** N/A
+
+- ### **_See My Requested Ride Info_**
+
+**_Endpoint:_**
+
+```
+/api/v1/rides/my-ride/:id
+```
+
+**_This Id Will be the \_id of a Ride from the Ride collection_**
+
+**_Method:_** `GET`
+
+**_URL:_**
+
+```
+https://b5-a5-sazid.vercel.app/api/v1/rides/my-ride/688cf90bd38ee39b116d95fe
+```
+
+**_Access:_** Only `RIDER` has The Access of This Route
+
+**_Description:_** The requested Ride Info will be retrieved if the ride's riderId and The user requested user id matches.
+
+**_Special Notes:_** You have to set the login access token in header authorization to access this route.
+
+**_Required Fields:_** N/A
+
+- ### **_See All My Rides Info_**
+
+**_Endpoint:_**
+
+```
+/api/v1/rides/all-rides-rider
+```
+
+**_Method:_** `GET`
+
+**_URL:_**
+
+```
+https://b5-a5-sazid.vercel.app/api/v1/rides/all-rides-rider
+```
+
+**_Access:_** Only `RIDER` has The Access of This Route
+
+**_Description:_** All the rides Info will be retrieved if the ride's riderId and The user requested user id matches.
+
+**_Special Notes:_** You have to set the login access token in header authorization to access this route.
+
+**_Required Fields:_** N/A
+
+- ### **_See Riders Around Me (Driver)_**
+
+**_Endpoint:_**
+
+```
+/api/v1/rides/rides-near
+```
+
+**_Method:_** `GET`
+
+**_URL:_**
+
+```
+https://b5-a5-sazid.vercel.app/api/v1/rides/rides-near
+```
+
+**_Access:_** Only `DRIVER` has The Access of This Route
+
+**_Description:_** A driver can see the rides around him within 1 km. This will be matched accordingly with the driver `currentLocation` and rider `pickupLocation`
+**_Special Notes:_** You have to set the login access token in header authorization to access this route.
+
+**_Required Fields:_** N/A
+
+- ### **_Reject Ride Request (Driver)_**
+
+**_Endpoint:_**
+
+```
+/api/v1/rides/reject-ride/:id
+```
+
+**_This Id Will be the \_id of a Ride from the Ride collection_**
+
+**_Method:_** `PATCH`
+
+**_URL:_**
+
+```
+https://b5-a5-sazid.vercel.app/api/v1/rides/reject-ride/688cf90bd38ee39b116d95fe
+```
+
+**_Access:_** Only `DRIVER` has The Access of This Route
+
+**_Description:_** A Driver can reject a ride only if its not already accepted or already in a ride. If rejected any ride the ride will not more show around him and the rider can not also even see the driver around him.
+
+**_Special Notes:_** You have to set the login access token in header authorization to access this route.
+
+**_Required Fields:_** N/A
+
+- ### **_Accept Ride Request (Driver)_**
+
+**_Endpoint:_**
+
+```
+/api/v1/rides/accept-ride/:id
+```
+
+**_This Id Will be the \_id of a Ride from the Ride collection_**
+
+**_Method:_** `PATCH`
+
+**_URL:_**
+
+```
+https://b5-a5-sazid.vercel.app/api/v1/rides/accept-ride/688d0ca1ef2ee7a54fb72d5f
+```
+
+**_Access:_** Only `DRIVER` has The Access of This Route
+
+**_Description:_** A Driver can reject a ride only if its not already accepted or already in a ride. If rejected any ride the ride will not more show around him and the rider can not also even see the driver around him.
+
+**_Special Notes:_** You have to set the login access token in header authorization to access this route.
+
+**_Required Fields:_** N/A
+
+- ### **_Pickup Rider (Driver)_**
+
+**_Endpoint:_**
+
+```
+/api/v1/rides/pickup-rider/:id
+```
+
+**_This Id Will be the \_id of a Ride from the Ride collection_**
+
+**_Method:_** `PATCH`
+
+**_URL:_**
+
+```
+https://b5-a5-sazid.vercel.app/api/v1/rides/pickup-rider/688d0ca1ef2ee7a54fb72d5f
+```
+
+**_Access:_** Only `DRIVER` has The Access of This Route
+
+**_Description:_** If the ride is accepted by the driver trying to pickup will be allowed to pickup the rider.
+
+**_Special Notes:_** You have to set the login access token in header authorization to access this route.
+
+**_Required Fields:_** N/A
+
+- ### **_Start Ride (Driver)_**
+
+**_Endpoint:_**
+
+```
+/api/v1/rides/start-ride/:id
+```
+
+**_This Id Will be the \_id of a Ride from the Ride collection_**
+
+**_Method:_** `PATCH`
+
+**_URL:_**
+
+```
+https://b5-a5-sazid.vercel.app/api/v1/rides/start-ride/688dd2d202a28032cbfcca3f
+```
+
+**_Access:_** Only `DRIVER` has The Access of This Route
+
+**_Description:_** If the rider is picked up the driver can start the ride.
+
+**_Special Notes:_** You have to set the login access token in header authorization to access this route.
+
+**_Required Fields:_** N/A
+
+- ### **_Complete Ride (Driver)_**
+
+**_Endpoint:_**
+
+```
+/api/v1/rides/complete-ride/:id
+```
+
+**_This Id Will be the \_id of a Ride from the Ride collection_**
+
+**_Method:_** `PATCH`
+
+**_URL:_**
+
+```
+https://b5-a5-sazid.vercel.app/api/v1/rides/complete-ride/688dd2d202a28032cbfcca3f
+```
+
+**_Access:_** Only `DRIVER` has The Access of This Route
+
+**_Description:_** Driver can Hit Complete the ride. This will add the fare amount to diver Income and driver all status will be reset and the rider status will be reset as well.
+
+**_Special Notes:_** You have to set the login access token in header authorization to access this route.
+
+**_Required Fields:_** N/A
+
+### **_Remember After Completion of a Ride The Rider Current Location will be the destination Of The Ride_**
+
+- ### **_Feedback and Rate a Ride (Rider)_**
+
+**_Endpoint:_**
+
+```
+/api/v1/rides/feedback/:id
+```
+
+**_This Id Will be the \_id of a Ride from the Ride collection_**
+
+**_Method:_** `POST`
+
+**_URL:_**
+
+```
+https://b5-a5-sazid.vercel.app/api/v1/rides/feedback/688d0ca1ef2ee7a54fb72d5f
+```
+
+**_Access:_** Only `RIDER` has The Access of This Route
+
+**_Description:_** A rider can give feedback to the ride and rate the ride. the rating will be dynamically adjusted wih the current rating of the driver
+
+**_Special Notes:_** You have to set the login access token in header authorization to access this route.
+
+**_Required Fields:_**
+
+```json
+{
+  "feedback": "Vey Nice",
+  "rating": 4.5
+}
+```
+
+- ### **_See all My Rides (driver)_**
+
+**_Endpoint:_**
+
+```
+/api/v1/rides/all-rides-driver
+```
+
+**_Method:_** `GET`
+
+**_URL:_**
+
+```
+https://b5-a5-sazid.vercel.app/api/v1/rides/all-rides-driver
+```
+
+**_Access:_** Only `DRIVER` has The Access of This Route
+
+**_Description:_** A rider can see all the rides associated by him.
+
+**_Special Notes:_** You have to set the login access token in header authorization to access this route.
+
+**_Required Fields:_** N/A
+
+- ### **_See all Rides of the system (Admin)_**
+
+**_Endpoint:_**
+
+```
+/api/v1/rides/all-rides-admin
+```
+
+**_Method:_** `GET`
+
+**_URL:_**
+
+```
+https://b5-a5-sazid.vercel.app/api/v1/rides/all-rides-admin
+```
+
+**_Access:_** Only `ADMIN` has The Access of This Route
+
+**_Description:_** A rider can see all the rides created by users.
+
+**_Special Notes:_** You have to set the login access token in header authorization to access this route.
+
+**_Required Fields:_** N/A
+
+## STATISTICS RELATED API
+
+- ### **_Generate Rides Reports (Admin)_**
+
+**_Endpoint:_**
+
+```
+/api/v1/stats/earning-history
+```
+
+**_Method:_** `GET`
+
+**_URL:_**
+
+```
+https://b5-a5-sazid.vercel.app/api/v1/stats/earning-history
+```
+
+**_Access:_** Only `ADMIN` has The Access of This Route
+
+**_Description:_** Admin can see all the summary on rides collections. can see summary of completed, cancelled, Requested rides, total revenue, total riders, total drivers, average fare.
+
+**_Special Notes:_** You have to set the login access token in header authorization to access this route.
+
+**_Required Fields:_** N/A
+
+- ### **_Generate Rides Reports for Driver (Driver)_**
+
+**_Endpoint:_**
+
+```
+/api/v1/stats/earning-history
+```
+
+**_Method:_** `GET`
+
+**_URL:_**
+
+```
+https://b5-a5-sazid.vercel.app/api/v1/stats/earning-history
+```
+
+**_Access:_** Only `DRIVER` has The Access of This Route
+
+**_Description:_** Admin can see all the summary on rides collections. can see summary of completed, cancelled, total Earnings.
+
+**_Special Notes:_** You have to set the login access token in header authorization to access this route.
+
+**_Required Fields:_** N/A
+
+# API ENDPOINT SUMMARY
+
+| Category     | Name                     | Method | URL                                 | Access    | Body Params                            | Description                 |
+| ------------ | ------------------------ | ------ | ----------------------------------- | --------- | -------------------------------------- | --------------------------- |
+| USER-WORKS   | create-user              | POST   | `/users/register`                   | Public    | name, email, password, location, phone | Create user                 |
+| USER-WORKS   | get-me                   | GET    | `/users/me`                         | Protected | –                                      | Get own profile             |
+| USER-WORKS   | update-user              | PATCH  | `/users/:id`                        | Protected | phone, location                        | Update user info            |
+| ADMIN-WORKS  | get-all-users            | GET    | `/users/all-users`                  | Protected | –                                      | Get all users               |
+| ADMIN-WORKS  | get-single-user          | GET    | `/users/:id`                        | Protected | –                                      | Get single user info        |
+| ADMIN-WORKS  | BLOCK/UNBLOCK-USER       | PATCH  | `/users/change-status/:id`          | Protected | isBlocked                              | Toggle user status          |
+| USER-WORKS   | login                    | POST   | `/auth/login`                       | Public    | email, password                        | Login via credentials       |
+| USER-WORKS   | Refresh-Token            | POST   | `/auth/refresh-token`               | Protected | –                                      | Refresh token               |
+| USER-WORKS   | logout                   | POST   | `/auth/logout`                      | Protected | –                                      | Logout                      |
+| USER-WORKS   | change-password          | POST   | `/auth/change-password`             | Protected | oldPassword, newPassword               | Change password             |
+| USER-WORKS   | set-password             | POST   | `/auth/set-password`                | Protected | password                               | Set password (Google login) |
+| USER-WORKS   | forgot-password          | POST   | `/auth/forgot-password`             | Public    | email                                  | Forgot password             |
+| USER-WORKS   | RESET-PASSWORD           | POST   | `/auth/reset-password`              | Protected | id, newPassword                        | Reset password              |
+| ADMIN-WORKS  | ADMIN-APPROVE-DRIVER     | PATCH  | `/drivers/status/:id`               | Protected | driverStatus                           | Approve/reject driver       |
+| ADMIN-WORKS  | GET-ALL-DRIVERS-ADMIN    | GET    | `/drivers/all-drivers`              | Protected | –                                      | View all drivers            |
+| ADMIN-WORKS  | GET-SINGLE-DRIVER-ADMIN  | GET    | `/drivers/:id`                      | Protected | –                                      | View one driver             |
+| DRIVER-WORKS | REGISTER-DRIVER          | POST   | `/drivers/register`                 | Protected | FormData (file + data)                 | Register as driver          |
+| DRIVER-WORKS | GET-MY-PROFILE-DRIVER    | GET    | `/drivers/me`                       | Protected | –                                      | Driver profile              |
+| DRIVER-WORKS | UPDATE-MY-PROFILE-DRIVER | PATCH  | `/drivers/update-my-driver-profile` | Protected | FormData + file                        | Update driver profile       |
+| DRIVER-WORKS | GO-ONLINE                | PATCH  | `/drivers/go-online`                | Protected | type, coordinates                      | Set driver online           |
