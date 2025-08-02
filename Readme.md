@@ -165,7 +165,7 @@ cd Ride-Booking-App-Backend-Sazid
 
 ```
 
-#### Eet All the .env configurations
+#### ***Set All the .env configurations***
 
 ```
 PORT=
@@ -194,13 +194,13 @@ SMTP_FROM=
 
 ```
 
-#### Install The Dependencies
+#### ***Install The Dependencies***
 
 ```
 npm install
 ```
 
-#### Run the Project
+#### ***Run the Project***
 
 ```
 npm run dev
@@ -209,13 +209,22 @@ npm run dev
 ## API Endpoints with Proper Explanations
 
 
-### ***Create User (Register)**
+### ***Create User (Register)***
 
-***Endpoint:*** `api/v1/users/register`
+***Endpoint:*** 
+
+```
+api/v1/users/register
+```
+
 ***Method:*** `POST`
 
-***URL:*** `https://b5-a5-sazid.vercel.app/api/v1/users/register`
+***URL:*** 
 
+```
+https://b5-a5-sazid.vercel.app/api/v1/users/register
+
+```
 ***Access Control:*** Everyone can Access this Route 
 
 ***Description:*** By default the user role will be RIDER
@@ -239,10 +248,19 @@ npm run dev
 
 ### ***User Login (Credentials Login)***
 
-***Endpoint:*** `api/v1/auth/login`
+***Endpoint:*** 
+
+```
+api/v1/auth/login
+```
+
 ***Method:*** `POST`
 
-***URL:*** `https://b5-a5-sazid.vercel.app/api/v1/auth/login`
+***URL:*** 
+
+```
+https://b5-a5-sazid.vercel.app/api/v1/auth/login
+```
 
 ***Access Control:*** Everyone can Access this Route 
 
@@ -259,22 +277,31 @@ npm run dev
 }
 ```
 
-### User Login (Google Login)
+### ***User Login (Google Login)***
 
 ```
 https://b5-a5-sazid.vercel.app/api/v1/auth/google
 
 ```
-- Hit This route this will redirect you to the google consent screen
+- Hit This route in your browser this will redirect you to the google consent screen
 
 ***Special Notes:***  `As There Is No Frontend The token will not be set using the google login for now!`
 
 ### ***Get Your Own Profile***
 
-***Endpoint:*** `api/v1/users/me`
+***Endpoint:*** 
+
+```
+api/v1/users/me
+```
+
 ***Method:*** `GET`
 
-***URL:*** `https://b5-a5-sazid.vercel.app/api/v1/users/me`
+***URL:*** 
+
+```
+https://b5-a5-sazid.vercel.app/api/v1/users/me
+```
 
 ***Description:*** Will retrieve the logged In User information using the token. 
 
