@@ -1273,25 +1273,42 @@ https://b5-a5-sazid.vercel.app/api/v1/stats/earning-history
 
 # API ENDPOINT SUMMARY
 
-| Category     | Name                     | Method | URL                                 | Access    | Body Params                            | Description                 |
-| ------------ | ------------------------ | ------ | ----------------------------------- | --------- | -------------------------------------- | --------------------------- |
-| USER-WORKS   | create-user              | POST   | `/users/register`                   | Public    | name, email, password, location, phone | Create user                 |
-| USER-WORKS   | get-me                   | GET    | `/users/me`                         | Protected | –                                      | Get own profile             |
-| USER-WORKS   | update-user              | PATCH  | `/users/:id`                        | Protected | phone, location                        | Update user info            |
-| ADMIN-WORKS  | get-all-users            | GET    | `/users/all-users`                  | Protected | –                                      | Get all users               |
-| ADMIN-WORKS  | get-single-user          | GET    | `/users/:id`                        | Protected | –                                      | Get single user info        |
-| ADMIN-WORKS  | BLOCK/UNBLOCK-USER       | PATCH  | `/users/change-status/:id`          | Protected | isBlocked                              | Toggle user status          |
-| USER-WORKS   | login                    | POST   | `/auth/login`                       | Public    | email, password                        | Login via credentials       |
-| USER-WORKS   | Refresh-Token            | POST   | `/auth/refresh-token`               | Protected | –                                      | Refresh token               |
-| USER-WORKS   | logout                   | POST   | `/auth/logout`                      | Protected | –                                      | Logout                      |
-| USER-WORKS   | change-password          | POST   | `/auth/change-password`             | Protected | oldPassword, newPassword               | Change password             |
-| USER-WORKS   | set-password             | POST   | `/auth/set-password`                | Protected | password                               | Set password (Google login) |
-| USER-WORKS   | forgot-password          | POST   | `/auth/forgot-password`             | Public    | email                                  | Forgot password             |
-| USER-WORKS   | RESET-PASSWORD           | POST   | `/auth/reset-password`              | Protected | id, newPassword                        | Reset password              |
-| ADMIN-WORKS  | ADMIN-APPROVE-DRIVER     | PATCH  | `/drivers/status/:id`               | Protected | driverStatus                           | Approve/reject driver       |
-| ADMIN-WORKS  | GET-ALL-DRIVERS-ADMIN    | GET    | `/drivers/all-drivers`              | Protected | –                                      | View all drivers            |
-| ADMIN-WORKS  | GET-SINGLE-DRIVER-ADMIN  | GET    | `/drivers/:id`                      | Protected | –                                      | View one driver             |
-| DRIVER-WORKS | REGISTER-DRIVER          | POST   | `/drivers/register`                 | Protected | FormData (file + data)                 | Register as driver          |
-| DRIVER-WORKS | GET-MY-PROFILE-DRIVER    | GET    | `/drivers/me`                       | Protected | –                                      | Driver profile              |
-| DRIVER-WORKS | UPDATE-MY-PROFILE-DRIVER | PATCH  | `/drivers/update-my-driver-profile` | Protected | FormData + file                        | Update driver profile       |
-| DRIVER-WORKS | GO-ONLINE                | PATCH  | `/drivers/go-online`                | Protected | type, coordinates                      | Set driver online           |
+| Method | Endpoint                                   | Access          | Body Parameters                             | Description                      |
+| ------ | ------------------------------------------ | --------------- | ------------------------------------------- | -------------------------------- |
+| POST   | `/api/v1/users/register`                   | Everyone        | name, email, password, location, phone      | Register as Rider (default role) |
+| POST   | `/api/v1/auth/login`                       | Everyone        | email, password                             | Login with credentials           |
+| POST   | `/api/v1/auth/set-password`                | Google Users    | password                                    | Set password after Google login  |
+| POST   | `/api/v1/auth/forgot-password`             | Everyone        | email                                       | Request password reset           |
+| POST   | `/api/v1/auth/reset-password`              | Requested Users | id, newPassword                             | Reset password with token        |
+| POST   | `/api/v1/auth/change-password`             | Logged-in users | oldPassword, newPassword                    | Change current password          |
+| GET    | `/api/v1/users/me`                         | Logged-in users | –                                           | Get logged-in user profile       |
+| PATCH  | `/api/v1/users/:id`                        | Logged-in users | phone, location                             | Update own user info             |
+| GET    | `/api/v1/users/all-users`                  | Admin           | –                                           | Get list of all users            |
+| GET    | `/api/v1/users/:id`                        | Admin           | –                                           | Get single user info             |
+| PATCH  | `/api/v1/users/change-status/:id`          | Admin           | isBlocked                                   | Block/Unblock user               |
+| POST   | `/api/v1/auth/refresh-token`               | Logged-in users | email, password                             | Generate new access token        |
+| POST   | `/api/v1/auth/logout`                      | Logged-in users | –                                           | Logout and clear tokens          |
+| POST   | `/api/v1/drivers/register`                 | Logged-in users | vehicle (form-data), driving license (file) | Register as driver               |
+| PATCH  | `/api/v1/drivers/status/:id`               | Admin           | driverStatus                                | Approve/Suspend driver           |
+| GET    | `/api/v1/drivers/:id`                      | Admin           | –                                           | Get driver info                  |
+| GET    | `/api/v1/drivers/all-drivers`              | Admin           | –                                           | List all drivers                 |
+| GET    | `/api/v1/drivers/me`                       | Driver          | –                                           | Get own driver profile           |
+| PATCH  | `/api/v1/drivers/update-my-driver-profile` | Driver          | vehicle (form-data), driving license (file) | Update driver info               |
+| PATCH  | `/api/v1/drivers/go-online`                | Driver          | type, coordinates                           | Mark driver as online            |
+| PATCH  | `/api/v1/drivers/go-offline`               | Driver          | –                                           | Mark driver as offline           |
+| POST   | `/api/v1/rides/request`                    | Rider           | pickupLocation, destination                 | Request a ride                   |
+| PATCH  | `/api/v1/rides/cancel-ride/:id`            | Rider           | –                                           | Cancel a ride                    |
+| GET    | `/api/v1/rides/drivers-near`               | Rider           | –                                           | Find nearby drivers              |
+| GET    | `/api/v1/rides/my-ride/:id`                | Rider           | –                                           | View specific ride               |
+| GET    | `/api/v1/rides/all-rides-rider`            | Rider           | –                                           | View all rides by rider          |
+| GET    | `/api/v1/rides/rides-near`                 | Driver          | –                                           | View rides near driver           |
+| PATCH  | `/api/v1/rides/reject-ride/:id`            | Driver          | –                                           | Reject a ride                    |
+| PATCH  | `/api/v1/rides/accept-ride/:id`            | Driver          | –                                           | Accept a ride                    |
+| PATCH  | `/api/v1/rides/pickup-rider/:id`           | Driver          | –                                           | Pickup the rider                 |
+| PATCH  | `/api/v1/rides/start-ride/:id`             | Driver          | –                                           | Start the ride                   |
+| PATCH  | `/api/v1/rides/complete-ride/:id`          | Driver          | –                                           | Complete the ride                |
+| POST   | `/api/v1/rides/feedback/:id`               | Rider           | feedback, rating                            | Leave feedback & rate the ride   |
+| GET    | `/api/v1/rides/all-rides-driver`           | Driver          | –                                           | All rides by driver              |
+| GET    | `/api/v1/rides/all-rides-admin`            | Admin           | –                                           | All rides in system              |
+| GET    | `/api/v1/stats/earning-history`            | Admin           | –                                           | Ride stats & earnings summary    |
+| GET    | `/api/v1/stats/earning-history`            | Driver          | –                                           | Driver-specific earnings report  |
