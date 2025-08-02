@@ -116,14 +116,14 @@ ADMIN_PASSWORD= Admin123@
 ## Driver Credentials (You can Create One as well)
 
 ```
-ADMIN_EMAIL= driver@gmail.com
-ADMIN_PASSWORD= Driver123@
+Driver_EMAIL= driver@gmail.com
+Driver_PASSWORD= Driver123@
 ```
 ## Rider Credentials (You can Create One as well)
 
 ```
-ADMIN_EMAIL= rider@gmail.com
-ADMIN_PASSWORD= Rider123@
+Rider_EMAIL= rider@gmail.com
+Rider_PASSWORD= Rider123@
 ```
 
 
