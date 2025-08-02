@@ -1,6 +1,6 @@
 # RIDE MANAGEMENT APP - BACKEND
 
-#### Live Link
+#### Live Link : [link](https://b5-a5-sazid.vercel.app)
 
 ### Project Overview
 
@@ -38,7 +38,7 @@ Built using typescript, Express.js and MongoDB, Mongoose, the system implements 
 #### **_Rider Capabilities_**
 
 - Request Ride only if any other ride is not ongoing and the user is not blocked (fare and distance will be dynamically created)
-- cancel rides only before driver accepts the ride
+- cancel rides only before driver accepts the ride and also can not cancel more than 3 rides a day. 
 - View ride history(cancelled, Requested and completed rides)
 - View specific ride info
 - Discover nearby drivers using location data
@@ -51,6 +51,7 @@ Built using typescript, Express.js and MongoDB, Mongoose, the system implements 
 - Go online taking the current location
 - Go offline removing the current location
 - View ride and earnings history
+- Discover nearby rides using location data
 
 #### **_Admin Controls_**
 
@@ -205,6 +206,7 @@ npm install
 ```
 npm run dev
 ```
+### I Recommend To  use my postman collection in the postman_collection folder for testing this project and for clarities check all detailed Api Endpoints here. 
 
 # API Endpoints with Proper Explanations
 
