@@ -25,47 +25,90 @@ Built using typescript, Express.js and MongoDB, Mongoose, the system implements 
 - **ts-node-dev** – Auto reload server during development
 - **ESLint** – Enforce consistent code quality
 
-### Key Features
+## Key Features
 
-#### **_Authentication & Role Management_**
+### **_Authentication & Role Management_**
 
 - Secure JWT-based login system
 - Passwords hashed using bcrypt
-- Role-based access control for admin, rider, driver
-- Google authentication and as well as Local Registration
-- Forgot password, set password, change password, reset password functionality
+- Role-based access control for **ADMIN**, **RIDER**, and **DRIVER**
+- Google OAuth 2.0 login support and manual registration/login
+- Set password route available after Google login
+- Forgot password sends email with reset link containing temporary token
+- Reset password and change password with proper access control
+- Token refresh via `/auth/refresh-token`
+- Logout clears tokens from cookies for secure sign-out
 
-#### **_Rider Capabilities_**
+---
 
-- Request Ride only if any other ride is not ongoing and the user is not blocked (fare and distance will be dynamically created)
-- cancel rides only before driver accepts the ride and also can not cancel more than 3 rides a day. 
-- View ride history(cancelled, Requested and completed rides)
-- View specific ride info
-- Discover nearby drivers using location data
-- Submit feedback and ratings after ride completion rating will be added and dynamically change the average rating of the rider as well.
+### **_Rider Capabilities_**
 
-#### **_Driver Capabilities_**
+- Request ride (only if no ongoing ride and user is not blocked)
+- Fare calculated dynamically using Haversine formula × base rate (`100 BDT/km`)
+- Cancel ride if:
+  - Not yet accepted
+  - Fewer than 3 cancellations in the last 24 hours
+- View ride history:
+  - All rides via `/all-rides-rider`
+  - Specific ride via `/my-ride/:id`
+- Discover nearby drivers within 1 km using pickup coordinates
+- Submit feedback & rate drivers post-ride
+  - Driver’s average rating dynamically updates
 
-- Accept or reject ride requests
-- Update ride status through: Picked Up → In Transit → Completed (if completed driver currentLocation will be dynamically update with the destination Location )
-- Go online taking the current location
-- Go offline removing the current location
-- View ride and earnings history
-- Discover nearby rides using location data
+---
 
-#### **_Admin Controls_**
+### **Driver Capabilities**
 
-- Approve or suspend drivers
-- Block or unblock users
-- Access over user and ride data
-- Generate system-wide earnings reports
+- Register as driver with vehicle details & driving license (via `form-data`)
+- Update driver profile with new vehicle/license info (also via `form-data`)
+- View own driver profile (`/drivers/me`)
+- Go online (location submitted & saved); go offline (location removed)
+- Discover nearby ride requests within 1 km
+- Accept(Only when not engaged in another ride) or reject ride requests (based on current status)
+- Progress ride statuses:
+  - `ACCEPTED → PICKED_UP → IN_TRANSIT → COMPLETED`
+- View:
+  - Ride history via `/all-rides-driver`
+  - Earnings via `/stats/earning-history`
+- Upon ride completion:
+  - Driver income updated
+  - Rider's current location set to destination
+  - All statuses reset
 
-#### **_System Architecture_**
+---
 
-- Modular folder structure: auth/, users/, drivers/, rides/
-- Centralized role-based route protection
-- Full ride lifecycle tracking with timestamps for each status change
+### **Admin Controls**
 
+- Approve/Suspend drivers: `/drivers/status/:id`
+- Block/Unblock users: `/users/change-status/:id`
+- View:
+  - All users
+  - Single user
+  - All drivers
+  - Single driver
+  - All rides in the system
+- Generate system-wide ride and earnings report via `/stats/earning-history`
+
+---
+
+### **System Architecture**
+
+- Modular folder structure: `auth/`, `users/`, `drivers/`, `rides/`, `stats/`
+- Robust Zod validation & centralized `AppError`-based error handling
+- JWT-based route protection with role-based guards
+- Geospatial ride matching:
+  - Uses `GeoJSON` + `Haversine-distance`
+- Full ride lifecycle tracking with timestamps per status transition
+- Tokens stored in `HTTP-only cookies`; logout clears tokens securely
+- Password, token, and status logic properly handled for Google login users
+
+## Admin Login Credentials 
+
+```
+ADMIN_EMAIL= admin@gmail.com
+ADMIN_PASSWORD= Admin123@
+
+```
 ### Project Structure
 
 ```
@@ -206,7 +249,8 @@ npm install
 ```
 npm run dev
 ```
-### I Recommend To  use my postman collection in the postman_collection folder for testing this project and for clarities check all detailed Api Endpoints here. 
+
+### I Recommend To use my postman collection in the postman_collection folder for testing this project and for clarities check all detailed Api Endpoints here.
 
 # API Endpoints with Proper Explanations
 
@@ -1293,7 +1337,6 @@ https://b5-a5-sazid.vercel.app/api/v1/stats/earning-history
 | POST   | `/api/v1/auth/refresh-token`      | Logged-in users | email, password                        | Refresh access token          |
 | POST   | `/api/v1/auth/logout`             | Logged-in users | –                                      | Logout and clear cookies      |
 
-
 ## DRIVER API
 
 | Method | Endpoint                                   | Access | Body Parameters                             | Description            |
@@ -1306,7 +1349,6 @@ https://b5-a5-sazid.vercel.app/api/v1/stats/earning-history
 | PATCH  | `/api/v1/drivers/update-my-driver-profile` | Driver | vehicle (form-data), driving license (file) | Update driver profile  |
 | PATCH  | `/api/v1/drivers/go-online`                | Driver | type, coordinates                           | Set driver online      |
 | PATCH  | `/api/v1/drivers/go-offline`               | Driver | –                                           | Set driver offline     |
-
 
 ## RIDE API
 
@@ -1327,8 +1369,7 @@ https://b5-a5-sazid.vercel.app/api/v1/stats/earning-history
 | GET    | `/api/v1/rides/all-rides-driver`  | Driver | –                           | Get all driver rides     |
 | GET    | `/api/v1/rides/all-rides-admin`   | Admin  | –                           | Get all system rides     |
 
-
-## STATISTICS API 
+## STATISTICS API
 
 | Method | Endpoint                        | Access | Body Parameters | Description                                  |
 | ------ | ------------------------------- | ------ | --------------- | -------------------------------------------- |
