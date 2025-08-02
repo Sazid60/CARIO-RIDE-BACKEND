@@ -535,7 +535,7 @@ const getAllRidesForDriver = async (userId: string) => {
 
   const allRides = await Ride.find({ driverId: { $eq: driverId } })
 
-  const myRideCounts = await Ride.countDocuments()
+   const myRideCounts = allRides.length;
 
   const data = {
     myRideCounts,

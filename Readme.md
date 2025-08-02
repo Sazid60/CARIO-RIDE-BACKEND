@@ -1,6 +1,8 @@
 # RIDE MANAGEMENT APP - BACKEND
 
-#### Live Link : [link](https://b5-a5-sazid.vercel.app)
+#### Live Link : [Link](https://b5-a5-sazid.vercel.app)
+
+#### Video Demonstration Link : [Link](https://drive.google.com/file/d/1CugV_asUEpvUiFSF9vx_rCMX-hWhThCy/view?usp=sharing)
 
 ### Project Overview
 
@@ -54,6 +56,8 @@ Built using typescript, Express.js and MongoDB, Mongoose, the system implements 
 - Discover nearby drivers within 1 km using pickup coordinates
 - Submit feedback & rate drivers post-ride
   - Driver’s average rating dynamically updates
+- Blocked users can't request rides
+
 
 ---
 
@@ -74,7 +78,7 @@ Built using typescript, Express.js and MongoDB, Mongoose, the system implements 
   - Driver income updated
   - Rider's current location set to destination
   - All statuses reset
-
+- As driver/admin are also user and they can also Request Rides. Bu here driver can not accept his own created ride request.  
 ---
 
 ### **Admin Controls**
@@ -96,7 +100,7 @@ Built using typescript, Express.js and MongoDB, Mongoose, the system implements 
 - Modular folder structure: `auth/`, `users/`, `drivers/`, `rides/`, `stats/`
 - Robust Zod validation & centralized `AppError`-based error handling
 - JWT-based route protection with role-based guards
-- Geospatial ride matching:
+- Geo Location ride matching:
   - Uses `GeoJSON` + `Haversine-distance`
 - Full ride lifecycle tracking with timestamps per status transition
 - Tokens stored in `HTTP-only cookies`; logout clears tokens securely
@@ -109,6 +113,20 @@ ADMIN_EMAIL= admin@gmail.com
 ADMIN_PASSWORD= Admin123@
 
 ```
+## Driver Credentials (You can Create One as well)
+
+```
+ADMIN_EMAIL= driver@gmail.com
+ADMIN_PASSWORD= Driver123@
+```
+## Rider Credentials (You can Create One as well)
+
+```
+ADMIN_EMAIL= rider@gmail.com
+ADMIN_PASSWORD= Rider123@
+```
+
+
 ### Project Structure
 
 ```
