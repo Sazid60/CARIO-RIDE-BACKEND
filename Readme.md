@@ -27,7 +27,7 @@ Built using typescript, Express.js and MongoDB, Mongoose, the system implements 
 
 ### Key Features
 
-#### Authentication & Role Management
+#### ***Authentication & Role Management***
 
 - Secure JWT-based login system
 - Passwords hashed using bcrypt
@@ -35,7 +35,7 @@ Built using typescript, Express.js and MongoDB, Mongoose, the system implements 
 - Google authentication and as well as Local Registration
 - Forgot password, set password, change password, reset password functionality
 
-#### Rider Capabilities
+#### ***Rider Capabilities***
 
 - Request Ride only if any other ride is not ongoing and the user is not blocked
 - cancel rides only before driver accepts the ride
@@ -44,7 +44,7 @@ Built using typescript, Express.js and MongoDB, Mongoose, the system implements 
 - Discover nearby drivers using location data
 - Submit feedback and ratings after ride completion
 
-#### Driver Capabilities
+#### ***Driver Capabilities***
 
 - Accept or reject ride requests
 - Update ride status through: Picked Up → In Transit → Completed
@@ -52,14 +52,14 @@ Built using typescript, Express.js and MongoDB, Mongoose, the system implements 
 - Go offline removing the current location
 - View ride and earnings history
 
-#### Admin Controls
+#### ***Admin Controls***
 
 - Approve or suspend drivers
 - Block or unblock users
 - Access over user and ride data
 - Generate system-wide earnings reports
 
-#### System Architecture
+#### ***System Architecture***
 
 - Modular folder structure: auth/, users/, drivers/, rides/
 - Centralized role-based route protection
@@ -206,24 +206,23 @@ npm install
 npm run dev
 ```
 
-### API Endpoints with Proper Explanations
+## API Endpoints with Proper Explanations
 
 
+### ***Create User (Register)**
 
-#### Create User (Register)
+***Endpoint:*** `api/v1/users/register`
+***Method:*** `POST`
 
-**Endpoint:** `api/v1/users/register`
-**Method:** `POST`
+***URL:*** `https://b5-a5-sazid.vercel.app/api/v1/users/register`
 
-**URL:** `https://b5-a5-sazid.vercel.app/api/v1/users/register`
+***Access Control:*** Everyone can Access this Route 
 
-**Access Control:** Everyone can Access this Route 
+***Description:*** By default the user role will be RIDER
 
-**Description:** By default the user role will be RIDER
+***Special Notes :*** N/A
 
-**Special Notes :** N/A
-
-**Required Fields:**
+***Required Fields:***
 
 ```json
 {
@@ -238,20 +237,20 @@ npm run dev
 }
 ```
 
-#### User Login (Credentials Login)
+### ***User Login (Credentials Login)***
 
-**Endpoint:** `api/v1/auth/login`
-**Method:** `POST`
+***Endpoint:*** `api/v1/auth/login`
+***Method:*** `POST`
 
-**URL:** `https://b5-a5-sazid.vercel.app/api/v1/auth/login`
+***URL:*** `https://b5-a5-sazid.vercel.app/api/v1/auth/login`
 
-**Access Control:** Everyone can Access this Route 
+***Access Control:*** Everyone can Access this Route 
 
-**Description:** The Login Information will go through validations like exists or not, password matches or not and In return It Will Give us a access token and a refresh token
+***Description:*** The Login Information will go through validations like exists or not, password matches or not and In return It Will Give us a access token and a refresh token
 
-**Special Notes:** N/A
+***Special Notes:*** N/A
 
-**Required Fields:** 
+***Required Fields:*** 
 
 ```json 
 {
@@ -260,7 +259,7 @@ npm run dev
 }
 ```
 
-#### User Login (Google Login)
+### User Login (Google Login)
 
 ```
 https://b5-a5-sazid.vercel.app/api/v1/auth/google
@@ -268,17 +267,17 @@ https://b5-a5-sazid.vercel.app/api/v1/auth/google
 ```
 - Hit This route this will redirect you to the google consent screen
 
-**Special Notes:**  `As There Is No Frontend The token will not be set using the google login for now!`
+***Special Notes:***  `As There Is No Frontend The token will not be set using the google login for now!`
 
-#### Get Your Own Profile 
+### ***Get Your Own Profile***
 
-**Endpoint:** `api/v1/users/me`
-**Method:** `GET`
+***Endpoint:*** `api/v1/users/me`
+***Method:*** `GET`
 
-**URL:** `https://b5-a5-sazid.vercel.app/api/v1/users/me`
+***URL:*** `https://b5-a5-sazid.vercel.app/api/v1/users/me`
 
-**Description:** Will retrieve the logged In User information using the token. 
+***Description:*** Will retrieve the logged In User information using the token. 
 
-**Special Notes:** `Token Must Needed As userId From The Token Will be Used to search The User`
+***Special Notes:*** `Token Must Needed As userId From The Token Will be Used to search The User`
 
-**Required Fields:** Set the access token after login in the authorization 
+***Required Fields:*** Set the access token after login in the authorization 
