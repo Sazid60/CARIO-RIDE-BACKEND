@@ -107,18 +107,50 @@ const startRide = catchAsync(async (req: Request, res: Response) => {
   });
 });
 
-const completeRide = catchAsync(async (req: Request, res: Response) => {
+const arrived = catchAsync(async (req: Request, res: Response) => {
   const driver = req.user as JwtPayload;
   const driverId = driver.userId;
   const rideId = req.params.id
 
-  const rideInfo = await rideService.completeRide(driverId, rideId)
+  const rideInfo = await rideService.arrivedDestination(driverId, rideId)
 
   sendResponse(res, {
     success: true,
     statusCode: httpStatus.CREATED,
-    message: "Ride Has Been Completed !",
+    message: "Arrived In The Destination!",
     data: rideInfo.data
+  });
+
+});
+const payOffline = catchAsync(async (req: Request, res: Response) => {
+  const driver = req.user as JwtPayload;
+  const driverId = driver.userId;
+  const rideId = req.params.id
+
+  const rideInfo = await rideService.payOffline(driverId, rideId)
+
+  sendResponse(res, {
+    success: true,
+    statusCode: httpStatus.CREATED,
+    message: "Payment Completed!",
+    data: rideInfo.data
+  });
+
+});
+
+
+const payOnline = catchAsync(async (req: Request, res: Response) => {
+  const rider = req.user as JwtPayload;
+  const riderId = rider.userId;
+  const rideId = req.params.id
+
+  const rideInfo = await rideService.payOnline(riderId, rideId)
+
+  sendResponse(res, {
+    success: true,
+    statusCode: httpStatus.CREATED,
+    message: " Online Payment Initiated!",
+    data: rideInfo
   });
 
 });
@@ -243,7 +275,8 @@ export const rideController = {
   acceptRide,
   pickupRider,
   startRide,
-  completeRide,
+  payOnline,
+  payOffline,
   getAllRidesForAdmin,
   getAllRidesForRider,
   getAllRidesForDriver,
@@ -251,5 +284,6 @@ export const rideController = {
   getDriversNearMe,
   rejectRide,
   cancelRideByRider,
-  giveFeedback
+  giveFeedback,
+  arrived
 };

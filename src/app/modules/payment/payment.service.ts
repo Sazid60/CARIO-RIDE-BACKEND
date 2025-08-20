@@ -1,250 +1,244 @@
-// /* eslint-disable @typescript-eslint/no-explicit-any */
-// // import httpStatus from "http-status-codes";
-// // import AppError from "../../errorHelpers/AppError";
-// // import { ISSLCommerz } from "../sslCommerz/sslCommerz.interface";
-// // import { SSLService } from "../sslCommerz/sslCommerz.service";
-// // import { PAYMENT_STATUS } from "./payment.interface";
-// // import { Payment } from "./payment.model";
-// // import { generatePdf, IInvoiceData } from "../../utils/invoice";
-// // import { IUser } from "../user/user.interface";
-// // import { sendEmail } from "../../utils/sendEmail";
-// // import { uploadBufferToCloudinary } from "../../config/cloudinary.config";
 
-// const initPayment = async (rideId: string) => {
+/* eslint-disable no-console */
+/* eslint-disable @typescript-eslint/no-explicit-any */
+import httpStatus from "http-status-codes";
+import AppError from "../../errorHelpers/AppError";
+import { ISSLCommerz } from "../sslCommerz/sslCommerz.interface";
+import { SSLService } from "../sslCommerz/sslCommerz.service";
+import { PAYMENT_STATUS } from "./payment.interface";
+import { Payment } from "./payment.model";
+import { generatePdf, IInvoiceData } from "../../utils/invoice";
 
-//     // const payment = await Payment.findOne({ booking: bookingId })
+import { sendEmail } from "../../utils/sendEmail";
+import { uploadBufferToCloudinary } from "../../config/cloudinary.config";
+import { Ride } from "../ride/ride.model";
+import { User } from "../user/user.model";
+import { getAddress } from "../../utils/getAddress";
+import { RideStatus } from "../ride/ride.interface";
+import { Driver } from '../driver/driver.model';
 
-//     // if (!payment) {
-//     //     throw new AppError(httpStatus.NOT_FOUND, "Payment Not Found")
-//     // }
-//     // const booking = await Booking.findById(payment.booking)
+const initPayment = async (rideId: string) => {
 
-//     // const userAddress = (booking?.user as any).address
-//     // const userEmail = (booking?.user as any).email
-//     // const userPhoneNumber = (booking?.user as any).phone
-//     // const userName = (booking?.user as any).name
+    const payment = await Payment.findOne({ ride: rideId })
 
-//     // const sslPayload: ISSLCommerz = {
-//     //     address: userAddress,
-//     //     email: userEmail,
-//     //     phoneNumber: userPhoneNumber,
-//     //     name: userName,
-//     //     amount: payment.amount,
-//     //     transactionId: payment.transactionId
-//     // }
+    if (!payment) {
+        throw new AppError(httpStatus.NOT_FOUND, "Payment Not Found")
+    }
 
-//     // const sslPayment = await SSLService.sslPaymentInit(sslPayload)
+    if(payment.status === PAYMENT_STATUS.PAID){
+       throw new AppError(httpStatus.NOT_FOUND, "You Have already paid For This Ride!") 
+    }
+    const ride = await Ride.findById(payment.ride)
 
-//     // return {
-//     //     paymentUrl: sslPayment.GatewayPageURL
-//     // }
+    if (!ride) {
+        throw new AppError(httpStatus.NOT_FOUND, "Ride Not Found!")
+    }
 
-// };
-// // const successPayment = async (query: Record<string, string>) => {
+    const rider = await User.findById(ride.riderId)
 
-// //     // Update Booking Status to COnfirm 
-// //     // Update Payment Status to PAID
+    if (!rider) {
+        throw new AppError(httpStatus.NOT_FOUND, "Rider Not Found!")
+    }
 
-// //     const session = await Booking.startSession();
-// //     session.startTransaction()
+    const riderLocation = rider.location;
+    let address
 
-// //     try {
+    if (riderLocation && riderLocation.coordinates?.length === 2) {
+        const [lng, lat] = riderLocation.coordinates;
+        address = await getAddress(lat, lng);
+        console.log("Rider Address:", address);
+    }
 
+    // for sslCommerz
+    const userEmail = rider.email
+    const userPhoneNumber = (ride?.riderId as any).phone
+    const userName = (ride?.riderId as any).name
 
-// //         const updatedPayment = await Payment.findOneAndUpdate({ transactionId: query.transactionId }, {
-// //             status: PAYMENT_STATUS.PAID,
-// //         }, { new: true, runValidators: true, session: session })
+    const sslPayload: ISSLCommerz = {
+        address,
+        email: userEmail,
+        phoneNumber: userPhoneNumber,
+        name: userName,
+        amount: ride.fare as number,
+        transactionId: payment.transactionId
+    }
+    // initiate the sslCommerg
 
-// //         // this is a safety check though it wil not be used. safety will be checked earlier 
-// //         if (!updatedPayment) {
-// //             throw new AppError(401, "Payment not found")
-// //         }
+    const sslPayment = await SSLService.sslPaymentInit(sslPayload)
 
-// //         // we are holding the file as we need to generate pdf and need some information
-// //         const updatedBooking = await Booking
-// //             .findByIdAndUpdate(
-// //                 updatedPayment?.booking,
-// //                 { status: BOOKING_STATUS.COMPLETE },
-// //                 { new: true, runValidators: true, session }
-// //             )
-// //             .populate("tour", "title")
-// //             .populate("user", "name email")
-// //         // we are population since we are just storing the id and we need the info for generating the  invoice pdf 
+    return {
+        paymentUrl: sslPayment.GatewayPageURL
+    }
 
-// //         //  this is a safety check though it wil not be used. safety will be checked earlier 
-// //         if (!updatedBooking) {
-// //             throw new AppError(401, "Booking not found")
-// //         }
+};
 
-// //         const invoiceData: IInvoiceData = {
-// //             bookingDate: updatedBooking.createdAt as Date,
-// //             guestCount: updatedBooking.guestCount,
-// //             totalAmount: updatedPayment.amount,
-// //             tourTitle: (updatedBooking.tour as unknown as ITour).title, // as we have populated
-// //             transactionId: updatedPayment.transactionId,
-// //             userName: (updatedBooking.user as unknown as IUser).name // as we populated
-// //         }
-// //         const pdfBuffer = await generatePdf(invoiceData)
+const successPayment = async (query: Record<string, string>) => {
+    const session = await Ride.startSession();
+    session.startTransaction();
 
-// //         // uploading in cloudinary 
-// //         // using any for now 
-// //         const cloudinaryResult = await uploadBufferToCloudinary(pdfBuffer, "invoice")
-// //         // console.log({cloudinaryResult})
+    try {
+        // Find and update payment to PAID
+        const paymentInfo = await Payment.findOne({ transactionId: query.transactionId });
 
-// //         if (!cloudinaryResult) {
-// //             throw new AppError(401, "Error Uploading Pdf")
-// //         }
+        if (!paymentInfo) {
+            throw new AppError(401, "Payment not found");
+        }
 
-// //         // update our booking 
+        // Get the ride and mark completed
+        const updatedRide = await Ride.findByIdAndUpdate(
+            paymentInfo?.ride,
+            {
+                $set: {
+                    "timestamps.completedAt": new Date(),
+                    rideStatus: RideStatus.COMPLETED,
+                },
+            },
+            { new: true, runValidators: true, session }
+        )
+            .populate("riderId", "name email phone location")
+            .populate("payment");
 
-// //         await Payment.findByIdAndUpdate(updatedPayment._id, { invoiceUrl: cloudinaryResult.secure_url }, { runValidators: true, session })
+        if (!updatedRide) {
+            throw new AppError(401, "Ride not found");
+        }
 
-// //         await sendEmail({
-// //             to: (updatedBooking.user as unknown as IUser).email,
-// //             subject: "Your Booking Invoice",
-// //             templateName: "invoice",
-// //             templateData: invoiceData,
-// //             attachments: [
-// //                 {
-// //                     filename: "invoice.pdf",
-// //                     content: pdfBuffer,
-// //                     contentType: "application/pdf"
-// //                 }
-// //             ]
-// //         })
+        // Get driver
+        const driver = await Driver.findById(updatedRide.driverId).session(session);
+        if (!driver) throw new AppError(404, "Driver not found");
 
+        // Calculate incomes
+        const ownerCommissionPercentage = 20;
+        const driverIncome = (updatedRide.fare as number * (100 - ownerCommissionPercentage)) / 100;
+        const ownerIncome = (updatedRide.fare as number * ownerCommissionPercentage) / 100;
 
+        // Update driver earnings
+        driver.totalEarning = Number(driver.totalEarning || 0) + driverIncome;
+        driver.totalRides = Number(driver.totalRides || 0) + 1;
+        await driver.save({ session });
 
-// //         await session.commitTransaction(); //transaction
-// //         session.endSession()
-// //         return { success: true, message: "Payment Completed Successfully" }
-// //     } catch (error) {
-// //         await session.abortTransaction(); // rollback
-// //         session.endSession()
-// //         // throw new AppError(httpStatus.BAD_REQUEST, error) ❌❌
-// //         throw error
-// //     }
-// // };
+        // Update payment with incomes
+        const updatedPayment = await Payment.findByIdAndUpdate(
+            paymentInfo._id,
+            { driverIncome, ownerIncome, status: PAYMENT_STATUS.PAID },
+            { runValidators: true, session }
+        );
 
-// // const getInvoiceDownloadUrl = async (paymentId: string) => {
-// //     const payment = await Payment.findById(paymentId)
-// //         .select("invoiceUrl")
+        if (!updatedPayment) {
+            throw new AppError(httpStatus.BAD_REQUEST, "Payment Could not Be Created!")
+        }
 
-// //     if (!payment) {
-// //         throw new AppError(401, "Payment not found")
-// //     }
+        // Generate addresses
+        const pickupCoords = updatedRide.pickupLocation?.coordinates;
+        const destCoords = updatedRide.destination?.coordinates;
 
-// //     if (!payment.invoiceUrl) {
-// //         throw new AppError(401, "No invoice found")
-// //     }
+        const pickupLocation = pickupCoords ? await getAddress(pickupCoords[1], pickupCoords[0]) : null;
+        const destinationLocation = destCoords ? await getAddress(destCoords[1], destCoords[0]) : null;
 
-// //     return payment.invoiceUrl
-// // };
-// // const failPayment = async (query: Record<string, string>) => {
+        // Prepare invoice data
+        const invoiceData: IInvoiceData = {
+            rideDate: updatedRide.timestamps?.completedAt as Date,
+            travelDistance: updatedRide.travelDistance as number,
+            totalFare: updatedRide.fare as number,
+            transactionId: updatedPayment.transactionId,
+            riderId: updatedRide.riderId,
+            driverId: updatedRide.driverId,
+            pickupLocation,
+            destinationLocation,
+            completedAt: updatedRide.timestamps?.completedAt,
+            userName: (updatedRide.riderId as any).name,
+        };
 
-// //     // Update Booking Status to FAIL
-// //     // Update Payment Status to FAIL
+        // Generate PDF invoice
+        const pdfBuffer = await generatePdf(invoiceData);
 
-// //     const session = await Booking.startSession();
-// //     session.startTransaction()
+        // Upload invoice to Cloudinary
+        const cloudinaryResult = await uploadBufferToCloudinary(pdfBuffer, "invoice");
+        if (!cloudinaryResult) throw new AppError(401, "Error uploading PDF");
 
-// //     try {
+        // Update payment with invoice URL
+        await Payment.findByIdAndUpdate(
+            updatedPayment._id,
+            { invoiceUrl: cloudinaryResult.secure_url },
+            { runValidators: true, session }
+        );
 
+        // Send invoice email
+        await sendEmail({
+            to: (updatedRide.riderId as any).email,
+            subject: "Your Ride Invoice",
+            templateName: "invoice",
+            templateData: invoiceData,
+            attachments: [
+                {
+                    filename: "invoice.pdf",
+                    content: pdfBuffer,
+                    contentType: "application/pdf",
+                },
+            ],
+        });
 
-// //         const updatedPayment = await Payment.findOneAndUpdate({ transactionId: query.transactionId }, {
-// //             status: PAYMENT_STATUS.FAILED,
-// //         }, { new: true, runValidators: true, session: session })
+        await session.commitTransaction();
+        session.endSession();
 
-// //         await Booking
-// //             .findByIdAndUpdate(
-// //                 updatedPayment?.booking,
-// //                 { status: BOOKING_STATUS.FAILED },
-// //                 { runValidators: true, session }
-// //             )
-
-// //         await session.commitTransaction(); //transaction
-// //         session.endSession()
-// //         return { success: false, message: "Payment Failed" }
-// //     } catch (error) {
-// //         await session.abortTransaction(); // rollback
-// //         session.endSession()
-// //         // throw new AppError(httpStatus.BAD_REQUEST, error) ❌❌
-// //         throw error
-// //     }
-// // };
-// // const cancelPayment = async (query: Record<string, string>) => {
-
-// //     // Update Booking Status to CANCEL
-// //     // Update Payment Status to CANCEL
-
-// //     const session = await Booking.startSession();
-// //     session.startTransaction()
-
-// //     try {
-
-
-// //         const updatedPayment = await Payment.findOneAndUpdate({ transactionId: query.transactionId }, {
-// //             status: PAYMENT_STATUS.CANCELLED,
-// //         }, { runValidators: true, session: session })
-
-// //         await Booking
-// //             .findByIdAndUpdate(
-// //                 updatedPayment?.booking,
-// //                 { status: BOOKING_STATUS.CANCEL },
-// //                 { runValidators: true, session }
-// //             )
-
-// //         await session.commitTransaction(); //transaction
-// //         session.endSession()
-// //         return { success: false, message: "Payment Cancelled" }
-// //     } catch (error) {
-// //         await session.abortTransaction(); // rollback
-// //         session.endSession()
-// //         // throw new AppError(httpStatus.BAD_REQUEST, error) ❌❌
-// //         throw error
-// //     }
-// // };
+        return { success: true, message: "Payment Completed Successfully" };
+    } catch (error) {
+        await session.abortTransaction();
+        session.endSession();
+        throw error;
+    }
+};
 
 
-// export const PaymentService = {
-//     initPayment,
-//     // successPayment,
-//     // failPayment,
-//     // cancelPayment,
-//     // getInvoiceDownloadUrl
-// };
+const getInvoiceDownloadUrl = async (paymentId: string) => {
+    const payment = await Payment.findById(paymentId)
+        .select("invoiceUrl")
+
+    if (!payment) {
+        throw new AppError(401, "Payment not found")
+    }
+
+    if (!payment.invoiceUrl) {
+        throw new AppError(401, "No invoice found")
+    }
+
+    return payment.invoiceUrl
+};
+
+
+// FAILED PAYMENT
+const failPayment = async (query: Record<string, string>) => {
+
+    const paymentInfo = await Payment.findOne({ transactionId: query.transactionId })
+    if (!paymentInfo) throw new AppError(401, "Payment not found");
+
+    paymentInfo.status = PAYMENT_STATUS.FAILED;
+    await paymentInfo.save();
+
+    return { success: false, message: "Payment Failed" };
+
+};
+
+
+// CANCELLED PAYMENT with transaction rollback
+const cancelPayment = async (query: Record<string, string>) => {
+
+    const paymentInfo = await Payment.findOne({ transactionId: query.transactionId })
+    if (!paymentInfo) throw new AppError(401, "Payment not found");
+
+    paymentInfo.status = PAYMENT_STATUS.CANCELLED;
+    await paymentInfo.save();
+
+    return { success: false, message: "Payment Cancelled" };
+};
 
 
 
-// junks 
+export const PaymentService = {
+    initPayment,
+    successPayment,
+    failPayment,
+    cancelPayment,
+    getInvoiceDownloadUrl
+};
 
-    // const updatedRide = await Ride
-    //   .findById(ride._id)
-    //   .populate("riderId", "name email phone location");
 
-    // // Extract rider location coordinates
-    // const riderLocation = (updatedRide?.riderId as any)?.location;
-    // let address
-
-    // if (riderLocation && riderLocation.coordinates?.length === 2) {
-    //   const [lng, lat] = riderLocation.coordinates;
-    //   address = await getAddress(lat, lng);
-    //   console.log("Rider Address:", address);
-    // }
-
-    // // for sslCommerz
-    // const userEmail = (updatedRide?.riderId as any).email
-    // const userPhoneNumber = (updatedRide?.riderId as any).phone
-    // const userName = (updatedRide?.riderId as any).name
-
-    // const sslPayload: ISSLCommerz = {
-    //   address,
-    //   email: userEmail,
-    //   phoneNumber: userPhoneNumber,
-    //   name: userName,
-    //   amount : ride.fare as number,
-    //   transactionId: transactionId
-    // }
-    // // initiate the sslCommerg
-
-    // const sslPayment = await SSLService.sslPaymentInit(sslPayload)

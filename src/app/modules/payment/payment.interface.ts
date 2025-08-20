@@ -6,12 +6,14 @@ export enum PAYMENT_STATUS {
     UNPAID = "UNPAID",
     CANCELLED = "CANCELLED",
     FAILED = "FAILED",
-    REFUNDED = "REFUNDED"
 }
 export interface IPayment {
     ride: Types.ObjectId,
+    driver: Types.ObjectId,
     transactionId: string, 
-    amount: number, 
+    rideFare: number, 
+    ownerIncome?: number,
+    driverIncome?: number,
     paymentGatewayData?: any,
     invoiceUrl?: string,
     status: PAYMENT_STATUS,

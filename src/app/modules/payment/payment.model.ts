@@ -9,8 +9,13 @@ const paymentSchema = new Schema<IPayment>(
             type: Schema.Types.ObjectId,
             ref: "Ride",
             required: true,
-            unique: true
         },
+        driver: {
+            type: Schema.Types.ObjectId,
+            ref: "Driver",
+            required: true,
+        },
+
         transactionId: {
             type: String,
             required: true,
@@ -21,11 +26,16 @@ const paymentSchema = new Schema<IPayment>(
             enum: Object.values(PAYMENT_STATUS),
             default: PAYMENT_STATUS.UNPAID
         },
-        amount: {
+        rideFare: {
             type: Number,
             required: true
         },
-
+        ownerIncome : {
+            type: Number,
+        },
+        driverIncome : {
+            type: Number,
+        },
         paymentGatewayData: {
             type: Schema.Types.Mixed,
 
