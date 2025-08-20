@@ -40,6 +40,10 @@ const rideSchema = new Schema<IRide>(
       enum: Object.values(RideStatus),
       default: RideStatus.REQUESTED,
     },
+    payment: {
+      type: Schema.Types.ObjectId,
+      ref: "Payment",
+    },
     timestamps: {
       requestedAt: {
         type: Date,
@@ -62,8 +66,8 @@ const rideSchema = new Schema<IRide>(
         default: [],
       },
     ],
-    feedback : {
-      type : String
+    feedback: {
+      type: String
     },
     rating: { type: Number }
   },

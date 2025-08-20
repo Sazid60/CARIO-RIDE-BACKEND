@@ -6,6 +6,7 @@ import { userControllers } from "./user.controller";
 import { createUserZodSchema, updateOwnProfileUserZodSchema, updateUserZodSchema } from "./user.validation";
 import { checkAuth } from "../../middlewares/checkAuth";
 import { Role } from "./user.interface";
+import { multerUpload } from "../../config/multer.config";
 
 
 
@@ -17,11 +18,12 @@ router.get("/all-users", checkAuth(Role.ADMIN), userControllers.getAllUsers)
 
 router.get("/me", checkAuth(...Object.values(Role)), userControllers.getMe)
 
-router.post("/register",validateRequest(createUserZodSchema),userControllers.createUser)
+router.post("/register", multerUpload.single("file"), validateRequest(createUserZodSchema), userControllers.createUser)
+
 
 router.patch("/:id", validateRequest(updateOwnProfileUserZodSchema), checkAuth(...Object.values(Role)), userControllers.updateUser)
 
-router.patch("/change-status/:id", validateRequest(updateUserZodSchema), checkAuth(Role.ADMIN), userControllers.updateUserStatus)
+router.patch("/:id", multerUpload.single("file"), validateRequest(updateUserZodSchema), checkAuth(...Object.values(Role)), userControllers.updateUser)
 
 router.get("/:id",checkAuth(Role.ADMIN), userControllers.getSingleUser)
 

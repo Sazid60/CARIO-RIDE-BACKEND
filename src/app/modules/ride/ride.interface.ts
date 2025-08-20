@@ -25,6 +25,7 @@ export interface IRide {
   destination: ILocation;
   travelDistance?: number;
   fare?: number;
+  payment?:Types.ObjectId,
   rideStatus: RideStatus;
   cancelledBy?: CancelledBy;
   timestamps: {

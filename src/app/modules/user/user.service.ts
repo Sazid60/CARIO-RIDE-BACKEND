@@ -6,9 +6,36 @@ import bcryptjs from "bcryptjs";
 import { JwtPayload } from "jsonwebtoken";
 import { QueryBuilder } from "../../utils/QueryBuilder";
 import { userSearchableFields } from "./user.constant";
+import { envVars } from "../../config/env";
+import { deleteImageFromCloudinary } from "../../config/cloudinary.config";
+
+// const createUser = async (payload: Partial<IUser>) => {
+
+//     const { email, password, ...rest } = payload
+
+//     const isUserExist = await User.findOne({ email })
+
+//     if (isUserExist) {
+//         throw new AppError(httpStatus.BAD_REQUEST, "User Already Exists")
+//     }
+
+//     const hashedPassword = await bcryptjs.hash(password as string, 10)
+
+//     const authProvider: IAuthProvider = { provider: "credentials", providerId: email as string }
+
+//     const user = await User.create({
+//         email,
+//         password: hashedPassword,
+//         auths: [authProvider],
+//         ...rest
+//     })
+
+//     return user
+// }
 
 const createUser = async (payload: Partial<IUser>) => {
-
+    // eslint-disable-next-line no-console
+    console.log(payload)
     const { email, password, ...rest } = payload
 
     const isUserExist = await User.findOne({ email })
@@ -17,7 +44,7 @@ const createUser = async (payload: Partial<IUser>) => {
         throw new AppError(httpStatus.BAD_REQUEST, "User Already Exists")
     }
 
-    const hashedPassword = await bcryptjs.hash(password as string, 10)
+    const hashedPassword = await bcryptjs.hash(password as string, Number(envVars.BCRYPT_SALT_ROUND))
 
     const authProvider: IAuthProvider = { provider: "credentials", providerId: email as string }
 
@@ -57,15 +84,15 @@ const updateUser = async (userId: string, payload: Partial<IUser>, decodedToken:
 
     const ifUserExist = await User.findById(userId);
 
+    if (!ifUserExist) {
+        throw new AppError(httpStatus.NOT_FOUND, "User Not Found")
+    }
+
     // new
     if (decodedToken.role === Role.RIDER || decodedToken.role === Role.DRIVER) {
         if (userId !== decodedToken.userId) {
             throw new AppError(httpStatus.FORBIDDEN, "You are unauthorized to update another user's profile");
         }
-    }
-
-    if (!ifUserExist) {
-        throw new AppError(httpStatus.NOT_FOUND, "User Not Found")
     }
 
     if (payload.role) {
@@ -77,6 +104,12 @@ const updateUser = async (userId: string, payload: Partial<IUser>, decodedToken:
     if (payload.isBlocked || payload.isVerified) {
         if (decodedToken.role === Role.RIDER || decodedToken.role === Role.DRIVER) {
             throw new AppError(httpStatus.FORBIDDEN, "You are not authorized");
+        }
+    }
+
+    if (payload.picture) {
+        if (ifUserExist.picture) {
+            await deleteImageFromCloudinary(ifUserExist.picture);
         }
     }
 
@@ -108,7 +141,7 @@ export const updateUserStatus = async (userId: string, payload: Partial<IUser>, 
     }
 
     if (decodedToken.userId.toString() === ifUserExist._id.toString()) {
-        throw new AppError(httpStatus.FORBIDDEN,"You cannot change your own block status");
+        throw new AppError(httpStatus.FORBIDDEN, "You cannot change your own block status");
     }
 
     if (payload.isBlocked === ifUserExist.isBlocked) {

@@ -9,6 +9,10 @@ import AppError from "../../errorHelpers/AppError";
 import { Driver } from "../driver/driver.model";
 import { DriverOnlineStatus, DriverRidingStatus, DriverStatus, IDriver } from "../driver/driver.interface";
 import haversine from 'haversine-distance';
+import { Payment } from "../payment/payment.model";
+import { PAYMENT_STATUS } from "../payment/payment.interface";
+import { getTransactionId } from "../../utils/getTransactionId";
+
 
 
 const createRide = async (payload: IRide) => {
@@ -169,7 +173,7 @@ const acceptRide = async (driverUserId: string, rideId: string) => {
 
 
     const data = {
-      rideId : ride._id,
+      rideId: ride._id,
       riderName: rider.name,
       riderPhone: rider.phone
     }
@@ -324,7 +328,7 @@ const pickupRider = async (driverUserId: string, rideId: string) => {
 
     return {
       data: {
-        rideId : ride._id,
+        rideId: ride._id,
         riderDestination: ride.destination,
         totalFare: ride.fare,
       },
@@ -336,6 +340,8 @@ const pickupRider = async (driverUserId: string, rideId: string) => {
   }
 };
 const startRide = async (driverUserId: string, rideId: string) => {
+  const transactionId = getTransactionId()
+
   const session = await Ride.startSession();
   session.startTransaction();
 
@@ -388,11 +394,26 @@ const startRide = async (driverUserId: string, rideId: string) => {
       throw new AppError(httpStatus.NOT_FOUND, "Rider not found.");
     }
 
+    const payment = await Payment.create(
+      [
+        {
+          ride: ride._id,
+          status: PAYMENT_STATUS.UNPAID,
+          transactionId: transactionId,
+          amount: ride.fare
+        }
+      ],
+
+      { session }
+    )
+
     ride.rideStatus = RideStatus.IN_TRANSIT;
     ride.timestamps = {
       ...ride.timestamps,
       startedAt: new Date(),
     };
+    ride.payment = payment[0]._id
+
     await ride.save({ session });
 
     driver.ridingStatus = DriverRidingStatus.RIDING;
@@ -406,7 +427,7 @@ const startRide = async (driverUserId: string, rideId: string) => {
 
     return {
       data: {
-        rideId : ride._id,
+        rideId: ride._id,
         riderDestination: ride.destination,
         totalFare: ride.fare,
       },
@@ -491,7 +512,7 @@ const completeRide = async (driverUserId: string, rideId: string) => {
 
     return {
       data: {
-        rideId : ride._id,
+        rideId: ride._id,
         totalIncome: ride.fare,
       },
     };
@@ -535,7 +556,7 @@ const getAllRidesForDriver = async (userId: string) => {
 
   const allRides = await Ride.find({ driverId: { $eq: driverId } })
 
-   const myRideCounts = allRides.length;
+  const myRideCounts = allRides.length;
 
   const data = {
     myRideCounts,
@@ -713,7 +734,7 @@ export const giveFeedbackAndRateDriver = async (rideId: string, userId: string, 
     if (ride.riderId.toString() !== userId) {
       throw new AppError(httpStatus.BAD_REQUEST, "You are not authorized to rate this ride");
     }
-    
+
 
     if (ride.rating) {
       throw new AppError(httpStatus.BAD_REQUEST, "Feedback already submitted");

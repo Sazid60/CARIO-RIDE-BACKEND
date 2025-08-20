@@ -6,6 +6,7 @@ export const createUserZodSchema = z.object({
         .string({ invalid_type_error: "Name must be string" })
         .min(2, { message: "Name must be at least 2 characters long." })
         .max(50, { message: "Name cannot exceed 50 characters." }),
+    picture: z.string().optional(),
     email: z
         .string({ invalid_type_error: "Email must be string" })
         .email({ message: "Invalid email address format." })
@@ -46,6 +47,7 @@ export const updateUserZodSchema = z.object({
         .string({ invalid_type_error: "Name must be string" })
         .min(2, { message: "Name must be at least 2 characters long." })
         .max(50, { message: "Name cannot exceed 50 characters." }).optional(),
+    picture: z.string().optional(),
     phone: z
         .string({ invalid_type_error: "Phone Number must be string" })
         .regex(/^(?:\+8801\d{9}|01\d{9})$/, {
