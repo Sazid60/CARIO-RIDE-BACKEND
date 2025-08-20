@@ -1,3 +1,4 @@
+/* eslint-disable no-console */
 import axios from "axios";
 
 export async function getAddress(lat: number, lon: number) {

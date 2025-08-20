@@ -1,18 +1,20 @@
+/* eslint-disable no-console */
 import { Request, Response } from "express";
 import { envVars } from "../../config/env";
 import { catchAsync } from "../../utils/catchAsync";
 import { sendResponse } from "../../utils/sendResponse";
-import { PaymentService } from "./payment.service";
+
 import { SSLService } from "../sslCommerz/sslCommerz.service";
+import { PaymentService } from "./payment.service";
 
 
 const initPayment = catchAsync(async (req: Request, res: Response) => {
-    const bookingId = req.params.bookingId;
-    const result = await PaymentService.initPayment(bookingId as string)
+    const rideId = req.params.rideId;
+    const result = await PaymentService.initPayment(rideId as string)
     sendResponse(res, {
         statusCode: 201,
         success: true,
-        message: "Payment done successfully",
+        message: "Payment Initiated Again!",
         data: result,
     });
 });

@@ -79,13 +79,15 @@ router.patch("/pickup-rider/:id", checkAuth(Role.DRIVER), rideController.pickupR
 // start the ride 
 router.patch("/start-ride/:id", checkAuth(Role.DRIVER), rideController.startRide)
 
+// arrived
+router.patch("/arrived-destination/:id", checkAuth(Role.DRIVER), rideController.arrived)
 // pay Online
 
-// pay Offline
-
+router.patch("/pay-online/:id", checkAuth(Role.RIDER), rideController.payOnline)
 
 // COMPLETE THE RIDE
-router.patch("/complete-ride/:id", checkAuth(Role.DRIVER), rideController.completeRide)
+router.patch("/pay-offline/:id", checkAuth(Role.DRIVER), rideController.payOffline)
+
 
 
 

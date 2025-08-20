@@ -1,3 +1,5 @@
+/* eslint-disable no-console */
+/* eslint-disable @typescript-eslint/no-explicit-any */
 
 import { Ride } from "./ride.model";
 import { CancelledBy, IRide, RideStatus } from "./ride.interface";
@@ -9,10 +11,17 @@ import AppError from "../../errorHelpers/AppError";
 import { Driver } from "../driver/driver.model";
 import { DriverOnlineStatus, DriverRidingStatus, DriverStatus, IDriver } from "../driver/driver.interface";
 import haversine from 'haversine-distance';
-import { Payment } from "../payment/payment.model";
-import { PAYMENT_STATUS } from "../payment/payment.interface";
+import { Payment } from '../payment/payment.model';
 import { getTransactionId } from "../../utils/getTransactionId";
-
+import { PAYMENT_STATUS } from "../payment/payment.interface";
+import { getAddress } from "../../utils/getAddress";
+import { ISSLCommerz } from "../sslCommerz/sslCommerz.interface";
+import { SSLService } from "../sslCommerz/sslCommerz.service";
+import { generatePdf, IInvoiceData } from "../../utils/invoice";
+import { uploadBufferToCloudinary } from "../../config/cloudinary.config";
+import { sendEmail } from "../../utils/sendEmail";
+import { QueryBuilder } from "../../utils/QueryBuilder";
+import { rideSearchableFields } from "./ride.contant";
 
 
 const createRide = async (payload: IRide) => {
@@ -340,8 +349,6 @@ const pickupRider = async (driverUserId: string, rideId: string) => {
   }
 };
 const startRide = async (driverUserId: string, rideId: string) => {
-  const transactionId = getTransactionId()
-
   const session = await Ride.startSession();
   session.startTransaction();
 
@@ -394,26 +401,11 @@ const startRide = async (driverUserId: string, rideId: string) => {
       throw new AppError(httpStatus.NOT_FOUND, "Rider not found.");
     }
 
-    const payment = await Payment.create(
-      [
-        {
-          ride: ride._id,
-          status: PAYMENT_STATUS.UNPAID,
-          transactionId: transactionId,
-          amount: ride.fare
-        }
-      ],
-
-      { session }
-    )
-
     ride.rideStatus = RideStatus.IN_TRANSIT;
     ride.timestamps = {
       ...ride.timestamps,
       startedAt: new Date(),
     };
-    ride.payment = payment[0]._id
-
     await ride.save({ session });
 
     driver.ridingStatus = DriverRidingStatus.RIDING;
@@ -438,7 +430,7 @@ const startRide = async (driverUserId: string, rideId: string) => {
     throw error;
   }
 };
-const completeRide = async (driverUserId: string, rideId: string) => {
+const arrivedDestination = async (driverUserId: string, rideId: string) => {
   const session = await Ride.startSession();
   session.startTransaction();
 
@@ -454,7 +446,7 @@ const completeRide = async (driverUserId: string, rideId: string) => {
 
 
     if (driver.onlineStatus === DriverOnlineStatus.OFFLINE) {
-      throw new AppError(httpStatus.BAD_REQUEST, "Go Online To Pickup The Rider!");
+      throw new AppError(httpStatus.BAD_REQUEST, "Go Online First!");
     }
 
     const ride = await Ride.findById(rideId).session(session);
@@ -467,14 +459,10 @@ const completeRide = async (driverUserId: string, rideId: string) => {
     }
 
     if (String(driver._id) !== String(ride.driverId)) {
-      throw new AppError(httpStatus.BAD_REQUEST, "You cannot Start Riding with another driver's rider!");
+      throw new AppError(httpStatus.BAD_REQUEST, "You cannot Only Play With Your Accepted Rider's Ride!");
     }
 
-    if (ride.rideStatus === RideStatus.CANCELLED) {
-      throw new AppError(httpStatus.BAD_REQUEST, "This ride was cancelled.");
-    }
-
-    if ([RideStatus.COMPLETED].includes(ride.rideStatus)) {
+    if ([RideStatus.ARRIVED].includes(ride.rideStatus)) {
       throw new AppError(httpStatus.BAD_REQUEST, `This ride is already in ${ride.rideStatus} State.`);
     }
 
@@ -491,16 +479,14 @@ const completeRide = async (driverUserId: string, rideId: string) => {
       throw new AppError(httpStatus.NOT_FOUND, "Rider not found.");
     }
 
-    ride.rideStatus = RideStatus.COMPLETED;
+    ride.rideStatus = RideStatus.ARRIVED;
     ride.timestamps = {
       ...ride.timestamps,
-      completedAt: new Date(),
+      arrivedAt: new Date(),
     };
     await ride.save({ session });
 
     driver.ridingStatus = DriverRidingStatus.IDLE;
-    driver.totalEarning = Number(driver.totalEarning || 0) + Number(ride.fare || 0);
-    driver.totalRides = Number(driver.totalRides || 0) + 1;
     driver.currentLocation = ride.destination;
     await driver.save({ session });
 
@@ -513,7 +499,271 @@ const completeRide = async (driverUserId: string, rideId: string) => {
     return {
       data: {
         rideId: ride._id,
-        totalIncome: ride.fare,
+        totalFare: ride.fare,
+      },
+    };
+  } catch (error) {
+    await session.abortTransaction();
+    session.endSession();
+    throw error;
+  }
+};
+const payOnline = async (riderId: string, rideId: string) => {
+  const transactionId = getTransactionId()
+
+  const session = await Ride.startSession();
+  session.startTransaction();
+
+  try {
+
+
+
+    const ride = await Ride.findById(rideId).session(session);
+
+    if (!ride) {
+      throw new AppError(httpStatus.NOT_FOUND, "Ride not found.");
+    }
+
+    if (String(ride.riderId) !== riderId) {
+      throw new AppError(httpStatus.BAD_REQUEST, "This is Not Your Ride!");
+    }
+
+    if (!ride.driverId) {
+      throw new AppError(httpStatus.BAD_REQUEST, "No Driver Accepted Your Ride Yet!");
+    }
+
+    if (ride.rideStatus === RideStatus.CANCELLED) {
+      throw new AppError(httpStatus.BAD_REQUEST, "This ride was cancelled.");
+    }
+
+    if ([RideStatus.COMPLETED].includes(ride.rideStatus)) {
+      throw new AppError(httpStatus.BAD_REQUEST, `This ride is already in ${ride.rideStatus} State.`);
+    }
+
+    if (ride.rideStatus !== RideStatus.ARRIVED) {
+      throw new AppError(httpStatus.BAD_REQUEST, "You must Arrive To Finish The Ride!.");
+    }
+
+
+
+    console.log(ride.driverId)
+
+    const driver = await Driver.findOne({ _id: ride.driverId }).session(session);
+
+    if (!driver) {
+      throw new AppError(httpStatus.NOT_FOUND, "Driver not found.");
+    }
+    const paymentInfo = await Payment.findById(ride._id);
+
+
+    if (paymentInfo && (paymentInfo.status === PAYMENT_STATUS.PAID)) {
+      throw new AppError(httpStatus.BAD_REQUEST, ` Already ${PAYMENT_STATUS} this ride.`);
+    }
+
+    const payment = await Payment.create(
+      [
+        {
+          ride: ride._id,
+          driver: driver._id,
+          status: PAYMENT_STATUS.UNPAID,
+          transactionId,
+          rideFare: ride.fare,
+        }
+      ],
+      { session }
+    );
+
+    const updatedRide = await Ride.findByIdAndUpdate(
+      ride._id,
+      {
+        payment: payment[0]._id,
+      },
+      { new: true, runValidators: true, session }
+    )
+      .populate("riderId", "name email phone location")
+      .populate("payment");
+
+    const riderLocation = (updatedRide?.riderId as any)?.location;
+    let address
+
+    if (riderLocation && riderLocation.coordinates?.length === 2) {
+      const [lng, lat] = riderLocation.coordinates;
+      address = await getAddress(lat, lng);
+      console.log("Rider Address:", address);
+    }
+
+    // for sslCommerz
+    const userEmail = (updatedRide?.riderId as any).email
+    const userPhoneNumber = (updatedRide?.riderId as any).phone
+    const userName = (updatedRide?.riderId as any).name
+
+    const sslPayload: ISSLCommerz = {
+      address,
+      email: userEmail,
+      phoneNumber: userPhoneNumber,
+      name: userName,
+      amount: ride.fare as number,
+      transactionId: transactionId
+    }
+
+    const sslPayment = await SSLService.sslPaymentInit(sslPayload)
+
+    await session.commitTransaction();
+    session.endSession();
+
+
+    return {
+      paymentUrl: sslPayment.GatewayPageURL,
+      booking: updatedRide
+    }
+
+  } catch (error) {
+    await session.abortTransaction();
+    session.endSession();
+    throw error;
+  }
+};
+
+const payOffline = async (driverUserId: string, rideId: string) => {
+  const transactionId = getTransactionId();
+  const session = await Ride.startSession();
+  session.startTransaction();
+
+  try {
+
+    const driver = await Driver.findOne({ userId: driverUserId }).session(session);
+    if (!driver) {
+      throw new AppError(httpStatus.NOT_FOUND, "Driver not found.");
+    }
+    if (driver.driverStatus === DriverStatus.SUSPENDED) {
+      throw new AppError(httpStatus.BAD_REQUEST, "You are suspended. Cannot complete.");
+    }
+    if (driver.onlineStatus === DriverOnlineStatus.OFFLINE) {
+      throw new AppError(httpStatus.BAD_REQUEST, "Go Online To Pickup The Rider!");
+    }
+
+    const ride = await Ride.findById(rideId).session(session);
+    if (!ride) {
+      throw new AppError(httpStatus.NOT_FOUND, "Ride not found.");
+    }
+    if (String(driver._id) !== String(ride.driverId)) {
+      throw new AppError(httpStatus.BAD_REQUEST, "You cannot complete another driver's ride.");
+    }
+    if (ride.rideStatus === RideStatus.CANCELLED) {
+      throw new AppError(httpStatus.BAD_REQUEST, "This ride was cancelled.");
+    }
+    if (ride.rideStatus === RideStatus.COMPLETED) {
+      throw new AppError(httpStatus.BAD_REQUEST, "This ride is already completed.");
+    }
+    if (ride.rideStatus !== RideStatus.ARRIVED) {
+      throw new AppError(httpStatus.BAD_REQUEST, "You must Arrive To Finish The Ride!");
+    }
+    if (String(driver.userId) === String(ride.riderId)) {
+      throw new AppError(httpStatus.BAD_REQUEST, "You cannot complete your own ride.");
+    }
+
+
+    const rider = await User.findById(ride.riderId).session(session);
+    if (!rider) {
+      throw new AppError(httpStatus.NOT_FOUND, "Rider not found.");
+    }
+
+
+    const existingPayment = await Payment.findOne({ ride: ride._id }).session(session);
+    if (existingPayment && existingPayment.status === PAYMENT_STATUS.PAID) {
+      throw new AppError(httpStatus.BAD_REQUEST, "Payment already completed for this ride.");
+    }
+
+    const ownerCommissionPercentage = 20;
+    const driverIncome = (ride.fare as number * (100 - ownerCommissionPercentage)) / 100;
+    const ownerIncome = (ride.fare as number * ownerCommissionPercentage) / 100;
+
+
+    driver.totalEarning = Number(driver.totalEarning || 0) + driverIncome;
+    driver.totalRides = Number(driver.totalRides || 0) + 1;
+    await driver.save({ session });
+
+    const payment = await Payment.create(
+      [
+        {
+          ride: ride._id,
+          driver: driver._id,
+          status: PAYMENT_STATUS.PAID,
+          transactionId,
+          rideFare: ride.fare,
+          ownerIncome,
+          driverIncome,
+        },
+      ],
+      { session }
+    );
+
+    const updatedRide = await Ride.findByIdAndUpdate(
+      ride._id,
+      {
+        $set: {
+          "timestamps.completedAt": new Date(),
+          rideStatus: RideStatus.COMPLETED,
+          payment: payment[0]._id,
+        },
+      },
+      { new: true, runValidators: true, session }
+    )
+      .populate("riderId", "name email phone location")
+      .populate("payment");
+
+    if (!updatedRide) throw new AppError(httpStatus.BAD_REQUEST, "Ride could not be updated");
+
+    // Generate invoice PDF
+    const pickupCoords = updatedRide.pickupLocation?.coordinates;
+    const destCoords = updatedRide.destination?.coordinates;
+    const pickupLocation = pickupCoords ? await getAddress(pickupCoords[1], pickupCoords[0]) : null;
+    const destinationLocation = destCoords ? await getAddress(destCoords[1], destCoords[0]) : null;
+
+    const invoiceData: IInvoiceData = {
+      rideDate: updatedRide.timestamps?.completedAt as Date,
+      travelDistance: updatedRide.travelDistance as number,
+      totalFare: updatedRide.fare as number,
+      transactionId,
+      riderId: updatedRide.riderId,
+      driverId: updatedRide.driverId,
+      pickupLocation,
+      destinationLocation,
+      completedAt: updatedRide.timestamps?.completedAt,
+      userName: (updatedRide.riderId as any).name,
+    };
+
+    const pdfBuffer = await generatePdf(invoiceData);
+
+
+    const cloudinaryResult = await uploadBufferToCloudinary(pdfBuffer, "invoice");
+    if (!cloudinaryResult) throw new AppError(401, "Error uploading PDF");
+
+
+    await Payment.findByIdAndUpdate(payment[0]._id, { invoiceUrl: cloudinaryResult.secure_url }, { session });
+
+
+    await sendEmail({
+      to: (updatedRide.riderId as any).email,
+      subject: "Your Ride Invoice",
+      templateName: "invoice",
+      templateData: invoiceData,
+      attachments: [
+        {
+          filename: "invoice.pdf",
+          content: pdfBuffer,
+          contentType: "application/pdf",
+        },
+      ],
+    });
+
+    await session.commitTransaction();
+    session.endSession();
+
+    return {
+      data: {
+        rideId: updatedRide._id,
+        transactionId,
       },
     };
   } catch (error) {
@@ -523,49 +773,75 @@ const completeRide = async (driverUserId: string, rideId: string) => {
   }
 };
 
-const getAllRidesForAdmin = async () => {
-  const allRides = await Ride.find({})
+
+const getAllRidesForAdmin = async (query: Record<string, string>) => {
+  const queryBuilder = new QueryBuilder(Ride.find(), query)
+  const rideData = queryBuilder
+    .filter()
+    .search(rideSearchableFields)
+    .sort()
+    .fields()
+    .paginate();
+
+  const [data, meta] = await Promise.all([
+    rideData.build(),
+    queryBuilder.getMeta()
+  ])
 
   return {
-    allRides
+    data,
+    meta
   }
 }
-const getAllRidesForRider = async (riderId: string) => {
+const getAllRidesForRider = async (riderId: string, query: Record<string, string>) => {
+  const queryBuilder = new QueryBuilder(Ride.find({ riderId }), query);
 
-  const myRides = await Ride.find({ riderId: { $eq: riderId } })
+  
+  const rideData = queryBuilder
+    .filter()
+    .search(rideSearchableFields) 
+    .sort()
+    .fields()
+    .paginate();
 
-  const myRideCounts = await Ride.countDocuments()
-
-  const data = {
-    myRideCounts,
-    myRides
-  }
+  const [data, meta] = await Promise.all([
+    rideData.build(),
+    queryBuilder.getMeta(),
+  ]);
 
   return {
-    data
-  }
-}
-const getAllRidesForDriver = async (userId: string) => {
-  const driver = await Driver.findOne({ userId })
+    data,
+    meta,
+  };
+};
 
+const getAllRidesForDriver = async (userId: string, query: Record<string, string>) => {
+  const driver = await Driver.findOne({ userId });
   if (!driver) {
-    throw new AppError(httpStatus.BAD_REQUEST, "Driver InFormation Not Found !")
+    throw new AppError(httpStatus.BAD_REQUEST, "Driver information not found!");
   }
 
-  const driverId = driver._id
+  const queryBuilder = new QueryBuilder(Ride.find({ driverId: driver._id }), query);
 
-  const allRides = await Ride.find({ driverId: { $eq: driverId } })
 
-  const myRideCounts = allRides.length;
+  const rideData = queryBuilder
+    .filter()
+    .search(rideSearchableFields) 
+    .sort()
+    .fields()
+    .paginate();
 
-  const data = {
-    myRideCounts,
-    allRides
-  }
+  const [data, meta] = await Promise.all([
+    rideData.build(),
+    queryBuilder.getMeta(),
+  ]);
+
   return {
-    data
-  }
-}
+    data,
+    meta,
+  };
+};
+
 const getSingleRideForRider = async (rideId: string, riderId: string) => {
 
   const data = await Ride.findById(rideId)
@@ -728,8 +1004,6 @@ export const giveFeedbackAndRateDriver = async (rideId: string, userId: string, 
       throw new AppError(httpStatus.BAD_REQUEST, "No driver assigned to this ride");
     }
 
-    // console.log(ride.riderId.toString())
-    // console.log(userId)
 
     if (ride.riderId.toString() !== userId) {
       throw new AppError(httpStatus.BAD_REQUEST, "You are not authorized to rate this ride");
@@ -796,7 +1070,9 @@ export const rideService = {
   acceptRide,
   pickupRider,
   startRide,
-  completeRide,
+  payOffline,
+  payOnline,
+  arrivedDestination,
   getAllRidesForAdmin,
   getAllRidesForRider,
   getAllRidesForDriver,

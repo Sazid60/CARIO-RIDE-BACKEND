@@ -4,6 +4,8 @@ import { Driver } from "./driver.model";
 import httpStatus from 'http-status-codes';
 import { User } from "../user/user.model";
 import {IsBlocked, Role } from "../user/user.interface";
+import { driverSearchableFields } from "./driver.contants";
+import { QueryBuilder } from "../../utils/QueryBuilder";
 
 const createDriver = async (payload: IDriver) => {
   const user = await User.findById(payload.userId);
@@ -105,12 +107,27 @@ const updateMyDriverProfile = async (userId: string, updatedData: Partial<IDrive
 };
 
 
-const getAllDrivers = async () => {
-  const drivers = await Driver.find({})
+const getAllDrivers = async (query: Record<string, string>) => {
+  const queryBuilder = new QueryBuilder(Driver.find(), query);
+
+  const driverData = queryBuilder
+    .filter()
+    .search(driverSearchableFields) 
+    .sort()
+    .fields()
+    .paginate();
+
+  const [data, meta] = await Promise.all([
+    driverData.build(),
+    queryBuilder.getMeta(),
+  ]);
+
   return {
-    data: drivers,
-  }
-}
+    data,
+    meta,
+  };
+};
+
 
 
 const getSingleDriver = async (id: string) => {
