@@ -9,10 +9,25 @@ import { userServices } from "./user.service";
 import { sendResponse } from "../../utils/sendResponse";
 import { JwtPayload } from "jsonwebtoken";
 import { catchAsync } from "../../utils/catchAsync";
+import { IUser } from "./user.interface";
 
+
+// const createUser = catchAsync(async (req: Request, res: Response, next: NextFunction) => {
+//     const user = await userServices.createUser(req.body)
+//     sendResponse(res, {
+//         success: true,
+//         statusCode: httpStatus.CREATED,
+//         message: "User Created Successfully",
+//         data: user
+//     })
+// })
 
 const createUser = catchAsync(async (req: Request, res: Response, next: NextFunction) => {
-    const user = await userServices.createUser(req.body)
+    const payload: Partial<IUser> = {
+        ...req.body,
+        picture: req.file?.path
+    }
+    const user = await userServices.createUser(payload)
     sendResponse(res, {
         success: true,
         statusCode: httpStatus.CREATED,
@@ -21,11 +36,29 @@ const createUser = catchAsync(async (req: Request, res: Response, next: NextFunc
     })
 })
 
+
+// const updateUser = catchAsync(async (req: Request, res: Response, next: NextFunction) => {
+//     const userId = req.params.id
+//     const verifiedToken = req.user
+
+//     const payload = req.body
+//     const user = await userServices.updateUser(userId, payload, verifiedToken as JwtPayload)
+//     sendResponse(res, {
+//         success: true,
+//         statusCode: httpStatus.CREATED,
+//         message: "User Updated Successfully",
+//         data: user
+//     })
+// })
+
 const updateUser = catchAsync(async (req: Request, res: Response, next: NextFunction) => {
     const userId = req.params.id
     const verifiedToken = req.user
 
-    const payload = req.body
+    const payload = {
+        ...req.body,
+        picture: req.file?.path
+    }
     const user = await userServices.updateUser(userId, payload, verifiedToken as JwtPayload)
     sendResponse(res, {
         success: true,
