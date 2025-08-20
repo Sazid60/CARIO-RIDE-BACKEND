@@ -76,13 +76,14 @@ const updateMyDriverProfile = catchAsync(async (req: Request, res: Response) => 
 });
 
 const getAllDrivers = catchAsync(async (req: Request, res: Response, next: NextFunction) => {
-  const result = await driverServices.getAllDrivers();
+  const query = req.query;
+  const result = await driverServices.getAllDrivers(query as Record<string, string>);
 
   sendResponse(res, {
     success: true,
     statusCode: httpStatus.CREATED,
     message: "All Driver Retrieved Successfully",
-    data: result.data
+    data: result
   })
 })
 const getSingleDriver = catchAsync(async (req: Request, res: Response, next: NextFunction) => {

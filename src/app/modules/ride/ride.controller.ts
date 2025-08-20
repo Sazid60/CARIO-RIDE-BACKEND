@@ -157,14 +157,14 @@ const payOnline = catchAsync(async (req: Request, res: Response) => {
 
 
 const getAllRidesForAdmin = catchAsync(async (req: Request, res: Response) => {
-
-  const rideInfo = await rideService.getAllRidesForAdmin()
+  const query = req.query;
+  const rideInfo = await rideService.getAllRidesForAdmin(query as Record<string, string>)
 
   sendResponse(res, {
     success: true,
     statusCode: httpStatus.CREATED,
     message: "All Rides Retrieved For Admin !",
-    data: rideInfo.allRides
+    data: rideInfo
   });
 
 });
@@ -173,14 +173,15 @@ const getAllRidesForRider = catchAsync(async (req: Request, res: Response) => {
 
   const rider = req.user as JwtPayload
   const riderId = rider.userId
+  const query = req.query;
 
-  const rideInfo = await rideService.getAllRidesForRider(riderId)
+  const rideInfo = await rideService.getAllRidesForRider(riderId, query as Record<string, string>)
 
   sendResponse(res, {
     success: true,
     statusCode: httpStatus.CREATED,
     message: "Rides Made By You are Retrieved!",
-    data: rideInfo.data
+    data: rideInfo
   });
 
 });
@@ -188,14 +189,15 @@ const getAllRidesForDriver = catchAsync(async (req: Request, res: Response) => {
 
   const user = req.user as JwtPayload
   const userId = user.userId
+  const query = req.query;
 
-  const rideInfo = await rideService.getAllRidesForDriver(userId)
+  const rideInfo = await rideService.getAllRidesForDriver(userId, query as Record<string, string>)
 
   sendResponse(res, {
     success: true,
     statusCode: httpStatus.CREATED,
     message: "Rides Made By You are Retrieved!",
-    data: rideInfo.data
+    data: rideInfo
   });
 
 });

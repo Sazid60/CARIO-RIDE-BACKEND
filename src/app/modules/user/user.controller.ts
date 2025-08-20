@@ -37,19 +37,6 @@ const createUser = catchAsync(async (req: Request, res: Response, next: NextFunc
 })
 
 
-// const updateUser = catchAsync(async (req: Request, res: Response, next: NextFunction) => {
-//     const userId = req.params.id
-//     const verifiedToken = req.user
-
-//     const payload = req.body
-//     const user = await userServices.updateUser(userId, payload, verifiedToken as JwtPayload)
-//     sendResponse(res, {
-//         success: true,
-//         statusCode: httpStatus.CREATED,
-//         message: "User Updated Successfully",
-//         data: user
-//     })
-// })
 
 const updateUser = catchAsync(async (req: Request, res: Response, next: NextFunction) => {
     const userId = req.params.id
@@ -77,7 +64,7 @@ const getAllUsers = catchAsync(async (req: Request, res: Response, next: NextFun
         statusCode: httpStatus.CREATED,
         message: "All Users Retrieved Successfully",
         data: result.data,
-        // meta: result.meta
+        meta: result.meta
     })
 })
 const getSingleUser = catchAsync(async (req: Request, res: Response, next: NextFunction) => {

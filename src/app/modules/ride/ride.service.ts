@@ -20,6 +20,8 @@ import { SSLService } from "../sslCommerz/sslCommerz.service";
 import { generatePdf, IInvoiceData } from "../../utils/invoice";
 import { uploadBufferToCloudinary } from "../../config/cloudinary.config";
 import { sendEmail } from "../../utils/sendEmail";
+import { QueryBuilder } from "../../utils/QueryBuilder";
+import { rideSearchableFields } from "./ride.contant";
 
 
 const createRide = async (payload: IRide) => {
@@ -647,17 +649,17 @@ const payOffline = async (driverUserId: string, rideId: string) => {
     if (String(driver._id) !== String(ride.driverId)) {
       throw new AppError(httpStatus.BAD_REQUEST, "You cannot complete another driver's ride.");
     }
-    if (ride.rideStatus === RideStatus.CANCELLED){
+    if (ride.rideStatus === RideStatus.CANCELLED) {
       throw new AppError(httpStatus.BAD_REQUEST, "This ride was cancelled.");
     }
-    if (ride.rideStatus === RideStatus.COMPLETED){
+    if (ride.rideStatus === RideStatus.COMPLETED) {
       throw new AppError(httpStatus.BAD_REQUEST, "This ride is already completed.");
     }
-    if (ride.rideStatus !== RideStatus.ARRIVED){
+    if (ride.rideStatus !== RideStatus.ARRIVED) {
       throw new AppError(httpStatus.BAD_REQUEST, "You must Arrive To Finish The Ride!");
     }
-    if (String(driver.userId) === String(ride.riderId)){
-       throw new AppError(httpStatus.BAD_REQUEST, "You cannot complete your own ride.");
+    if (String(driver.userId) === String(ride.riderId)) {
+      throw new AppError(httpStatus.BAD_REQUEST, "You cannot complete your own ride.");
     }
 
 
@@ -676,7 +678,7 @@ const payOffline = async (driverUserId: string, rideId: string) => {
     const driverIncome = (ride.fare as number * (100 - ownerCommissionPercentage)) / 100;
     const ownerIncome = (ride.fare as number * ownerCommissionPercentage) / 100;
 
-  
+
     driver.totalEarning = Number(driver.totalEarning || 0) + driverIncome;
     driver.totalRides = Number(driver.totalRides || 0) + 1;
     await driver.save({ session });
@@ -772,49 +774,74 @@ const payOffline = async (driverUserId: string, rideId: string) => {
 };
 
 
-const getAllRidesForAdmin = async () => {
-  const allRides = await Ride.find({})
+const getAllRidesForAdmin = async (query: Record<string, string>) => {
+  const queryBuilder = new QueryBuilder(Ride.find(), query)
+  const rideData = queryBuilder
+    .filter()
+    .search(rideSearchableFields)
+    .sort()
+    .fields()
+    .paginate();
+
+  const [data, meta] = await Promise.all([
+    rideData.build(),
+    queryBuilder.getMeta()
+  ])
 
   return {
-    allRides
+    data,
+    meta
   }
 }
-const getAllRidesForRider = async (riderId: string) => {
+const getAllRidesForRider = async (riderId: string, query: Record<string, string>) => {
+  const queryBuilder = new QueryBuilder(Ride.find({ riderId }), query);
 
-  const myRides = await Ride.find({ riderId: { $eq: riderId } })
+  
+  const rideData = queryBuilder
+    .filter()
+    .search(rideSearchableFields) 
+    .sort()
+    .fields()
+    .paginate();
 
-  const myRideCounts = await Ride.countDocuments()
-
-  const data = {
-    myRideCounts,
-    myRides
-  }
+  const [data, meta] = await Promise.all([
+    rideData.build(),
+    queryBuilder.getMeta(),
+  ]);
 
   return {
-    data
-  }
-}
-const getAllRidesForDriver = async (userId: string) => {
-  const driver = await Driver.findOne({ userId })
+    data,
+    meta,
+  };
+};
 
+const getAllRidesForDriver = async (userId: string, query: Record<string, string>) => {
+  const driver = await Driver.findOne({ userId });
   if (!driver) {
-    throw new AppError(httpStatus.BAD_REQUEST, "Driver InFormation Not Found !")
+    throw new AppError(httpStatus.BAD_REQUEST, "Driver information not found!");
   }
 
-  const driverId = driver._id
+  const queryBuilder = new QueryBuilder(Ride.find({ driverId: driver._id }), query);
 
-  const allRides = await Ride.find({ driverId: { $eq: driverId } })
 
-  const myRideCounts = allRides.length;
+  const rideData = queryBuilder
+    .filter()
+    .search(rideSearchableFields) 
+    .sort()
+    .fields()
+    .paginate();
 
-  const data = {
-    myRideCounts,
-    allRides
-  }
+  const [data, meta] = await Promise.all([
+    rideData.build(),
+    queryBuilder.getMeta(),
+  ]);
+
   return {
-    data
-  }
-}
+    data,
+    meta,
+  };
+};
+
 const getSingleRideForRider = async (rideId: string, riderId: string) => {
 
   const data = await Ride.findById(rideId)

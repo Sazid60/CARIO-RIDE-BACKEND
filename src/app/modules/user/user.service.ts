@@ -9,29 +9,7 @@ import { userSearchableFields } from "./user.constant";
 import { envVars } from "../../config/env";
 import { deleteImageFromCloudinary } from "../../config/cloudinary.config";
 
-// const createUser = async (payload: Partial<IUser>) => {
 
-//     const { email, password, ...rest } = payload
-
-//     const isUserExist = await User.findOne({ email })
-
-//     if (isUserExist) {
-//         throw new AppError(httpStatus.BAD_REQUEST, "User Already Exists")
-//     }
-
-//     const hashedPassword = await bcryptjs.hash(password as string, 10)
-
-//     const authProvider: IAuthProvider = { provider: "credentials", providerId: email as string }
-
-//     const user = await User.create({
-//         email,
-//         password: hashedPassword,
-//         auths: [authProvider],
-//         ...rest
-//     })
-
-//     return user
-// }
 
 const createUser = async (payload: Partial<IUser>) => {
     // eslint-disable-next-line no-console
@@ -68,14 +46,15 @@ const getAllUsers = async (query: Record<string, string>) => {
         .fields()
         .paginate();
 
-    const [data] = await Promise.all([
+    const [data,meta] = await Promise.all([
         usersData.build(),
         queryBuilder.getMeta()
     ])
 
     return {
         data,
-        // meta
+        meta
+        
     }
 };
 // update User 
