@@ -796,10 +796,10 @@ const getAllRidesForAdmin = async (query: Record<string, string>) => {
 const getAllRidesForRider = async (riderId: string, query: Record<string, string>) => {
   const queryBuilder = new QueryBuilder(Ride.find({ riderId }), query);
 
-  
+
   const rideData = queryBuilder
     .filter()
-    .search(rideSearchableFields) 
+    .search(rideSearchableFields)
     .sort()
     .fields()
     .paginate();
@@ -826,7 +826,7 @@ const getAllRidesForDriver = async (userId: string, query: Record<string, string
 
   const rideData = queryBuilder
     .filter()
-    .search(rideSearchableFields) 
+    .search(rideSearchableFields)
     .sort()
     .fields()
     .paginate();
@@ -1064,7 +1064,25 @@ export const giveFeedbackAndRateDriver = async (rideId: string, userId: string, 
 };
 
 
+
+const getFeedbacks = async () => {
+  const totalRides = await Ride.countDocuments();
+  const feedbackDocs = await Ride.find({
+    feedback: { $exists: true, $ne: "" }
+  }).select("feedback -_id");
+
+  const feedbacks = feedbackDocs.map(doc => doc.feedback as string);
+  return {
+    totalRides,
+    feedbacks
+  };
+};
+
+
+
+
 export const rideService = {
+  getFeedbacks,
   createRide,
   getRidesNearMe,
   acceptRide,

@@ -1,14 +1,15 @@
 import z from "zod";
 
 export const createFaqZodSchema = z.object({
-    question: z.string({
-        required_error: "Question is required",
-    }).min(5, "Question must be at least 5 characters long"),
     email: z
         .string({
             required_error: "Email is required",
         }),
-    questionDetails: z.string({
+    name: z
+        .string({
+            required_error: "Name is required",
+        }),
+    question: z.string({
         required_error: "Question details are required",
     }).min(10, "Question details must be at least 10 characters long"),
 
