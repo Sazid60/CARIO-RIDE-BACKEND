@@ -1,5 +1,4 @@
 import z from "zod";
-import { IsBlocked, Role } from "./user.interface";
 
 export const createUserZodSchema = z.object({
     name: z
@@ -54,15 +53,7 @@ export const updateUserZodSchema = z.object({
             message: "Phone number must be valid for Bangladesh. Format: +8801XXXXXXXXX or 01XXXXXXXXX",
         })
         .optional(),
-    role: z
-        .enum(Object.values(Role) as [string])
-        .optional(),
-    isBlocked: z
-        .enum(Object.values(IsBlocked) as [string])
-        .optional(),
-    isVerified: z
-        .boolean({ invalid_type_error: "isVerified must be true or false" })
-        .optional(),
+
     location: z
         .object({
             type: z.literal("Point"),
