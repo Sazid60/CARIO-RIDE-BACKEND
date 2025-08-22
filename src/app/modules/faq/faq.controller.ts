@@ -8,61 +8,62 @@ import { faqServices } from "./faq.service";
 import { IFaq } from "./faq.interface";
 
 const askQuestion = catchAsync(async (req: Request, res: Response, next: NextFunction) => {
-  const payload: IFaq = {
-    ...req.body,
-  };
+    const payload: IFaq = {
+        ...req.body,
+    };
 
-  const faq = await faqServices.askQuestion(payload);
+    const faq = await faqServices.askQuestion(payload);
 
-  sendResponse(res, {
-    success: true,
-    statusCode: httpStatus.CREATED,
-    message: "Question submitted successfully",
-    data: faq,
-  });
+    sendResponse(res, {
+        success: true,
+        statusCode: httpStatus.CREATED,
+        message: "Question submitted successfully",
+        data: faq,
+    });
 });
 
 // Admin replies to a question
 const replyQuestion = catchAsync(async (req: Request, res: Response, next: NextFunction) => {
-  const { id } = req.params;
-  const { answer } = req.body;
+    const { id } = req.params;
+    const { answer } = req.body;
 
-  const updatedFaq = await faqServices.replyQuestion(id, { answer });
+    const updatedFaq = await faqServices.replyQuestion(id, { answer });
 
-  sendResponse(res, {
-    success: true,
-    statusCode: httpStatus.OK,
-    message: "Answer submitted successfully",
-    data: updatedFaq,
-  });
+    sendResponse(res, {
+        success: true,
+        statusCode: httpStatus.OK,
+        message: "Answer submitted successfully",
+        data: updatedFaq,
+    });
 });
 
 // Get all FAQs (public)
 const getAllFaqs = catchAsync(async (req: Request, res: Response) => {
-  const faqs = await faqServices.getAllFaqs();
-  sendResponse(res, {
-    success: true,
-    statusCode: httpStatus.OK,
-    message: "All FAQs retrieved successfully",
-    data: faqs,
-  });
+    const query = req.query
+    const faqs = await faqServices.getAllFaqs(query as Record<string, string>);
+    sendResponse(res, {
+        success: true,
+        statusCode: httpStatus.OK,
+        message: "All FAQs retrieved successfully",
+        data: faqs,
+    });
 });
 
 // Get single FAQ by ID (public)
 const getSingleFaq = catchAsync(async (req: Request, res: Response) => {
-  const { id } = req.params;
-  const faq = await faqServices.getSingleFaq(id);
-  sendResponse(res, {
-    success: true,
-    statusCode: httpStatus.OK,
-    message: "FAQ retrieved successfully",
-    data: faq,
-  });
+    const { id } = req.params;
+    const faq = await faqServices.getSingleFaq(id);
+    sendResponse(res, {
+        success: true,
+        statusCode: httpStatus.OK,
+        message: "FAQ retrieved successfully",
+        data: faq,
+    });
 });
 
 export const faqController = {
-  askQuestion,
-  replyQuestion,
-  getAllFaqs,
-  getSingleFaq,
+    askQuestion,
+    replyQuestion,
+    getAllFaqs,
+    getSingleFaq,
 };

@@ -23,7 +23,7 @@ router.patch(
 );
 
 
-router.get("/", checkAuth(Role.ADMIN),faqController.getAllFaqs);
+router.get("/",faqController.getAllFaqs);
 
 
 router.get("/:id",checkAuth(Role.ADMIN), faqController.getSingleFaq);

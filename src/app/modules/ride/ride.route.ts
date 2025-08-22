@@ -31,6 +31,10 @@ router.get("/all-rides-admin",
   rideController.getAllRidesForAdmin
 )
 
+router.get("/all-feedbacks",
+  rideController.getFeedbacks
+)
+
 // GET ALL MY RIDES - riders
 
 router.get("/all-rides-rider",

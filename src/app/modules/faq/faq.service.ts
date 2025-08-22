@@ -4,6 +4,8 @@ import { IFaq } from "./faq.interface";
 import AppError from "../../errorHelpers/AppError";
 import httpStatus from "http-status-codes";
 import { sendEmail } from "../../utils/sendEmail";
+import { QueryBuilder } from "../../utils/QueryBuilder";
+import { faqSearchableFields } from "./faq.constants";
 
 const askQuestion = async (payload: Partial<IFaq>) => {
     const faq = await Faq.create(payload);
@@ -26,6 +28,7 @@ const replyQuestion = async (id: string, payload: Partial<IFaq>) => {
         templateName: "faqReplay",
         templateData: {
             question: faq.question,
+            name: faq.name,
             answer: faq.answer,
         },
         attachments: [],
@@ -35,9 +38,27 @@ const replyQuestion = async (id: string, payload: Partial<IFaq>) => {
 };
 
 
-const getAllFaqs = async () => {
-    const faqs = await Faq.find().sort({ _id: -1 });
-    return faqs;
+const getAllFaqs = async (query: Record<string, string>) => {
+
+    const queryBuilder = new QueryBuilder(Faq.find(), query);
+
+    const faqData = queryBuilder
+        .filter()
+        .search(faqSearchableFields)
+        .sort()
+        .fields()
+        .paginate();
+
+    const [data, meta] = await Promise.all([
+        faqData.build(),
+        queryBuilder.getMeta(),
+    ]);
+
+    return {
+        data,
+        meta,
+    };
+
 };
 
 const getSingleFaq = async (id: string) => {

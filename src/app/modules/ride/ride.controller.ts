@@ -270,9 +270,20 @@ const giveFeedback = catchAsync(async (req: Request, res: Response) => {
     data: result,
   });
 });
+const getFeedbacks = catchAsync(async (req: Request, res: Response) => {
+  const result = await rideService.getFeedbacks();
+
+  sendResponse(res, {
+    success: true,
+    statusCode: httpStatus.OK,
+    message: "Feedback Retrieved successfully",
+    data: result,
+  });
+});
 
 export const rideController = {
   createRide,
+  getFeedbacks,
   getRidesNearMe,
   acceptRide,
   pickupRider,

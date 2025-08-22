@@ -13,9 +13,10 @@ const faqSchema = new Schema<IFaq>(
             required: true,
             trim: true,
         },
-        questionDetails: {
+        name: {
             type: String,
             required: true,
+            trim: true,
         },
         answer: {
             type: String,
