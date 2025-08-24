@@ -217,6 +217,38 @@ const getSingleRideForRider = catchAsync(async (req: Request, res: Response) => 
   });
 
 });
+const getSingleRideForDriver = catchAsync(async (req: Request, res: Response) => {
+  const rideId = req.params.id
+  const driverInfo = req.user as JwtPayload
+
+  const driverId = driverInfo.userId
+
+  const result = await rideService.getSingleRideForDriver(rideId, driverId)
+
+  sendResponse(res, {
+    success: true,
+    statusCode: httpStatus.CREATED,
+    message: "Your Ride Information Retrieved!",
+    data: result.data
+  });
+
+});
+
+const getLatestAcceptedRideForDriver = catchAsync(async (req: Request, res: Response) => {
+  const driverInfo = req.user as JwtPayload
+
+  const driverId = driverInfo.userId
+
+  const result = await rideService.getLatestAcceptedRideForDriver(driverId)
+
+  sendResponse(res, {
+    success: true,
+    statusCode: httpStatus.CREATED,
+    message: "Your Accepted Ride Information Retrieved!",
+    data: result.data
+  });
+
+});
 
 
 const getDriversNearMe = catchAsync(async (req: Request, res: Response) => {
@@ -298,5 +330,7 @@ export const rideController = {
   rejectRide,
   cancelRideByRider,
   giveFeedback,
-  arrived
+  arrived,
+  getLatestAcceptedRideForDriver,
+  getSingleRideForDriver
 };

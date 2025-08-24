@@ -38,7 +38,7 @@ router.patch(
   driverControllers.goOnline
 );
 
-router.post(
+router.patch(
   "/go-offline",
   checkAuth(Role.DRIVER),
   driverControllers.goOffline

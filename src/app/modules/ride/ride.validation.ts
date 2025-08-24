@@ -17,6 +17,14 @@ export const createRideZodSchema = z.object({
           message: "Coordinates must have [longitude, latitude]",
         }),
     }),
+    currentLocation: z.object({
+      type: z.literal("Point"),
+      coordinates: z
+        .tuple([z.number(), z.number()])
+        .refine(val => val.length === 2, {
+          message: "Coordinates must have [longitude, latitude]",
+        }),
+    }),
 });
 
 
