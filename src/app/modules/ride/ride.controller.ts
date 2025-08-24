@@ -313,7 +313,20 @@ const getFeedbacks = catchAsync(async (req: Request, res: Response) => {
   });
 });
 
+const updateRideLocation = catchAsync(async (req: Request, res: Response) => {
+  const rideId = req.params.id
+  const currentLocation = req.body;
+  const result = await rideService.updateRideLocation(rideId, currentLocation)
+  sendResponse(res, {
+    success: true,
+    statusCode: httpStatus.OK,
+    message: "Ride Location Updated!",
+    data: result.data
+  })
+});
+
 export const rideController = {
+  updateRideLocation,
   createRide,
   getFeedbacks,
   getRidesNearMe,

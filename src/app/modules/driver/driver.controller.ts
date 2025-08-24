@@ -97,11 +97,11 @@ const getSingleDriver = catchAsync(async (req: Request, res: Response, next: Nex
   })
 })
 
-const goOnline = catchAsync(async (req, res) => {
+const goOnline = catchAsync(async (req:Request, res:Response) => {
   const user = req.user as JwtPayload;
   const userId = user.userId;
   const currentLocation = req.body;
-  const result = await driverServices.goOnline(userId,currentLocation);
+  const result = await driverServices.goOnline(userId, currentLocation);
   sendResponse(res, {
     success: true,
     statusCode: httpStatus.OK,
@@ -110,8 +110,21 @@ const goOnline = catchAsync(async (req, res) => {
   })
 });
 
+const updateLocation = catchAsync(async (req:Request, res:Response) => {
+  const user = req.user as JwtPayload;
+  const userId = user.userId;
+  const currentLocation = req.body;
+  const result = await driverServices.updateLocation(userId, currentLocation);
+  sendResponse(res, {
+    success: true,
+    statusCode: httpStatus.OK,
+    message: "Your Location Updated!",
+    data: result.data
+  })
+});
+
 const goOffline = catchAsync(async (req, res) => {
-   const user = req.user as JwtPayload;
+  const user = req.user as JwtPayload;
   const userId = user.userId;
 
   const result = await driverServices.goOffline(userId);
@@ -132,6 +145,6 @@ export const driverControllers = {
   getSingleDriver,
   getAllDrivers,
   goOffline,
-  goOnline
-
+  goOnline,
+  updateLocation
 }

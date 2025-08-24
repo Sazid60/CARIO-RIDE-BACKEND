@@ -9,7 +9,7 @@ import { User } from "../user/user.model";
 import httpStatus from 'http-status-codes';
 import AppError from "../../errorHelpers/AppError";
 import { Driver } from "../driver/driver.model";
-import { DriverOnlineStatus, DriverRidingStatus, DriverStatus, IDriver } from "../driver/driver.interface";
+import { DriverOnlineStatus, DriverRidingStatus, DriverStatus, ICurrentLocation, IDriver } from "../driver/driver.interface";
 import haversine from 'haversine-distance';
 import { Payment } from '../payment/payment.model';
 import { getTransactionId } from "../../utils/getTransactionId";
@@ -863,7 +863,7 @@ const getSingleRideForDriver = async (rideId: string, driverId: string) => {
 
   const data = await Ride.findById(rideId)
 
-  const driver = await Driver.findOne({ userId:driverId });
+  const driver = await Driver.findOne({ userId: driverId });
 
   if (!driver) {
     throw new AppError(httpStatus.NOT_FOUND, "Driver Not Found!")
@@ -883,7 +883,7 @@ const getSingleRideForDriver = async (rideId: string, driverId: string) => {
 // const getLatestAcceptedRideForDriver = async (userId: string) => {
 //   console.log(userId)
 //   const driver = await Driver.findOne({ userId });
-  
+
 
 //   if (!driver) {
 //     throw new AppError(httpStatus.NOT_FOUND, "Driver Not Found!")
@@ -918,7 +918,16 @@ const getLatestAcceptedRideForDriver = async (userId: string) => {
   return { data };
 };
 
-
+const updateRideLocation = async (rideId: string, currentLocation: ICurrentLocation) => {
+  const ride = await Ride.findOneAndUpdate(
+    { _id: rideId },
+    {
+      currentLocation: currentLocation,
+    },
+    { new: true }
+  );
+  return { data: ride };
+};
 
 // const getDriversNearMe = async (userId: string) => {
 //   const user: IUser | null = await User.findById(userId);
@@ -1210,6 +1219,7 @@ const getFeedbacks = async () => {
 
 
 export const rideService = {
+  updateRideLocation,
   getSingleRideForDriver,
   getFeedbacks,
   createRide,
