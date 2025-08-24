@@ -98,7 +98,7 @@ const updateMyDriverProfile = async (userId: string, updatedData: Partial<IDrive
   const updatedDriver = await Driver.findOneAndUpdate(
     { userId: userId },
     updatedData,
-    { new: true, runValidators: true }
+    { new: true}
   );
 
   return {
@@ -163,6 +163,22 @@ const goOnline = async (userId: string, currentLocation: ICurrentLocation) => {
   );
   return { data: driver };
 };
+const updateLocation = async (userId: string, currentLocation: ICurrentLocation) => {
+  const driverInfo = await Driver.findOne({ userId });
+  if (!driverInfo) {
+    throw new AppError(httpStatus.NOT_FOUND, "Driver not found");
+  }
+
+  const driver = await Driver.findOneAndUpdate(
+    { userId },
+    {
+      onlineStatus: "ONLINE",
+      currentLocation: currentLocation,
+    },
+    { new: true }
+  );
+  return { data: driver };
+};
 
 const goOffline = async (userId: string) => {
 
@@ -193,7 +209,8 @@ export const driverServices = {
   getAllDrivers,
   getSingleDriver,
   goOffline,
-  goOnline
+  goOnline,
+  updateLocation
 };
 
 

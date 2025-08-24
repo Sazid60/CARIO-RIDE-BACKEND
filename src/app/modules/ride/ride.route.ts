@@ -92,6 +92,9 @@ router.patch("/reject-ride/:id", checkAuth(Role.DRIVER), rideController.rejectRi
 
 router.patch("/accept-ride/:id", checkAuth(Role.DRIVER), rideController.acceptRide)
 
+// update ride location
+
+router.patch("/ride-location-update/:id", checkAuth(Role.DRIVER, Role.RIDER), rideController.updateRideLocation)
 
 // Pickup the rider
 router.patch("/pickup-rider/:id", checkAuth(Role.DRIVER), rideController.pickupRider)

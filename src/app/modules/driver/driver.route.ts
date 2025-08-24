@@ -50,6 +50,8 @@ router.patch("/status/:id",
     driverControllers.updateDriverStatus
 )
 
+router.patch("/driver-location-update", checkAuth(Role.DRIVER), driverControllers.updateLocation)
+
 router.get("/:id",checkAuth(Role.ADMIN), driverControllers.getSingleDriver)
 
 
