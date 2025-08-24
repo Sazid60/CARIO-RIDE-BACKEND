@@ -487,7 +487,7 @@ const arrivedDestination = async (driverUserId: string, rideId: string) => {
     await ride.save({ session });
 
     driver.ridingStatus = DriverRidingStatus.IDLE;
-    driver.currentLocation = ride.destination;
+    // driver.currentLocation = ride.destination;
     await driver.save({ session });
 
     rider.riderStatus = RiderStatus.IDLE;
