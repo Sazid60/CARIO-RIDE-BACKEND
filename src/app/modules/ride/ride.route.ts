@@ -57,11 +57,27 @@ router.get("/drivers-near",
   rideController.getDriversNearMe
 )
 
+// router.get("/update-current-ride-location",
+//   checkAuth(Role.RIDER),
+//   rideController.updateCurrentLocation
+// )
+
+router.get("/my-accepted-ride",
+  checkAuth(Role.DRIVER),
+  rideController.getLatestAcceptedRideForDriver
+)
+
+
+
 
 // GET MY RIDE  - Rider
 router.get("/my-ride/:id",
-  checkAuth(...Object.values(Role)),
+  checkAuth(Role.RIDER),
   rideController.getSingleRideForRider
+)
+router.get("/my-accepted-ride/:id",
+  checkAuth(Role.DRIVER),
+  rideController.getSingleRideForDriver
 )
 
 // cancel ride - rider

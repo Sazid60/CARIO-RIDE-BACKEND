@@ -29,6 +29,17 @@ const rideSchema = new Schema<IRide>(
         required: true,
       },
     },
+    currentLocation: {
+      type: {
+        type: String,
+        enum: ["Point"],
+        default: "Point",
+      },
+      coordinates: {
+        type: [Number, Number],
+        required: true,
+      },
+    },
     travelDistance: {
       type: Number,
     },

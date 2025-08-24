@@ -43,7 +43,7 @@ const createRide = async (payload: IRide) => {
       throw new AppError(httpStatus.BAD_REQUEST, `You already have a ride in ${rider.riderStatus} State.`);
     }
 
-    const { distanceKm, fare } = calculateDistanceAndFare(
+    const { distanceKm, fare } = await calculateDistanceAndFare(
       pickupLocation.coordinates,
       destination.coordinates
     );
@@ -97,7 +97,7 @@ const getRidesNearMe = async (userId: string) => {
 
   const requestedRides: IRide[] = await Ride.find({
     rideStatus: RideStatus.REQUESTED,
-  });
+  }).sort({ createdAt: -1 });
 
   const nearByRides = requestedRides.filter((ride) => {
     if (ride.rejectedBy?.some(id => id.toString() === driver._id.toString())) {
@@ -112,7 +112,7 @@ const getRidesNearMe = async (userId: string) => {
       { lat: driverLat, lon: driverLng },
       { lat: pickupLat, lon: pickupLng }
     );
-    return distanceInMeters <= 1000;
+    return distanceInMeters <= 5000;
   });
 
   return {
@@ -859,9 +859,129 @@ const getSingleRideForRider = async (rideId: string, riderId: string) => {
     data
   }
 }
+const getSingleRideForDriver = async (rideId: string, driverId: string) => {
+
+  const data = await Ride.findById(rideId)
+
+  const driver = await Driver.findOne({ userId:driverId });
+
+  if (!driver) {
+    throw new AppError(httpStatus.NOT_FOUND, "Driver Not Found!")
+  }
+
+  if (!data) {
+    throw new AppError(httpStatus.NOT_FOUND, "Ride Information Not Found")
+  }
 
 
-const getDriversNearMe = async (userId: string) => {
+  return {
+    data
+  }
+}
+
+
+// const getLatestAcceptedRideForDriver = async (userId: string) => {
+//   console.log(userId)
+//   const driver = await Driver.findOne({ userId });
+  
+
+//   if (!driver) {
+//     throw new AppError(httpStatus.NOT_FOUND, "Driver Not Found!")
+//   }
+//   const data = await Ride.findOne({
+//     driverId: driver._id,
+//     rideStatus: "ACCEPTED",
+//   }).sort({ createdAt: -1 });
+
+//   return { data };
+// };
+
+
+const getLatestAcceptedRideForDriver = async (userId: string) => {
+  console.log(userId);
+
+  // Find the driver
+  const driver = await Driver.findOne({ userId });
+  if (!driver) {
+    throw new AppError(httpStatus.NOT_FOUND, "Driver Not Found!");
+  }
+
+  // Define acceptable ride statuses
+  const acceptedStatuses = ["ACCEPTED", "REQUESTED", "PICKED_UP", "IN_TRANSIT", "ARRIVED"];
+
+  // Find latest ride for this driver with any of the accepted statuses
+  const data = await Ride.findOne({
+    driverId: driver._id,
+    rideStatus: { $in: acceptedStatuses },
+  }).sort({ createdAt: -1 });
+
+  return { data };
+};
+
+
+
+// const getDriversNearMe = async (userId: string) => {
+//   const user: IUser | null = await User.findById(userId);
+//   if (!user) {
+//     throw new AppError(httpStatus.NOT_FOUND, "User not found.");
+//   }
+
+//   if (user.isBlocked === IsBlocked.BLOCKED) {
+//     throw new AppError(httpStatus.BAD_REQUEST, "You are blocked. Contact Admin.");
+//   }
+
+//   const latestRide = await Ride.findOne({ riderId: userId }).sort({ createdAt: -1 });
+//   if (!latestRide || !latestRide.pickupLocation?.coordinates?.length) {
+//     throw new AppError(httpStatus.BAD_REQUEST, "Your location not found.");
+//   }
+
+//   const [pickupLng, pickupLat] = latestRide.pickupLocation.coordinates;
+
+//   const drivers: IDriver[] = await Driver.find(
+//     {
+//       driverStatus: DriverStatus.APPROVED,
+//       onlineStatus: DriverOnlineStatus.ONLINE,
+//       ridingStatus: { $ne: DriverRidingStatus.RIDING },
+//       currentLocation: { $exists: true, $ne: null },
+//     },
+//     {
+//       vehicle: 1,
+//       currentLocation: 1,
+//     }
+//   ).populate("userId", "name phone");
+
+
+//   const nearbyDrivers = drivers.filter((driver) => {
+
+//     if (!driver.currentLocation?.coordinates?.length) return false;
+
+//     const [driverLng, driverLat] = driver.currentLocation.coordinates;
+
+//     const distanceInMeters = haversine(
+//       { lat: pickupLat, lon: pickupLng },
+//       { lat: driverLat, lon: driverLng }
+//     );
+
+//     return distanceInMeters <= 1000;
+//   });
+
+//   return {
+//     success: true,
+//     count: nearbyDrivers.length,
+//     data: nearbyDrivers,
+//   };
+// };
+
+
+
+
+export const getDriversNearMe = async (userId: string) => {
+  const activeStatuses = [
+    "REQUESTED",
+    "ACCEPTED",
+    "PICKED_UP",
+    "IN_TRANSIT",
+  ];
   const user: IUser | null = await User.findById(userId);
   if (!user) {
     throw new AppError(httpStatus.NOT_FOUND, "User not found.");
@@ -871,9 +991,15 @@ const getDriversNearMe = async (userId: string) => {
     throw new AppError(httpStatus.BAD_REQUEST, "You are blocked. Contact Admin.");
   }
 
-  const latestRide = await Ride.findOne({ riderId: userId }).sort({ createdAt: -1 });
-  if (!latestRide || !latestRide.pickupLocation?.coordinates?.length) {
-    throw new AppError(httpStatus.BAD_REQUEST, "Your location not found.");
+  const latestRide: IRide | null = await Ride.findOne({
+    riderId: userId,
+    rideStatus: { $in: activeStatuses },
+    "pickupLocation.coordinates.0": { $exists: true },
+    "pickupLocation.coordinates.1": { $exists: true },
+  }).sort({ createdAt: -1 });
+
+  if (!latestRide) {
+    throw new AppError(httpStatus.BAD_REQUEST, "No active ride found.");
   }
 
   const [pickupLng, pickupLat] = latestRide.pickupLocation.coordinates;
@@ -891,9 +1017,7 @@ const getDriversNearMe = async (userId: string) => {
     }
   ).populate("userId", "name phone");
 
-
   const nearbyDrivers = drivers.filter((driver) => {
-
     if (!driver.currentLocation?.coordinates?.length) return false;
 
     const [driverLng, driverLat] = driver.currentLocation.coordinates;
@@ -903,15 +1027,19 @@ const getDriversNearMe = async (userId: string) => {
       { lat: driverLat, lon: driverLng }
     );
 
-    return distanceInMeters <= 1000;
+    return distanceInMeters <= 5000;
   });
 
   return {
     success: true,
+    ride: latestRide,
     count: nearbyDrivers.length,
     data: nearbyDrivers,
   };
 };
+
+
+
 
 const cancelRideByRider = async (userId: string, rideId: string) => {
   const session = await Ride.startSession();
@@ -1082,9 +1210,11 @@ const getFeedbacks = async () => {
 
 
 export const rideService = {
+  getSingleRideForDriver,
   getFeedbacks,
   createRide,
   getRidesNearMe,
+  getLatestAcceptedRideForDriver,
   acceptRide,
   pickupRider,
   startRide,
