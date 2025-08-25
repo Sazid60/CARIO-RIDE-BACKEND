@@ -48,8 +48,8 @@ const cancelPayment = catchAsync(async (req: Request, res: Response) => {
     //     res.redirect(`${envVars.SSL.SSL_CANCEL_FRONTEND_URL}?transactionId=${query.transactionId}&message=${result.message}&amount=${query.amount}&status=${query.status}`)
     // }
 
-    if (result.success === false) {
-        res.redirect(`${envVars.FRONTEND_URL}/book-ride`)
+    if (!result.success) {
+        res.redirect(`${envVars.FRONTEND_URL}`)
     }
 });
 
