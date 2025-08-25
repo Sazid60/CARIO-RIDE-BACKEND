@@ -20,19 +20,19 @@ const createDriver = async (payload: IDriver) => {
     throw new AppError(httpStatus.FORBIDDEN, "Your account is Not Verified. Contact support.");
   }
 
-  if (!user.phone) {
-    throw new AppError(httpStatus.BAD_REQUEST, "Please update your phone number in user profile before applying.");
-  }
+  // if (!user.phone) {
+  //   throw new AppError(httpStatus.BAD_REQUEST, "Please update your phone number in user profile before applying.");
+  // }
 
-  if (!user.location || !user.location.coordinates || user.location.coordinates.length !== 2) {
-    throw new AppError(httpStatus.BAD_REQUEST, "Please update your location In User Profile before applying.");
-  }
+  // if (!user.location || !user.location.coordinates || user.location.coordinates.length !== 2) {
+  //   throw new AppError(httpStatus.BAD_REQUEST, "Please update your location In User Profile before applying.");
+  // }
 
   const existingDriver = await Driver.findOne({ userId: payload.userId });
 
   if (existingDriver) {
     if (existingDriver.driverStatus === DriverStatus.PENDING) {
-      throw new AppError(httpStatus.BAD_REQUEST, "Please wait for admin approval!");
+      throw new AppError(httpStatus.BAD_REQUEST, "You Are Already Registered! Please wait for admin approval!");
     }
     if (existingDriver.driverStatus === DriverStatus.SUSPENDED) {
       throw new AppError(httpStatus.BAD_REQUEST, "You are suspended. Please contact the office!");
