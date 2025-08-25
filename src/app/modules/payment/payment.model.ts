@@ -42,6 +42,9 @@ const paymentSchema = new Schema<IPayment>(
         },
         invoiceUrl: {
             type: String
+        },
+        paymentMethod: {
+            type: String
         }
     },
     {

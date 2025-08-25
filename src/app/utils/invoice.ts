@@ -67,7 +67,7 @@ export const generatePdf = async (invoiceData: IInvoiceData): Promise<Buffer> =>
 
             // Footer
             doc.fontSize(12).text("Thank you for riding with us!", { align: "center" });
-            doc.fontSize(10).fillColor("gray").text("Powered by RideHub", { align: "center" });
+            doc.fontSize(10).fillColor("gray").text("Powered by Cario-Rides", { align: "center" });
 
             doc.end();
         });

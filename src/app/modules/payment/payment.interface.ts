@@ -7,6 +7,10 @@ export enum PAYMENT_STATUS {
     CANCELLED = "CANCELLED",
     FAILED = "FAILED",
 }
+export enum PAYMENT_METHOD {
+    ONLINE = "ONLINE",
+    OFFLINE = "OFFLINE",
+}
 export interface IPayment {
     ride: Types.ObjectId,
     driver: Types.ObjectId,
@@ -17,4 +21,5 @@ export interface IPayment {
     paymentGatewayData?: any,
     invoiceUrl?: string,
     status: PAYMENT_STATUS,
+    paymentMethod?: PAYMENT_METHOD
 }
