@@ -180,7 +180,7 @@ const successPayment = async (query: Record<string, string>) => {
         await session.commitTransaction();
         session.endSession();
 
-        return { success: true, message: "Payment Completed Successfully" };
+        return { success: true, message: "Payment Completed Successfully", rideId: updatedRide._id };
     } catch (error) {
         await session.abortTransaction();
         session.endSession();
@@ -228,7 +228,7 @@ const cancelPayment = async (query: Record<string, string>) => {
     paymentInfo.status = PAYMENT_STATUS.CANCELLED;
     await paymentInfo.save();
 
-    return { success: false, message: "Payment Cancelled" };
+    return { success: false, message: "Payment Cancelled"};
 };
 
 

@@ -117,7 +117,7 @@ router.patch("/pay-offline/:id", checkAuth(Role.DRIVER), rideController.payOffli
 
 // give feedback 
 
-router.post(
+router.patch(
   "/feedback/:rideId",
   checkAuth(...Object.values(Role)),
   validateRequest(rideFeedbackSchema),
