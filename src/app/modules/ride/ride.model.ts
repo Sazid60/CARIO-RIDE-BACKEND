@@ -29,6 +29,9 @@ const rideSchema = new Schema<IRide>(
         required: true,
       },
     },
+    transactionId : {
+      type : String
+    },
     currentLocation: {
       type: {
         type: String,

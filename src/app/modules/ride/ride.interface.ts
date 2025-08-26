@@ -24,6 +24,7 @@ export interface IRide {
   driverId?: Types.ObjectId;
   pickupLocation: ILocation;
   currentLocation: ILocation;
+  transactionId ?: string,
   destination: ILocation;
   travelDistance?: number;
   fare?: number;

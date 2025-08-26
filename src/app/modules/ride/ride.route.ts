@@ -38,7 +38,7 @@ router.get("/all-feedbacks",
 // GET ALL MY RIDES - riders
 
 router.get("/all-rides-rider",
-  checkAuth(...Object.values(Role)),
+  checkAuth(Role.RIDER),
   rideController.getAllRidesForRider
 )
 
