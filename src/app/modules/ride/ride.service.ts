@@ -544,7 +544,6 @@ const arrivedDestination = async (driverUserId: string, rideId: string) => {
     const rider = await User.findById(ride.riderId).session(session);
     if (!rider) throw new AppError(httpStatus.NOT_FOUND, "Rider not found.");
 
-    // ✅ Instead of ride.save(), do atomic update
     const updatedRide = await Ride.findOneAndUpdate(
       { _id: ride._id },
       {
@@ -556,14 +555,12 @@ const arrivedDestination = async (driverUserId: string, rideId: string) => {
       { new: true, session }
     );
 
-    // ✅ Instead of driver.save()
     await Driver.updateOne(
       { _id: driver._id },
       { $set: { ridingStatus: DriverRidingStatus.IDLE } },
       { session }
     );
 
-    // ✅ Instead of rider.save()
     await User.updateOne(
       { _id: rider._id },
       { $set: { riderStatus: RiderStatus.IDLE } },
@@ -655,6 +652,7 @@ const payOnline = async (riderId: string, rideId: string) => {
       ride._id,
       {
         payment: payment[0]._id,
+        transactionId : payment[0].transactionId,
       },
       { new: true, runValidators: true, session }
     )
@@ -782,6 +780,7 @@ const payOffline = async (driverUserId: string, rideId: string) => {
         $set: {
           "timestamps.completedAt": new Date(),
           rideStatus: RideStatus.COMPLETED,
+          transactionId : payment[0].transactionId,
           payment: payment[0]._id,
         },
       },
@@ -872,7 +871,7 @@ const getAllRidesForAdmin = async (query: Record<string, string>) => {
   }
 }
 const getAllRidesForRider = async (riderId: string, query: Record<string, string>) => {
-  const queryBuilder = new QueryBuilder(Ride.find({ riderId }), query);
+  const queryBuilder = new QueryBuilder(Ride.find({ riderId }).populate("payment").populate("driverId"), query);
 
 
   const rideData = queryBuilder
@@ -880,6 +879,7 @@ const getAllRidesForRider = async (riderId: string, query: Record<string, string
     .search(rideSearchableFields)
     .sort()
     .fields()
+    .dateSearch()
     .paginate();
 
   const [data, meta] = await Promise.all([
@@ -922,7 +922,7 @@ const getAllRidesForDriver = async (userId: string, query: Record<string, string
 
 const getSingleRideForRider = async (rideId: string, riderId: string) => {
 
-  const data = await Ride.findById(rideId)
+  const data = await Ride.findById(rideId).populate("driverId").populate("payment")
 
   if (!data) {
     throw new AppError(httpStatus.NOT_FOUND, "Ride Information Not Found")

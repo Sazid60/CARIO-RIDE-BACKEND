@@ -1,1 +1,1 @@
-export const rideSearchableFields = ["rideStatus"];
+export const rideSearchableFields = ["rideStatus", "transactionId"];

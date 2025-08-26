@@ -46,7 +46,7 @@ const credentialsLogin = catchAsync(async (req: Request, res: Response, next: Ne
                 user: rest
             }
         })
-    })(req, res, next) 
+    })(req, res, next)
 })
 const getNewAccessToken = catchAsync(async (req: Request, res: Response, next: NextFunction) => {
     const refreshToken = req.cookies.refreshToken
@@ -68,15 +68,15 @@ const logout = catchAsync(async (req: Request, res: Response, next: NextFunction
     res.clearCookie("accessToken",
         {
             httpOnly: true,
-            secure: false,
-            sameSite: "lax"
+            secure: true,
+            sameSite: "none",
         }
     )
     res.clearCookie("refreshToken",
         {
             httpOnly: true,
-            secure: false,
-            sameSite: "lax"
+            secure: true,
+            sameSite: "none",
         }
     )
 
@@ -153,13 +153,13 @@ const resetPassword = catchAsync(async (req: Request, res: Response, next: NextF
 
 })
 const googleCallbackController = catchAsync(async (req: Request, res: Response, next: NextFunction) => {
-   
+
     const user = req.user;
 
     let redirectTo = req.query.state ? req.query.state as string : ""
 
     if (redirectTo.startsWith("/")) {
-        redirectTo = redirectTo.slice(1) 
+        redirectTo = redirectTo.slice(1)
     }
 
     if (!user) {
@@ -169,7 +169,7 @@ const googleCallbackController = catchAsync(async (req: Request, res: Response, 
     const tokenInfo = createUserToken(user)
 
     setAuthCookie(res, tokenInfo)
-    
+
     res.redirect(`${envVars.FRONTEND_URL}/${redirectTo}`)
 
 })

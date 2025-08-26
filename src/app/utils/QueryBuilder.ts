@@ -19,7 +19,7 @@ export class QueryBuilder<T> {
             delete filter[field]
         }
 
-        this.modelQuery = this.modelQuery.find(filter) 
+        this.modelQuery = this.modelQuery.find(filter)
 
         return this;
     }
@@ -32,6 +32,23 @@ export class QueryBuilder<T> {
         this.modelQuery = this.modelQuery.find(searchQuery)
         return this
     }
+
+    dateSearch(dateField = "createdAt"): this {
+        const dateSearch = this.query.dateSearch?.trim();
+        if (dateSearch) {
+            const regex = new RegExp(dateSearch, "i");
+            this.modelQuery = this.modelQuery.find({
+                $expr: {
+                    $regexMatch: {
+                        input: { $dateToString: { format: "%Y-%m-%d", date: `$${dateField}` } },
+                        regex: regex
+                    }
+                }
+            });
+        }
+        return this;
+    }
+
 
     sort(): this {
 
@@ -52,7 +69,7 @@ export class QueryBuilder<T> {
     paginate(): this {
 
         const page = Number(this.query.page) || 1
-        const limit = Number(this.query.limit) ||30
+        const limit = Number(this.query.limit) || 30
         const skip = (page - 1) * limit
 
         this.modelQuery = this.modelQuery.skip(skip).limit(limit)

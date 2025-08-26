@@ -91,6 +91,7 @@ const successPayment = async (query: Record<string, string>) => {
                 $set: {
                     "timestamps.completedAt": new Date(),
                     rideStatus: RideStatus.COMPLETED,
+                    transactionId : paymentInfo.transactionId,
                 },
             },
             { new: true, runValidators: true, session }
