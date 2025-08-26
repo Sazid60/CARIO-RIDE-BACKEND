@@ -112,7 +112,7 @@ const getRidesNearMe = async (userId: string) => {
       { lat: driverLat, lon: driverLng },
       { lat: pickupLat, lon: pickupLng }
     );
-    return distanceInMeters <= 5000;
+    return distanceInMeters <= 1000;
   });
 
   return {
@@ -1143,7 +1143,7 @@ export const getDriversNearMe = async (userId: string) => {
       { lat: driverLat, lon: driverLng }
     );
 
-    return distanceInMeters <= 5000;
+    return distanceInMeters <= 1000;
   });
 
   return {
