@@ -128,8 +128,80 @@ const getDriverStats = async (userId: string) => {
     };
 };
 
+const getRiderReport = async (userId: string) => {
+  const rider = await User.findById(userId);
+
+  if (!rider) {
+    throw new AppError(httpStatus.NOT_FOUND, "Rider Not Found");
+  }
+
+  const totalCompletedRidesPromise = Ride.countDocuments({
+    riderId: new mongoose.Types.ObjectId(userId),
+    rideStatus: RideStatus.COMPLETED,
+  });
+
+  const totalCancelledRidesPromise = Ride.countDocuments({
+    riderId: new mongoose.Types.ObjectId(userId),
+    rideStatus: RideStatus.CANCELLED,
+  });
+
+  const totalSpentPromise = Ride.aggregate([
+    {
+      $match: {
+        riderId: new mongoose.Types.ObjectId(userId),
+        rideStatus: RideStatus.COMPLETED,
+      },
+    },
+    {
+      $group: {
+        _id: null,
+        totalSpent: { $sum: "$fare" },
+        avgFare: { $avg: "$fare" },
+      },
+    },
+  ]);
+
+  const ridesOverTimePromise = Ride.aggregate([
+    {
+      $match: {
+        riderId: new mongoose.Types.ObjectId(userId),
+        rideStatus: RideStatus.COMPLETED,
+      },
+    },
+    {
+      $group: {
+        _id: { $dateToString: { format: "%Y-%m", date: "$timestamps.completedAt" } },
+        totalRides: { $sum: 1 },
+        totalFare: { $sum: "$fare" },
+      },
+    },
+    { $sort: { _id: 1 } }, 
+  ]);
+
+  const [
+    totalCompletedRides,
+    totalCancelledRides,
+    totalSpentAgg,
+    ridesOverTime,
+  ] = await Promise.all([
+    totalCompletedRidesPromise,
+    totalCancelledRidesPromise,
+    totalSpentPromise,
+    ridesOverTimePromise,
+  ]);
+
+  return {
+    totalCompletedRides,
+    totalCancelledRides,
+    totalSpent: totalSpentAgg?.[0]?.totalSpent || 0,
+    avgFare: totalSpentAgg?.[0]?.avgFare || 0,
+    ridesOverTime, 
+  };
+};
+
 
 export const StatsService = {
     getRideStats,
-    getDriverStats
+    getDriverStats,
+    getRiderReport
 };

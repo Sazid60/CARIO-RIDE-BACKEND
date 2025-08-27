@@ -79,6 +79,10 @@ router.get("/my-accepted-ride/:id",
   checkAuth(Role.DRIVER),
   rideController.getSingleRideForDriver
 )
+router.get("/single-ride/:id",
+  checkAuth(Role.ADMIN),
+  rideController.getSingleRideForAdmin
+)
 
 // cancel ride - rider
 

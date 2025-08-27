@@ -112,7 +112,7 @@ const getRidesNearMe = async (userId: string) => {
       { lat: driverLat, lon: driverLng },
       { lat: pickupLat, lon: pickupLng }
     );
-    return distanceInMeters <= 5000;
+    return distanceInMeters <= 1000;
   });
 
   return {
@@ -652,7 +652,7 @@ const payOnline = async (riderId: string, rideId: string) => {
       ride._id,
       {
         payment: payment[0]._id,
-        transactionId : payment[0].transactionId,
+        transactionId: payment[0].transactionId,
       },
       { new: true, runValidators: true, session }
     )
@@ -780,7 +780,7 @@ const payOffline = async (driverUserId: string, rideId: string) => {
         $set: {
           "timestamps.completedAt": new Date(),
           rideStatus: RideStatus.COMPLETED,
-          transactionId : payment[0].transactionId,
+          transactionId: payment[0].transactionId,
           payment: payment[0]._id,
         },
       },
@@ -852,11 +852,12 @@ const payOffline = async (driverUserId: string, rideId: string) => {
 
 
 const getAllRidesForAdmin = async (query: Record<string, string>) => {
-  const queryBuilder = new QueryBuilder(Ride.find(), query)
+  const queryBuilder = new QueryBuilder(Ride.find().populate("payment").populate("driverId"), query)
   const rideData = queryBuilder
     .filter()
     .search(rideSearchableFields)
     .sort()
+    .dateSearch()
     .fields()
     .paginate();
 
@@ -899,7 +900,7 @@ const getAllRidesForDriver = async (userId: string, query: Record<string, string
     throw new AppError(httpStatus.BAD_REQUEST, "Driver information not found!");
   }
 
-  const queryBuilder = new QueryBuilder(Ride.find({ driverId: driver._id }), query);
+  const queryBuilder = new QueryBuilder(Ride.find({ driverId: driver._id }).populate("payment").populate("driverId"), query);
 
 
   const rideData = queryBuilder
@@ -907,6 +908,7 @@ const getAllRidesForDriver = async (userId: string, query: Record<string, string
     .search(rideSearchableFields)
     .sort()
     .fields()
+    .dateSearch()
     .paginate();
 
   const [data, meta] = await Promise.all([
@@ -931,6 +933,18 @@ const getSingleRideForRider = async (rideId: string, riderId: string) => {
 
   if (String(data.riderId) !== riderId) {
     throw new AppError(httpStatus.BAD_REQUEST, "This Ride Is Not Yours!")
+  }
+
+  return {
+    data
+  }
+}
+const getSingleRideForAdmin = async (rideId: string) => {
+
+  const data = await Ride.findById(rideId).populate("driverId").populate("payment")
+
+  if (!data) {
+    throw new AppError(httpStatus.NOT_FOUND, "Ride Information Not Found")
   }
 
   return {
@@ -1143,7 +1157,7 @@ export const getDriversNearMe = async (userId: string) => {
       { lat: driverLat, lon: driverLng }
     );
 
-    return distanceInMeters <= 5000;
+    return distanceInMeters <= 1000;
   });
 
   return {
@@ -1326,6 +1340,7 @@ const getFeedbacks = async () => {
 
 
 export const rideService = {
+  getSingleRideForAdmin,
   updateRideLocation,
   getSingleRideForDriver,
   getFeedbacks,

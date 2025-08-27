@@ -217,6 +217,20 @@ const getSingleRideForRider = catchAsync(async (req: Request, res: Response) => 
   });
 
 });
+const getSingleRideForAdmin = catchAsync(async (req: Request, res: Response) => {
+  const rideId = req.params.id
+
+
+  const result = await rideService.getSingleRideForAdmin(rideId)
+
+  sendResponse(res, {
+    success: true,
+    statusCode: httpStatus.CREATED,
+    message: "Single Ride Information Retrieved!",
+    data: result.data
+  });
+
+});
 const getSingleRideForDriver = catchAsync(async (req: Request, res: Response) => {
   const rideId = req.params.id
   const driverInfo = req.user as JwtPayload
@@ -326,6 +340,7 @@ const updateRideLocation = catchAsync(async (req: Request, res: Response) => {
 });
 
 export const rideController = {
+  getSingleRideForAdmin,
   updateRideLocation,
   createRide,
   getFeedbacks,
