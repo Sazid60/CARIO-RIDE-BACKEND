@@ -1,207 +1,330 @@
 import { Ride } from "../ride/ride.model";
 import { RideStatus } from "../ride/ride.interface";
 import { User } from "../user/user.model";
-import { Role } from "../user/user.interface";
 import mongoose from "mongoose";
 import { Driver } from "../driver/driver.model";
 import AppError from "../../errorHelpers/AppError";
 import httpStatus from 'http-status-codes';
 
-const getRideStats = async () => {
-    const totalRidesPromise = Ride.countDocuments();
+export const getAdminStats = async () => {
+  const totalRidersPromise = User.countDocuments({ role: "RIDER" });
+  const totalDriversPromise = Driver.countDocuments();
 
-    const ridesByStatusPromise = Ride.aggregate([
-        {
-            $group: {
-                _id: "$rideStatus",
-                count: { $sum: 1 }
-            }
-        }
-    ]);
+  const totalCompletedRidesPromise = Ride.countDocuments({ rideStatus: "COMPLETED" });
+  const totalCancelledRidesPromise = Ride.countDocuments({ rideStatus: "CANCELLED" });
 
-    const totalRevenuePromise = Ride.aggregate([
-        {
-            $match: {
-                rideStatus: RideStatus.COMPLETED
-            }
+  const totalFareMoneyPromise = Ride.aggregate([
+    { $match: { rideStatus: "COMPLETED" } },
+    { $group: { _id: null, totalFareMoney: { $sum: "$fare" } } },
+  ]);
+
+  const totalEarningsPromise = Ride.aggregate([
+    { $match: { rideStatus: "COMPLETED" } },
+    {
+      $lookup: {
+        from: "payments",
+        localField: "payment",
+        foreignField: "_id",
+        as: "paymentData",
+      },
+    },
+    { $unwind: "$paymentData" },
+    { $group: { _id: null, totalEarnings: { $sum: "$paymentData.ownerIncome" } } },
+  ]);
+
+  const ridesDailyPromise = Ride.aggregate([
+    { $match: { rideStatus: "COMPLETED" } },
+    {
+      $lookup: {
+        from: "payments",
+        localField: "payment",
+        foreignField: "_id",
+        as: "paymentData",
+      },
+    },
+    { $unwind: "$paymentData" },
+    {
+      $group: {
+        _id: { $dateToString: { format: "%Y-%m-%d", date: "$timestamps.completedAt", timezone: "Asia/Dhaka" } },
+        totalRides: { $sum: 1 },
+        totalEarnings: { $sum: "$paymentData.ownerIncome" }, 
+        totalFareMoney: { $sum: "$fare" },
+      },
+    },
+    { $sort: { _id: 1 } },
+  ]);
+
+  const ridesWeeklyPromise = Ride.aggregate([
+    { $match: { rideStatus: "COMPLETED" } },
+    {
+      $lookup: {
+        from: "payments",
+        localField: "payment",
+        foreignField: "_id",
+        as: "paymentData",
+      },
+    },
+    { $unwind: "$paymentData" },
+    {
+      $group: {
+        _id: {
+          year: { $year: { date: "$timestamps.completedAt", timezone: "Asia/Dhaka" } },
+          week: { $isoWeek: { date: "$timestamps.completedAt", timezone: "Asia/Dhaka" } },
         },
-        {
-            $group: {
-                _id: null,
-                totalFare: { $sum: "$fare" }
-            }
-        }
-    ]);
+        totalRides: { $sum: 1 },
+        totalEarnings: { $sum: "$paymentData.ownerIncome" },
+        totalFareMoney: { $sum: "$fare" },
+      },
+    },
+    { $sort: { "_id.year": 1, "_id.week": 1 } },
+  ]);
 
-    const avgFarePromise = Ride.aggregate([
-        {
-            $match: {
-                rideStatus: RideStatus.COMPLETED
-            }
-        },
-        {
-            $group: {
-                _id: null,
-                avgFare: { $avg: "$fare" }
-            }
-        }
-    ]);
+  const ridesMonthlyPromise = Ride.aggregate([
+    { $match: { rideStatus: "COMPLETED" } },
+    {
+      $lookup: {
+        from: "payments",
+        localField: "payment",
+        foreignField: "_id",
+        as: "paymentData",
+      },
+    },
+    { $unwind: "$paymentData" },
+    {
+      $group: {
+        _id: { $dateToString: { format: "%Y-%m", date: "$timestamps.completedAt", timezone: "Asia/Dhaka" } },
+        totalRides: { $sum: 1 },
+        totalEarnings: { $sum: "$paymentData.ownerIncome" },
+        totalFareMoney: { $sum: "$fare" },
+      },
+    },
+    { $sort: { _id: 1 } },
+  ]);
 
-    const totalRidersPromise = User.countDocuments({ role: Role.RIDER });
-    const totalDriversPromise = User.countDocuments({ role: Role.DRIVER });
+  const [
+    totalRiders,
+    totalDrivers,
+    totalCompletedRides,
+    totalCancelledRides,
+    totalFareMoneyAgg,
+    totalEarningsAgg,
+    ridesDaily,
+    ridesWeekly,
+    ridesMonthly,
+  ] = await Promise.all([
+    totalRidersPromise,
+    totalDriversPromise,
+    totalCompletedRidesPromise,
+    totalCancelledRidesPromise,
+    totalFareMoneyPromise,
+    totalEarningsPromise,
+    ridesDailyPromise,
+    ridesWeeklyPromise,
+    ridesMonthlyPromise,
+  ]);
 
-    const [
-        totalRides,
-        ridesByStatus,
-        totalRevenue,
-        avgFare,
-        totalRiders,
-        totalDrivers
-    ] = await Promise.all([
-        totalRidesPromise,
-        ridesByStatusPromise,
-        totalRevenuePromise,
-        avgFarePromise,
-        totalRidersPromise,
-        totalDriversPromise
-    ]);
-
-    return {
-        totalRides,
-        ridesByStatus,
-        totalRevenue: totalRevenue?.[0]?.totalFare || 0,
-        avgFare: avgFare?.[0]?.avgFare || 0,
-        totalRiders,
-        totalDrivers
-    };
+  return {
+    totalRiders,
+    totalDrivers,
+    totalCompletedRides,
+    totalCancelledRides,
+    totalFareMoney: totalFareMoneyAgg?.[0]?.totalFareMoney || 0,
+    totalEarnings: totalEarningsAgg?.[0]?.totalEarnings || 0, 
+    ridesDaily,
+    ridesWeekly,
+    ridesMonthly,
+  };
 };
-
 
 const getDriverStats = async (userId: string) => {
-    const driver = await Driver.findOne({ userId })
+  const driver = await Driver.findOne({ userId })
+  if (!driver) throw new AppError(httpStatus.NOT_FOUND, "Driver Not Found")
 
-    if (!driver) {
-        throw new AppError(httpStatus.NOT_FOUND, "Driver Not Found")
-    }
-    const driverId = driver._id
+  const driverId = driver._id
 
+  const totalCompletedRidesPromise = Ride.countDocuments({
+    driverId: new mongoose.Types.ObjectId(driverId),
+    rideStatus: "COMPLETED",
+  })
 
-    const totalCompletedRidesPromise = Ride.countDocuments({
-        driverId: new mongoose.Types.ObjectId(driverId),
-        rideStatus: RideStatus.COMPLETED,
-    });
+  const totalCancelledRidesPromise = Ride.countDocuments({
+    driverId: new mongoose.Types.ObjectId(driverId),
+    rideStatus: "CANCELLED",
+  })
 
-    const totalCancelledRidesPromise = Ride.countDocuments({
-        driverId: new mongoose.Types.ObjectId(driverId),
-        rideStatus: RideStatus.CANCELLED,
-    });
+  const totalEarningsPromise = Ride.aggregate([
+    { $match: { driverId: new mongoose.Types.ObjectId(driverId), rideStatus: "COMPLETED" } },
+    {
+      $lookup: {
+        from: "payments",
+        localField: "payment",
+        foreignField: "_id",
+        as: "paymentData",
+      },
+    },
+    { $unwind: "$paymentData" },
+    { $group: { _id: null, totalEarnings: { $sum: "$paymentData.driverIncome" } } },
+  ])
 
-    const totalEarningsPromise = Ride.aggregate([
-        {
-            $match: {
-                driverId: new mongoose.Types.ObjectId(driverId),
-                rideStatus: RideStatus.COMPLETED,
-            },
+  const ridesDailyPromise = Ride.aggregate([
+    { $match: { driverId: new mongoose.Types.ObjectId(driverId), rideStatus: "COMPLETED" } },
+    {
+      $lookup: {
+        from: "payments",
+        localField: "payment",
+        foreignField: "_id",
+        as: "paymentData",
+      },
+    },
+    { $unwind: "$paymentData" },
+    {
+      $group: {
+        _id: { $dateToString: { format: "%Y-%m-%d", date: "$timestamps.completedAt", timezone: "Asia/Dhaka" } },
+        totalRides: { $sum: 1 },
+        totalIncome: { $sum: "$paymentData.driverIncome" },
+      },
+    },
+    { $sort: { _id: 1 } },
+  ])
+
+  const ridesWeeklyPromise = Ride.aggregate([
+    { $match: { driverId: new mongoose.Types.ObjectId(driverId), rideStatus: "COMPLETED" } },
+    {
+      $lookup: {
+        from: "payments",
+        localField: "payment",
+        foreignField: "_id",
+        as: "paymentData",
+      },
+    },
+    { $unwind: "$paymentData" },
+    {
+      $group: {
+        _id: {
+          year: { $year: { date: "$timestamps.completedAt", timezone: "Asia/Dhaka" } },
+          week: { $isoWeek: { date: "$timestamps.completedAt", timezone: "Asia/Dhaka" } },
         },
-        {
-            $group: {
-                _id: null,
-                totalFare: { $sum: "$fare" },
-            },
-        },
-    ]);
+        totalRides: { $sum: 1 },
+        totalIncome: { $sum: "$paymentData.driverIncome" },
+      },
+    },
+    { $sort: { "_id.year": 1, "_id.week": 1 } },
+  ])
 
-    const [
-        totalCompletedRides,
-        totalCancelledRides,
-        totalEarningsAgg,
-    ] = await Promise.all([
-        totalCompletedRidesPromise,
-        totalCancelledRidesPromise,
-        totalEarningsPromise,
-    ]);
+  const ridesMonthlyPromise = Ride.aggregate([
+    { $match: { driverId: new mongoose.Types.ObjectId(driverId), rideStatus: "COMPLETED" } },
+    {
+      $lookup: {
+        from: "payments",
+        localField: "payment",
+        foreignField: "_id",
+        as: "paymentData",
+      },
+    },
+    { $unwind: "$paymentData" },
+    {
+      $group: {
+        _id: { $dateToString: { format: "%Y-%m", date: "$timestamps.completedAt", timezone: "Asia/Dhaka" } },
+        totalRides: { $sum: 1 },
+        totalIncome: { $sum: "$paymentData.driverIncome" },
+      },
+    },
+    { $sort: { _id: 1 } },
+  ])
 
-    return {
-        totalCompletedRides,
-        totalCancelledRides,
-        totalEarnings: totalEarningsAgg?.[0]?.totalFare || 0,
-    };
-};
+  const [
+    totalCompletedRides,
+    totalCancelledRides,
+    totalEarningsAgg,
+    ridesDaily,
+    ridesWeekly,
+    ridesMonthly,
+  ] = await Promise.all([
+    totalCompletedRidesPromise,
+    totalCancelledRidesPromise,
+    totalEarningsPromise,
+    ridesDailyPromise,
+    ridesWeeklyPromise,
+    ridesMonthlyPromise,
+  ])
+
+  return {
+    totalCompletedRides,
+    totalCancelledRides,
+    totalEarnings: totalEarningsAgg?.[0]?.totalEarnings || 0,
+    ridesDaily,
+    ridesWeekly,
+    ridesMonthly,
+  }
+}
 
 const getRiderReport = async (userId: string) => {
-  const rider = await User.findById(userId);
-
-  if (!rider) {
-    throw new AppError(httpStatus.NOT_FOUND, "Rider Not Found");
-  }
+  const rider = await User.findById(userId)
+  if (!rider) throw new AppError(httpStatus.NOT_FOUND, "Rider Not Found")
 
   const totalCompletedRidesPromise = Ride.countDocuments({
     riderId: new mongoose.Types.ObjectId(userId),
     rideStatus: RideStatus.COMPLETED,
-  });
+  })
 
   const totalCancelledRidesPromise = Ride.countDocuments({
     riderId: new mongoose.Types.ObjectId(userId),
     rideStatus: RideStatus.CANCELLED,
-  });
+  })
 
   const totalSpentPromise = Ride.aggregate([
-    {
-      $match: {
-        riderId: new mongoose.Types.ObjectId(userId),
-        rideStatus: RideStatus.COMPLETED,
-      },
-    },
-    {
-      $group: {
-        _id: null,
-        totalSpent: { $sum: "$fare" },
-        avgFare: { $avg: "$fare" },
-      },
-    },
-  ]);
+    { $match: { riderId: new mongoose.Types.ObjectId(userId), rideStatus: RideStatus.COMPLETED } },
+    { $group: { _id: null, totalSpent: { $sum: "$fare" }, avgFare: { $avg: "$fare" } } },
+  ])
 
-  const ridesOverTimePromise = Ride.aggregate([
-    {
-      $match: {
-        riderId: new mongoose.Types.ObjectId(userId),
-        rideStatus: RideStatus.COMPLETED,
-      },
-    },
-    {
-      $group: {
-        _id: { $dateToString: { format: "%Y-%m", date: "$timestamps.completedAt" } },
-        totalRides: { $sum: 1 },
-        totalFare: { $sum: "$fare" },
-      },
-    },
-    { $sort: { _id: 1 } }, 
-  ]);
+  const ridesDailyPromise = Ride.aggregate([
+    { $match: { riderId: new mongoose.Types.ObjectId(userId), rideStatus: RideStatus.COMPLETED } },
+    { $group: { _id: { $dateToString: { format: "%Y-%m-%d", date: "$timestamps.completedAt" } }, totalRides: { $sum: 1 }, totalFare: { $sum: "$fare" } } },
+    { $sort: { _id: 1 } },
+  ])
+
+  const ridesWeeklyPromise = Ride.aggregate([
+    { $match: { riderId: new mongoose.Types.ObjectId(userId), rideStatus: RideStatus.COMPLETED } },
+    { $group: { _id: { year: { $year: "$timestamps.completedAt" }, week: { $isoWeek: "$timestamps.completedAt" } }, totalRides: { $sum: 1 }, totalFare: { $sum: "$fare" } } },
+    { $sort: { "_id.year": 1, "_id.week": 1 } },
+  ])
+
+  const ridesMonthlyPromise = Ride.aggregate([
+    { $match: { riderId: new mongoose.Types.ObjectId(userId), rideStatus: RideStatus.COMPLETED } },
+    { $group: { _id: { $dateToString: { format: "%Y-%m", date: "$timestamps.completedAt" } }, totalRides: { $sum: 1 }, totalFare: { $sum: "$fare" } } },
+    { $sort: { _id: 1 } },
+  ])
 
   const [
     totalCompletedRides,
     totalCancelledRides,
     totalSpentAgg,
-    ridesOverTime,
+    ridesDaily,
+    ridesWeekly,
+    ridesMonthly,
   ] = await Promise.all([
     totalCompletedRidesPromise,
     totalCancelledRidesPromise,
     totalSpentPromise,
-    ridesOverTimePromise,
-  ]);
+    ridesDailyPromise,
+    ridesWeeklyPromise,
+    ridesMonthlyPromise,
+  ])
 
   return {
     totalCompletedRides,
     totalCancelledRides,
     totalSpent: totalSpentAgg?.[0]?.totalSpent || 0,
     avgFare: totalSpentAgg?.[0]?.avgFare || 0,
-    ridesOverTime, 
-  };
-};
+    ridesDaily,
+    ridesWeekly,
+    ridesMonthly,
+  }
+}
 
 
 export const StatsService = {
-    getRideStats,
+    getAdminStats,
     getDriverStats,
     getRiderReport
 };

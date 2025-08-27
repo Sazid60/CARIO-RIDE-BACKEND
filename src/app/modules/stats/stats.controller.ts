@@ -4,8 +4,8 @@ import { sendResponse } from "../../utils/sendResponse";
 import { StatsService } from "./stats.service";
 import { JwtPayload } from "jsonwebtoken";
 
-const ridesReport = catchAsync(async (req: Request, res: Response) => {
-  const result = await StatsService.getRideStats();
+const getAdminStats = catchAsync(async (req: Request, res: Response) => {
+  const result = await StatsService.getAdminStats();
   sendResponse(res, {
     statusCode: 200,
     success: true,
@@ -42,7 +42,7 @@ const driverReport = catchAsync(async (req: Request, res: Response) => {
 
 
 export const StatsController = {
-  ridesReport,
+  getAdminStats,
   driverReport,
   riderReport 
 };
