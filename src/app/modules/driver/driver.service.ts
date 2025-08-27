@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import AppError from "../../errorHelpers/AppError";
 import { DriverStatus, ICurrentLocation, IDriver } from "./driver.interface";
 import { Driver } from "./driver.model";
@@ -20,14 +21,6 @@ const createDriver = async (payload: IDriver) => {
     throw new AppError(httpStatus.FORBIDDEN, "Your account is Not Verified. Contact support.");
   }
 
-  // if (!user.phone) {
-  //   throw new AppError(httpStatus.BAD_REQUEST, "Please update your phone number in user profile before applying.");
-  // }
-
-  // if (!user.location || !user.location.coordinates || user.location.coordinates.length !== 2) {
-  //   throw new AppError(httpStatus.BAD_REQUEST, "Please update your location In User Profile before applying.");
-  // }
-
   const existingDriver = await Driver.findOne({ userId: payload.userId });
 
   if (existingDriver) {
@@ -44,8 +37,6 @@ const createDriver = async (payload: IDriver) => {
   return driver;
 };
 
-
-// admin will update driver status 
 
 export const updateDriverStatus = async (id: string, driverStatus: DriverStatus) => {
   const session = await Driver.startSession();
@@ -82,29 +73,24 @@ export const updateDriverStatus = async (id: string, driverStatus: DriverStatus)
 
 const getMe = async (userId: string) => {
   const driver = await Driver.findOne({ userId })
-  // console.log(driver)
   return {
     data: driver
   }
 };
 
-const updateMyDriverProfile = async (userId: string, updatedData: Partial<IDriver>) => {
-
+const updateMyDriverProfile = async (userId: string, updatedData: any) => {
   const driver = await Driver.findOne({ userId });
-  if (!driver) {
-    throw new AppError(httpStatus.NOT_FOUND, "Driver not found");
-  }
+  if (!driver) throw new AppError(httpStatus.NOT_FOUND, "Driver not found");
 
   const updatedDriver = await Driver.findOneAndUpdate(
-    { userId: userId },
-    updatedData,
-    { new: true}
+    { userId },
+    { $set: updatedData },
+    { new: true }
   );
 
-  return {
-    data: updatedDriver
-  }
+  return updatedDriver; 
 };
+
 
 
 const getAllDrivers = async (query: Record<string, string>) => {

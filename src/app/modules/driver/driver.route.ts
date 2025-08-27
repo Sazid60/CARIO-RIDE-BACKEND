@@ -2,7 +2,7 @@ import { Router } from "express";
 import { checkAuth } from "../../middlewares/checkAuth";
 import { Role } from "../user/user.interface";
 import { validateRequest } from "../../middlewares/validateRequest";
-import { createDriverZodSchema, goOnlineZodSchema, updateDriverProfileZodSchema, updateDriverStatusZodSchema } from "./driver.validation";
+import { createDriverZodSchema, goOnlineZodSchema,updateDriverStatusZodSchema } from "./driver.validation";
 import { multerUpload } from "../../config/multer.config";
 import { driverControllers } from "./driver.controller";
 
@@ -19,13 +19,11 @@ router.post("/register",
 )
 router.get("/me", checkAuth(Role.DRIVER), driverControllers.getMe)
 
-// update rider profile 
 
 router.patch(
   "/update-my-driver-profile",
   checkAuth(Role.DRIVER),
   multerUpload.single("file"),          
-  validateRequest(updateDriverProfileZodSchema), 
   driverControllers.updateMyDriverProfile
 );
 

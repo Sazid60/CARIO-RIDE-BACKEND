@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 /* eslint-disable @typescript-eslint/no-unused-vars */
 
 import { NextFunction, Request, Response } from "express";
@@ -56,16 +57,27 @@ const getMe = catchAsync(async (req: Request, res: Response, next: NextFunction)
 })
 
 
-const updateMyDriverProfile = catchAsync(async (req: Request, res: Response) => {
+export const updateMyDriverProfile = catchAsync(async (req: Request, res: Response) => {
   const user = req.user as JwtPayload;
   const userId = user.userId;
-  const updateData = { ...req.body };
 
-  if (req.file?.path) {
-    updateData.drivingLicense = req.file.path;
+  const updatedData: any = {};
+
+  // Vehicle is a nested object
+  if (req.body.vehicle) {
+    const vehicleData = JSON.parse(req.body.vehicle);
+    if (vehicleData.vehicleNumber) updatedData["vehicle.vehicleNumber"] = vehicleData.vehicleNumber;
+    if (vehicleData.vehicleType) updatedData["vehicle.vehicleType"] = vehicleData.vehicleType;
   }
 
-  const updatedDriver = await driverServices.updateMyDriverProfile(userId, updateData);
+  // Driving license
+  if (req.file?.path) updatedData.drivingLicense = req.file.path;
+
+  // Optional other fields
+  if (req.body.onlineStatus) updatedData.onlineStatus = req.body.onlineStatus;
+  if (req.body.ridingStatus) updatedData.ridingStatus = req.body.ridingStatus;
+
+  const updatedDriver = await driverServices.updateMyDriverProfile(userId, updatedData);
 
   sendResponse(res, {
     success: true,
@@ -74,6 +86,7 @@ const updateMyDriverProfile = catchAsync(async (req: Request, res: Response) => 
     data: updatedDriver,
   });
 });
+
 
 const getAllDrivers = catchAsync(async (req: Request, res: Response, next: NextFunction) => {
   const query = req.query;
@@ -97,7 +110,7 @@ const getSingleDriver = catchAsync(async (req: Request, res: Response, next: Nex
   })
 })
 
-const goOnline = catchAsync(async (req:Request, res:Response) => {
+const goOnline = catchAsync(async (req: Request, res: Response) => {
   const user = req.user as JwtPayload;
   const userId = user.userId;
   const currentLocation = req.body;
@@ -110,7 +123,7 @@ const goOnline = catchAsync(async (req:Request, res:Response) => {
   })
 });
 
-const updateLocation = catchAsync(async (req:Request, res:Response) => {
+const updateLocation = catchAsync(async (req: Request, res: Response) => {
   const user = req.user as JwtPayload;
   const userId = user.userId;
   const currentLocation = req.body;
