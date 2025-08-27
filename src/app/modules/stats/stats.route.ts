@@ -7,6 +7,7 @@ const router = express.Router();
 
 router.get("/earning-history", checkAuth(Role.ADMIN), StatsController.ridesReport);
 router.get("/my-earning-history", checkAuth(Role.DRIVER), StatsController.driverReport);
+router.get("/my-all-ride-history", checkAuth(Role.RIDER), StatsController.riderReport)
 
 
 export const StatsRoutes = router;

@@ -13,6 +13,17 @@ const ridesReport = catchAsync(async (req: Request, res: Response) => {
     data: result,
   });
 });
+const riderReport = catchAsync(async (req: Request, res: Response) => {
+  const user = req.user as JwtPayload
+  const userId = user.userId
+  const result = await StatsService.getRiderReport(userId);
+  sendResponse(res, {
+    statusCode: 200,
+    success: true,
+    message: "Rider Report Generated!",
+    data: result,
+  });
+});
 
 const driverReport = catchAsync(async (req: Request, res: Response) => {
   const user = req.user as JwtPayload;
@@ -32,5 +43,6 @@ const driverReport = catchAsync(async (req: Request, res: Response) => {
 
 export const StatsController = {
   ridesReport,
-  driverReport 
+  driverReport,
+  riderReport 
 };
