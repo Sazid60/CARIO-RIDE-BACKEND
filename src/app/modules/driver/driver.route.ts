@@ -9,7 +9,9 @@ import { driverControllers } from "./driver.controller";
 
 const router = Router()
 
-router.get("/all-drivers", checkAuth(Role.ADMIN), driverControllers.getAllDrivers)
+
+
+router.patch("/driver-location-update", checkAuth(Role.DRIVER), driverControllers.updateLocation)
 
 router.post("/register",
     checkAuth(...Object.values(Role)),
@@ -27,7 +29,7 @@ router.patch(
   driverControllers.updateMyDriverProfile
 );
 
-// go online or offline 
+
 
 router.patch(
   "/go-online",
@@ -48,7 +50,7 @@ router.patch("/status/:id",
     driverControllers.updateDriverStatus
 )
 
-router.patch("/driver-location-update", checkAuth(Role.DRIVER), driverControllers.updateLocation)
+router.get("/all-drivers", checkAuth(Role.ADMIN), driverControllers.getAllDrivers)
 
 router.get("/:id",checkAuth(Role.ADMIN), driverControllers.getSingleDriver)
 

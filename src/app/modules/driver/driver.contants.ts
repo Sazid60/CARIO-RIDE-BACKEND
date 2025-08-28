@@ -1,1 +1,1 @@
-export const driverSearchableFields = [""];
+export const driverSearchableFields = ["vehicle.vehicleNumber"];

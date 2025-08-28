@@ -22,7 +22,7 @@ const askQuestion = catchAsync(async (req: Request, res: Response, next: NextFun
     });
 });
 
-// Admin replies to a question
+
 const replyQuestion = catchAsync(async (req: Request, res: Response, next: NextFunction) => {
     const { id } = req.params;
     const { answer } = req.body;
@@ -37,7 +37,7 @@ const replyQuestion = catchAsync(async (req: Request, res: Response, next: NextF
     });
 });
 
-// Get all FAQs (public)
+
 const getAllFaqs = catchAsync(async (req: Request, res: Response) => {
     const query = req.query
     const faqs = await faqServices.getAllFaqs(query as Record<string, string>);
@@ -49,7 +49,7 @@ const getAllFaqs = catchAsync(async (req: Request, res: Response) => {
     });
 });
 
-// Get single FAQ by ID (public)
+
 const getSingleFaq = catchAsync(async (req: Request, res: Response) => {
     const { id } = req.params;
     const faq = await faqServices.getSingleFaq(id);

@@ -4,7 +4,7 @@ import { DriverStatus, ICurrentLocation, IDriver } from "./driver.interface";
 import { Driver } from "./driver.model";
 import httpStatus from 'http-status-codes';
 import { User } from "../user/user.model";
-import {IsBlocked, Role } from "../user/user.interface";
+import { IsBlocked, Role } from "../user/user.interface";
 import { driverSearchableFields } from "./driver.contants";
 import { QueryBuilder } from "../../utils/QueryBuilder";
 
@@ -88,25 +88,27 @@ const updateMyDriverProfile = async (userId: string, updatedData: any) => {
     { new: true }
   );
 
-  return updatedDriver; 
+  return updatedDriver;
 };
 
 
 
 const getAllDrivers = async (query: Record<string, string>) => {
-  const queryBuilder = new QueryBuilder(Driver.find(), query);
+  const queryBuilder = new QueryBuilder(Driver.find().populate("userId"), query);
 
   const driverData = queryBuilder
     .filter()
-    .search(driverSearchableFields) 
+    .search(driverSearchableFields)
     .sort()
     .fields()
+    .dateSearch()
     .paginate();
 
   const [data, meta] = await Promise.all([
     driverData.build(),
     queryBuilder.getMeta(),
   ]);
+
 
   return {
     data,

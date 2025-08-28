@@ -1,4 +1,4 @@
-/* eslint-disable no-console */
+
 import { Faq } from "./faq.model";
 import { IFaq } from "./faq.interface";
 import AppError from "../../errorHelpers/AppError";
@@ -47,6 +47,7 @@ const getAllFaqs = async (query: Record<string, string>) => {
         .search(faqSearchableFields)
         .sort()
         .fields()
+        .dateSearch()
         .paginate();
 
     const [data, meta] = await Promise.all([

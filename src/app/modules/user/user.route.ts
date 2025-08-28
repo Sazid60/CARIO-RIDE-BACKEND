@@ -23,6 +23,8 @@ router.post("/register", multerUpload.single("file"), validateRequest(createUser
 
 router.patch("/:id", multerUpload.single("file"),validateRequest(updateOwnProfileUserZodSchema), checkAuth(...Object.values(Role)), userControllers.updateUser)
 
+router.patch("/change-status/:id", checkAuth(Role.ADMIN), userControllers.updateUserStatus)
+
 
 router.get("/:id",checkAuth(Role.ADMIN), userControllers.getSingleUser)
 
