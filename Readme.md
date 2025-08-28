@@ -1,6 +1,6 @@
 # RIDE MANAGEMENT APP - BACKEND
 
-#### Live Link : [Link](https://b5-a5-sazid.vercel.app)
+#### Live Link : [Link](https://cario-ride-backend.vercel.app)
 
 #### Video Demonstration Link : [Link](https://drive.google.com/file/d/1CugV_asUEpvUiFSF9vx_rCMX-hWhThCy/view?usp=sharing)
 
@@ -287,7 +287,7 @@ api/v1/users/register
 **_URL:_**
 
 ```
-https://b5-a5-sazid.vercel.app/api/v1/users/register
+https://cario-ride-backend.vercel.app/api/v1/users/register
 ```
 
 **_Access:_** Everyone can Access this Route
@@ -324,7 +324,7 @@ api/v1/auth/login
 **_URL:_**
 
 ```
-https://b5-a5-sazid.vercel.app/api/v1/auth/login
+https://cario-ride-backend.vercel.app/api/v1/auth/login
 ```
 
 **_Access:_** Everyone can Access this Route
@@ -345,7 +345,7 @@ https://b5-a5-sazid.vercel.app/api/v1/auth/login
 - ### **_User Login (Google Login)_**
 
 ```
-https://b5-a5-sazid.vercel.app/api/v1/auth/google
+https://cario-ride-backend.vercel.app/api/v1/auth/google
 ```
 
 - Hit This route in your browser this will redirect you to the google consent screen
@@ -365,7 +365,7 @@ https://b5-a5-sazid.vercel.app/api/v1/auth/google
 **_URL:_**
 
 ```
-https://b5-a5-sazid.vercel.app/api/v1/auth/set-password
+https://cario-ride-backend.vercel.app/api/v1/auth/set-password
 ```
 
 **_Access:_** Everyone can Access this Route
@@ -395,7 +395,7 @@ https://b5-a5-sazid.vercel.app/api/v1/auth/set-password
 **_URL:_**
 
 ```
-https://b5-a5-sazid.vercel.app/api/v1/auth/forgot-password
+https://cario-ride-backend.vercel.app/api/v1/auth/forgot-password
 ```
 
 **_Access:_** Everyone can Access this Route
@@ -425,7 +425,7 @@ https://b5-a5-sazid.vercel.app/api/v1/auth/forgot-password
 **_URL:_**
 
 ```
-https://b5-a5-sazid.vercel.app/api/v1/auth/reset-password
+https://cario-ride-backend.vercel.app/api/v1/auth/reset-password
 ```
 
 **_Access:_** Who have requested for forget password
@@ -456,7 +456,7 @@ https://b5-a5-sazid.vercel.app/api/v1/auth/reset-password
 **_URL:_**
 
 ```
-https://b5-a5-sazid.vercel.app/api/v1/auth/change-password
+https://cario-ride-backend.vercel.app/api/v1/auth/change-password
 ```
 
 **_Access:_** Every User has This Route Access
@@ -487,7 +487,7 @@ api/v1/users/me
 **_URL:_**
 
 ```
-https://b5-a5-sazid.vercel.app/api/v1/users/me
+https://cario-ride-backend.vercel.app/api/v1/users/me
 ```
 
 **_Access:_** Every Logged In User has This Route Access
@@ -513,7 +513,7 @@ https://b5-a5-sazid.vercel.app/api/v1/users/me
 **_URL:_**
 
 ```
-https://b5-a5-sazid.vercel.app/api/v1/users/688ce948d9111e28bdc2331f
+https://cario-ride-backend.vercel.app/api/v1/users/688ce948d9111e28bdc2331f
 ```
 
 **_Access:_** Every Logged In User has This Route Access
@@ -550,7 +550,7 @@ https://b5-a5-sazid.vercel.app/api/v1/users/688ce948d9111e28bdc2331f
 **_URL:_**
 
 ```
-https://b5-a5-sazid.vercel.app/api/v1/users/all-users
+https://cario-ride-backend.vercel.app/api/v1/users/all-users
 ```
 
 **_Access:_** Only Logged In `Admin` has this route access
@@ -574,7 +574,7 @@ https://b5-a5-sazid.vercel.app/api/v1/users/all-users
 **_URL:_**
 
 ```
-https://b5-a5-sazid.vercel.app/api/v1/users/688ce8b3ae33ed0887c79358
+https://cario-ride-backend.vercel.app/api/v1/users/688ce8b3ae33ed0887c79358
 ```
 
 **_Access:_** Only Logged In `Admin` has this route access
@@ -600,7 +600,7 @@ https://b5-a5-sazid.vercel.app/api/v1/users/688ce8b3ae33ed0887c79358
 **_URL:_**
 
 ```
-https://b5-a5-sazid.vercel.app/api/v1/users/change-status/688ce948d9111e28bdc2331f
+https://cario-ride-backend.vercel.app/api/v1/users/change-status/688ce948d9111e28bdc2331f
 ```
 
 **_Access:_** Only Logged In `Admin` has this route access
@@ -630,7 +630,7 @@ https://b5-a5-sazid.vercel.app/api/v1/users/change-status/688ce948d9111e28bdc233
 **_URL:_**
 
 ```
-https://b5-a5-sazid.vercel.app/api/v1/auth/refresh-token
+https://cario-ride-backend.vercel.app/api/v1/auth/refresh-token
 ```
 
 **_Access:_** Every User has This Route Access
@@ -661,7 +661,7 @@ https://b5-a5-sazid.vercel.app/api/v1/auth/refresh-token
 **_URL:_**
 
 ```
-https://b5-a5-sazid.vercel.app/api/v1/auth/logout
+https://cario-ride-backend.vercel.app/api/v1/auth/logout
 ```
 
 **_Access:_** Every User has This Route Access
@@ -687,7 +687,7 @@ https://b5-a5-sazid.vercel.app/api/v1/auth/logout
 **_URL:_**
 
 ```
-https://b5-a5-sazid.vercel.app/api/v1/drivers/register
+https://cario-ride-backend.vercel.app/api/v1/drivers/register
 ```
 
 **_Access:_** Every User has This Route Access
@@ -715,7 +715,7 @@ https://b5-a5-sazid.vercel.app/api/v1/drivers/register
 **_Endpoint:_**
 
 ```
-https://b5-a5-sazid.vercel.app/api/v1/drivers/status/:id
+https://cario-ride-backend.vercel.app/api/v1/drivers/status/:id
 ```
 
 **_Method:_** `PATCH`
@@ -725,7 +725,7 @@ https://b5-a5-sazid.vercel.app/api/v1/drivers/status/:id
 **_URL:_**
 
 ```
-https://b5-a5-sazid.vercel.app/api/v1/drivers/status/688cf801d38ee39b116d95ea
+https://cario-ride-backend.vercel.app/api/v1/drivers/status/688cf801d38ee39b116d95ea
 ```
 
 **_Access:_** Only `Admin` has The Access of This Route
@@ -758,7 +758,7 @@ https://b5-a5-sazid.vercel.app/api/v1/drivers/status/688cf801d38ee39b116d95ea
 **_URL:_**
 
 ```
-https://b5-a5-sazid.vercel.app/api/v1/drivers/688cf4e7fb36356243740aa1
+https://cario-ride-backend.vercel.app/api/v1/drivers/688cf4e7fb36356243740aa1
 ```
 
 **_Access:_** Only `Admin` has The Access of This Route
@@ -782,7 +782,7 @@ https://b5-a5-sazid.vercel.app/api/v1/drivers/688cf4e7fb36356243740aa1
 **_URL:_**
 
 ```
-https://b5-a5-sazid.vercel.app/api/v1/drivers/all-drivers
+https://cario-ride-backend.vercel.app/api/v1/drivers/all-drivers
 ```
 
 **_Access:_** Only `Admin` has The Access of This Route
@@ -808,7 +808,7 @@ https://b5-a5-sazid.vercel.app/api/v1/drivers/all-drivers
 **_URL:_**
 
 ```
-https://b5-a5-sazid.vercel.app/api/v1/drivers/me
+https://cario-ride-backend.vercel.app/api/v1/drivers/me
 ```
 
 **_Access:_** Only `Driver` has The Access of This Route
@@ -832,7 +832,7 @@ https://b5-a5-sazid.vercel.app/api/v1/drivers/me
 **_URL:_**
 
 ```
-https://b5-a5-sazid.vercel.app/api/v1/drivers/update-my-driver-profile
+https://cario-ride-backend.vercel.app/api/v1/drivers/update-my-driver-profile
 ```
 
 **_Access:_** Only `Driver` has The Access of This Route
@@ -868,7 +868,7 @@ https://b5-a5-sazid.vercel.app/api/v1/drivers/update-my-driver-profile
 **_URL:_**
 
 ```
-https://b5-a5-sazid.vercel.app/api/v1/drivers/go-online
+https://cario-ride-backend.vercel.app/api/v1/drivers/go-online
 ```
 
 **_Access:_** Only `Driver` has The Access of This Route
@@ -899,7 +899,7 @@ https://b5-a5-sazid.vercel.app/api/v1/drivers/go-online
 **_URL:_**
 
 ```
-https://b5-a5-sazid.vercel.app/api/v1/drivers/go-offline
+https://cario-ride-backend.vercel.app/api/v1/drivers/go-offline
 ```
 
 **_Access:_** Only `Driver` has The Access of This Route
@@ -925,7 +925,7 @@ https://b5-a5-sazid.vercel.app/api/v1/drivers/go-offline
 **_URL:_**
 
 ```
-https://b5-a5-sazid.vercel.app/api/v1/rides/request
+https://cario-ride-backend.vercel.app/api/v1/rides/request
 ```
 
 **_Access:_** Only `RIDER` has The Access of This Route
@@ -964,7 +964,7 @@ https://b5-a5-sazid.vercel.app/api/v1/rides/request
 **_URL:_**
 
 ```
-https://b5-a5-sazid.vercel.app/api/v1/rides/cancel-ride/688cfa6fd38ee39b116d9634
+https://cario-ride-backend.vercel.app/api/v1/rides/cancel-ride/688cfa6fd38ee39b116d9634
 ```
 
 **_Access:_** Only `RIDER` has The Access of This Route
@@ -988,7 +988,7 @@ https://b5-a5-sazid.vercel.app/api/v1/rides/cancel-ride/688cfa6fd38ee39b116d9634
 **_URL:_**
 
 ```
-https://b5-a5-sazid.vercel.app/api/v1/rides/drivers-near
+https://cario-ride-backend.vercel.app/api/v1/rides/drivers-near
 ```
 
 **_Access:_** Only `RIDER` has The Access of This Route
@@ -1014,7 +1014,7 @@ https://b5-a5-sazid.vercel.app/api/v1/rides/drivers-near
 **_URL:_**
 
 ```
-https://b5-a5-sazid.vercel.app/api/v1/rides/my-ride/688cf90bd38ee39b116d95fe
+https://cario-ride-backend.vercel.app/api/v1/rides/my-ride/688cf90bd38ee39b116d95fe
 ```
 
 **_Access:_** Only `RIDER` has The Access of This Route
@@ -1038,7 +1038,7 @@ https://b5-a5-sazid.vercel.app/api/v1/rides/my-ride/688cf90bd38ee39b116d95fe
 **_URL:_**
 
 ```
-https://b5-a5-sazid.vercel.app/api/v1/rides/all-rides-rider
+https://cario-ride-backend.vercel.app/api/v1/rides/all-rides-rider
 ```
 
 **_Access:_** Only `RIDER` has The Access of This Route
@@ -1062,7 +1062,7 @@ https://b5-a5-sazid.vercel.app/api/v1/rides/all-rides-rider
 **_URL:_**
 
 ```
-https://b5-a5-sazid.vercel.app/api/v1/rides/rides-near
+https://cario-ride-backend.vercel.app/api/v1/rides/rides-near
 ```
 
 **_Access:_** Only `DRIVER` has The Access of This Route
@@ -1087,7 +1087,7 @@ https://b5-a5-sazid.vercel.app/api/v1/rides/rides-near
 **_URL:_**
 
 ```
-https://b5-a5-sazid.vercel.app/api/v1/rides/reject-ride/688cf90bd38ee39b116d95fe
+https://cario-ride-backend.vercel.app/api/v1/rides/reject-ride/688cf90bd38ee39b116d95fe
 ```
 
 **_Access:_** Only `DRIVER` has The Access of This Route
@@ -1113,7 +1113,7 @@ https://b5-a5-sazid.vercel.app/api/v1/rides/reject-ride/688cf90bd38ee39b116d95fe
 **_URL:_**
 
 ```
-https://b5-a5-sazid.vercel.app/api/v1/rides/accept-ride/688d0ca1ef2ee7a54fb72d5f
+https://cario-ride-backend.vercel.app/api/v1/rides/accept-ride/688d0ca1ef2ee7a54fb72d5f
 ```
 
 **_Access:_** Only `DRIVER` has The Access of This Route
@@ -1139,7 +1139,7 @@ https://b5-a5-sazid.vercel.app/api/v1/rides/accept-ride/688d0ca1ef2ee7a54fb72d5f
 **_URL:_**
 
 ```
-https://b5-a5-sazid.vercel.app/api/v1/rides/pickup-rider/688d0ca1ef2ee7a54fb72d5f
+https://cario-ride-backend.vercel.app/api/v1/rides/pickup-rider/688d0ca1ef2ee7a54fb72d5f
 ```
 
 **_Access:_** Only `DRIVER` has The Access of This Route
@@ -1165,7 +1165,7 @@ https://b5-a5-sazid.vercel.app/api/v1/rides/pickup-rider/688d0ca1ef2ee7a54fb72d5
 **_URL:_**
 
 ```
-https://b5-a5-sazid.vercel.app/api/v1/rides/start-ride/688dd2d202a28032cbfcca3f
+https://cario-ride-backend.vercel.app/api/v1/rides/start-ride/688dd2d202a28032cbfcca3f
 ```
 
 **_Access:_** Only `DRIVER` has The Access of This Route
@@ -1191,7 +1191,7 @@ https://b5-a5-sazid.vercel.app/api/v1/rides/start-ride/688dd2d202a28032cbfcca3f
 **_URL:_**
 
 ```
-https://b5-a5-sazid.vercel.app/api/v1/rides/complete-ride/688dd2d202a28032cbfcca3f
+https://cario-ride-backend.vercel.app/api/v1/rides/complete-ride/688dd2d202a28032cbfcca3f
 ```
 
 **_Access:_** Only `DRIVER` has The Access of This Route
@@ -1219,7 +1219,7 @@ https://b5-a5-sazid.vercel.app/api/v1/rides/complete-ride/688dd2d202a28032cbfcca
 **_URL:_**
 
 ```
-https://b5-a5-sazid.vercel.app/api/v1/rides/feedback/688d0ca1ef2ee7a54fb72d5f
+https://cario-ride-backend.vercel.app/api/v1/rides/feedback/688d0ca1ef2ee7a54fb72d5f
 ```
 
 **_Access:_** Only `RIDER` has The Access of This Route
@@ -1250,7 +1250,7 @@ https://b5-a5-sazid.vercel.app/api/v1/rides/feedback/688d0ca1ef2ee7a54fb72d5f
 **_URL:_**
 
 ```
-https://b5-a5-sazid.vercel.app/api/v1/rides/all-rides-driver
+https://cario-ride-backend.vercel.app/api/v1/rides/all-rides-driver
 ```
 
 **_Access:_** Only `DRIVER` has The Access of This Route
@@ -1274,7 +1274,7 @@ https://b5-a5-sazid.vercel.app/api/v1/rides/all-rides-driver
 **_URL:_**
 
 ```
-https://b5-a5-sazid.vercel.app/api/v1/rides/all-rides-admin
+https://cario-ride-backend.vercel.app/api/v1/rides/all-rides-admin
 ```
 
 **_Access:_** Only `ADMIN` has The Access of This Route
@@ -1300,7 +1300,7 @@ https://b5-a5-sazid.vercel.app/api/v1/rides/all-rides-admin
 **_URL:_**
 
 ```
-https://b5-a5-sazid.vercel.app/api/v1/stats/earning-history
+https://cario-ride-backend.vercel.app/api/v1/stats/earning-history
 ```
 
 **_Access:_** Only `ADMIN` has The Access of This Route
@@ -1324,7 +1324,7 @@ https://b5-a5-sazid.vercel.app/api/v1/stats/earning-history
 **_URL:_**
 
 ```
-https://b5-a5-sazid.vercel.app/api/v1/stats/earning-history
+https://cario-ride-backend.vercel.app/api/v1/stats/earning-history
 ```
 
 **_Access:_** Only `DRIVER` has The Access of This Route

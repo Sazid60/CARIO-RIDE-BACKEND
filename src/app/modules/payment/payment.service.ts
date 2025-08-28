@@ -25,8 +25,8 @@ const initPayment = async (rideId: string) => {
         throw new AppError(httpStatus.NOT_FOUND, "Payment Not Found")
     }
 
-    if(payment.status === PAYMENT_STATUS.PAID){
-       throw new AppError(httpStatus.NOT_FOUND, "You Have already paid For This Ride!") 
+    if (payment.status === PAYMENT_STATUS.PAID) {
+        throw new AppError(httpStatus.NOT_FOUND, "You Have already paid For This Ride!")
     }
     const ride = await Ride.findById(payment.ride)
 
@@ -77,21 +77,19 @@ const successPayment = async (query: Record<string, string>) => {
     session.startTransaction();
 
     try {
-        // Find and update payment to PAID
         const paymentInfo = await Payment.findOne({ transactionId: query.transactionId });
 
         if (!paymentInfo) {
             throw new AppError(401, "Payment not found");
         }
 
-        // Get the ride and mark completed
         const updatedRide = await Ride.findByIdAndUpdate(
             paymentInfo?.ride,
             {
                 $set: {
                     "timestamps.completedAt": new Date(),
                     rideStatus: RideStatus.COMPLETED,
-                    transactionId : paymentInfo.transactionId,
+                    transactionId: paymentInfo.transactionId,
                 },
             },
             { new: true, runValidators: true, session }
@@ -103,21 +101,21 @@ const successPayment = async (query: Record<string, string>) => {
             throw new AppError(401, "Ride not found");
         }
 
-        // Get driver
+
         const driver = await Driver.findById(updatedRide.driverId).session(session);
         if (!driver) throw new AppError(404, "Driver not found");
 
-        // Calculate incomes
+
         const ownerCommissionPercentage = 20;
         const driverIncome = (updatedRide.fare as number * (100 - ownerCommissionPercentage)) / 100;
         const ownerIncome = (updatedRide.fare as number * ownerCommissionPercentage) / 100;
 
-        // Update driver earnings
+
         driver.totalEarning = Number(driver.totalEarning || 0) + driverIncome;
         driver.totalRides = Number(driver.totalRides || 0) + 1;
         await driver.save({ session });
 
-        // Update payment with incomes
+
         const updatedPayment = await Payment.findByIdAndUpdate(
             paymentInfo._id,
             { driverIncome, ownerIncome, status: PAYMENT_STATUS.PAID },
@@ -128,14 +126,14 @@ const successPayment = async (query: Record<string, string>) => {
             throw new AppError(httpStatus.BAD_REQUEST, "Payment Could not Be Created!")
         }
 
-        // Generate addresses
+
         const pickupCoords = updatedRide.pickupLocation?.coordinates;
         const destCoords = updatedRide.destination?.coordinates;
 
         const pickupLocation = pickupCoords ? await getAddress(pickupCoords[1], pickupCoords[0]) : null;
         const destinationLocation = destCoords ? await getAddress(destCoords[1], destCoords[0]) : null;
 
-        // Prepare invoice data
+
         const invoiceData: IInvoiceData = {
             rideDate: updatedRide.timestamps?.completedAt as Date,
             travelDistance: updatedRide.travelDistance as number,
@@ -149,21 +147,21 @@ const successPayment = async (query: Record<string, string>) => {
             userName: (updatedRide.riderId as any).name,
         };
 
-        // Generate PDF invoice
+
         const pdfBuffer = await generatePdf(invoiceData);
 
-        // Upload invoice to Cloudinary
+
         const cloudinaryResult = await uploadBufferToCloudinary(pdfBuffer, "invoice");
         if (!cloudinaryResult) throw new AppError(401, "Error uploading PDF");
 
-        // Update payment with invoice URL
+
         await Payment.findByIdAndUpdate(
             updatedPayment._id,
             { invoiceUrl: cloudinaryResult.secure_url },
             { runValidators: true, session }
         );
 
-        // Send invoice email
+  
         await sendEmail({
             to: (updatedRide.riderId as any).email,
             subject: "Your Ride Invoice",
@@ -229,7 +227,7 @@ const cancelPayment = async (query: Record<string, string>) => {
     paymentInfo.status = PAYMENT_STATUS.CANCELLED;
     await paymentInfo.save();
 
-    return { success: false, message: "Payment Cancelled"};
+    return { success: false, message: "Payment Cancelled" };
 };
 
 
