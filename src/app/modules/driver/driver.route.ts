@@ -2,14 +2,16 @@ import { Router } from "express";
 import { checkAuth } from "../../middlewares/checkAuth";
 import { Role } from "../user/user.interface";
 import { validateRequest } from "../../middlewares/validateRequest";
-import { createDriverZodSchema, goOnlineZodSchema, updateDriverProfileZodSchema, updateDriverStatusZodSchema } from "./driver.validation";
+import { createDriverZodSchema, goOnlineZodSchema,updateDriverStatusZodSchema } from "./driver.validation";
 import { multerUpload } from "../../config/multer.config";
 import { driverControllers } from "./driver.controller";
 
 
 const router = Router()
 
-router.get("/all-drivers", checkAuth(Role.ADMIN), driverControllers.getAllDrivers)
+
+
+router.patch("/driver-location-update", checkAuth(Role.DRIVER), driverControllers.updateLocation)
 
 router.post("/register",
     checkAuth(...Object.values(Role)),
@@ -19,17 +21,15 @@ router.post("/register",
 )
 router.get("/me", checkAuth(Role.DRIVER), driverControllers.getMe)
 
-// update rider profile 
 
 router.patch(
   "/update-my-driver-profile",
   checkAuth(Role.DRIVER),
   multerUpload.single("file"),          
-  validateRequest(updateDriverProfileZodSchema), 
   driverControllers.updateMyDriverProfile
 );
 
-// go online or offline 
+
 
 router.patch(
   "/go-online",
@@ -50,7 +50,7 @@ router.patch("/status/:id",
     driverControllers.updateDriverStatus
 )
 
-router.patch("/driver-location-update", checkAuth(Role.DRIVER), driverControllers.updateLocation)
+router.get("/all-drivers", checkAuth(Role.ADMIN), driverControllers.getAllDrivers)
 
 router.get("/:id",checkAuth(Role.ADMIN), driverControllers.getSingleDriver)
 

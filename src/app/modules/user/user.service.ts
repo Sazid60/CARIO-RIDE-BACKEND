@@ -12,8 +12,6 @@ import { deleteImageFromCloudinary } from "../../config/cloudinary.config";
 
 
 const createUser = async (payload: Partial<IUser>) => {
-    // eslint-disable-next-line no-console
-    console.log(payload)
     const { email, password, ...rest } = payload
 
     const isUserExist = await User.findOne({ email })
@@ -44,6 +42,7 @@ const getAllUsers = async (query: Record<string, string>) => {
         .search(userSearchableFields)
         .sort()
         .fields()
+        .dateSearch()
         .paginate();
 
     const [data,meta] = await Promise.all([
@@ -57,7 +56,7 @@ const getAllUsers = async (query: Record<string, string>) => {
         
     }
 };
-// update User 
+
 
 const updateUser = async (userId: string, payload: Partial<IUser>, decodedToken: JwtPayload) => {
 
@@ -112,7 +111,7 @@ const getMe = async (userId: string) => {
 };
 
 
-export const updateUserStatus = async (userId: string, payload: Partial<IUser>, decodedToken: JwtPayload) => {
+const updateUserStatus = async (userId: string, payload: Partial<IUser>, decodedToken: JwtPayload) => {
     const ifUserExist = await User.findById(userId);
 
     if (!ifUserExist) {

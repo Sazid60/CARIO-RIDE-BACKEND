@@ -12,16 +12,6 @@ import { catchAsync } from "../../utils/catchAsync";
 import { IUser } from "./user.interface";
 
 
-// const createUser = catchAsync(async (req: Request, res: Response, next: NextFunction) => {
-//     const user = await userServices.createUser(req.body)
-//     sendResponse(res, {
-//         success: true,
-//         statusCode: httpStatus.CREATED,
-//         message: "User Created Successfully",
-//         data: user
-//     })
-// })
-
 const createUser = catchAsync(async (req: Request, res: Response, next: NextFunction) => {
     const payload: Partial<IUser> = {
         ...req.body,
@@ -92,7 +82,6 @@ const updateUserStatus = catchAsync(async (req: Request, res: Response, next: Ne
     const userId = req.params.id;
     const verifiedToken = req.user as JwtPayload;
     const payload = req.body;
-
     const user = await userServices.updateUserStatus(userId, payload, verifiedToken);
 
     sendResponse(res, {

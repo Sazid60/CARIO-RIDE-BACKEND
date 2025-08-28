@@ -40,16 +40,6 @@ export const goOnlineZodSchema = z
       }),
   });
 
-export const updateDriverProfileZodSchema = z.object({
-  name: z.string().optional(),
-  vehicle: z
-    .object({
-      vehicleNumber: z.string().min(4).optional(),
-      vehicleType: z.enum(Object.values(VehicleType) as [string]).optional(),
-    })
-    .optional(),
-  drivingLicense: z.string().optional(),
-});
 
 
 export const updateDriverStatusZodSchema = z.object({

@@ -9,7 +9,6 @@ import { Role } from "../user/user.interface";
 
 const router = Router()
 
-// create a ride request - > user 
 
 router.post(
   "/request",
@@ -18,13 +17,11 @@ router.post(
   rideController.createRide
 );
 
-// get all the available rides in driver coordinates 
 router.get("/rides-near",
   checkAuth(Role.DRIVER),
   rideController.getRidesNearMe
 )
 
-// GET ALL RIDES- Admin
 
 router.get("/all-rides-admin",
   checkAuth(Role.ADMIN),
@@ -35,14 +32,11 @@ router.get("/all-feedbacks",
   rideController.getFeedbacks
 )
 
-// GET ALL MY RIDES - riders
 
 router.get("/all-rides-rider",
   checkAuth(Role.RIDER),
   rideController.getAllRidesForRider
 )
-
-// GET ALL MY RIDES - driver
 
 router.get("/all-rides-driver",
   checkAuth(Role.DRIVER),
@@ -51,16 +45,11 @@ router.get("/all-rides-driver",
 
 
 
-// GET Rider Near Me - RIDER
 router.get("/drivers-near",
   checkAuth(...Object.values(Role)),
   rideController.getDriversNearMe
 )
 
-// router.get("/update-current-ride-location",
-//   checkAuth(Role.RIDER),
-//   rideController.updateCurrentLocation
-// )
 
 router.get("/my-accepted-ride",
   checkAuth(Role.DRIVER),
@@ -70,7 +59,7 @@ router.get("/my-accepted-ride",
 
 
 
-// GET MY RIDE  - Rider
+
 router.get("/my-ride/:id",
   checkAuth(Role.RIDER),
   rideController.getSingleRideForRider
@@ -84,42 +73,40 @@ router.get("/single-ride/:id",
   rideController.getSingleRideForAdmin
 )
 
-// cancel ride - rider
 
 router.patch("/cancel-ride/:id", checkAuth(...Object.values(Role)), rideController.cancelRideByRider)
 
-// reject rides - rider
+
 
 router.patch("/reject-ride/:id", checkAuth(Role.DRIVER), rideController.rejectRide)
 
-// driver accept ride
+
 
 router.patch("/accept-ride/:id", checkAuth(Role.DRIVER), rideController.acceptRide)
 
-// update ride location
+
 
 router.patch("/ride-location-update/:id", checkAuth(Role.DRIVER, Role.RIDER), rideController.updateRideLocation)
 
-// Pickup the rider
+
 router.patch("/pickup-rider/:id", checkAuth(Role.DRIVER), rideController.pickupRider)
 
-// start the ride 
+
 router.patch("/start-ride/:id", checkAuth(Role.DRIVER), rideController.startRide)
 
-// arrived
+
 router.patch("/arrived-destination/:id", checkAuth(Role.DRIVER), rideController.arrived)
-// pay Online
+
 
 router.patch("/pay-online/:id", checkAuth(Role.RIDER), rideController.payOnline)
 
-// COMPLETE THE RIDE
+
 router.patch("/pay-offline/:id", checkAuth(Role.DRIVER), rideController.payOffline)
 
 
 
 
 
-// give feedback 
 
 router.patch(
   "/feedback/:rideId",

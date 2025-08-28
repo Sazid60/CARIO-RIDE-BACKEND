@@ -1,1 +1,1 @@
-export const faqSearchableFields = ["question"]
+export const faqSearchableFields = ["question", "email", "name"]
