@@ -37,6 +37,10 @@ router.get("/all-rides-rider",
   checkAuth(Role.RIDER),
   rideController.getAllRidesForRider
 )
+router.get("/rider-latest-ride",
+  checkAuth(Role.RIDER),
+  rideController.getRequestedRideForRider
+)
 
 router.get("/all-rides-driver",
   checkAuth(Role.DRIVER),

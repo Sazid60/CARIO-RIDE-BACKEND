@@ -95,25 +95,39 @@ const getRidesNearMe = async (userId: string) => {
     throw new AppError(httpStatus.BAD_REQUEST, "Driver location is not set.");
   }
 
-  const requestedRides: IRide[] = await Ride.find({
+  // const requestedRides: IRide[] = await Ride.find({
+  //   rideStatus: RideStatus.REQUESTED,
+  // }).sort({ createdAt: -1 });
+
+  // const nearByRides = requestedRides.filter((ride) => {
+  //   if (ride.rejectedBy?.some(id => id.toString() === driver._id.toString())) {
+  //     return false;
+  //   }
+  //   if (!ride.pickupLocation?.coordinates || !driver.currentLocation?.coordinates) return false;
+
+  //   const [pickupLng, pickupLat] = ride.pickupLocation.coordinates;
+  //   const [driverLng, driverLat] = driver.currentLocation.coordinates;
+
+  //   const distanceInMeters = haversine(
+  //     { lat: driverLat, lon: driverLng },
+  //     { lat: pickupLat, lon: pickupLng }
+  //   );
+  //   return distanceInMeters <= 1000;
+  // });
+
+  const [lng, lat] = driver.currentLocation.coordinates;
+  
+  const nearByRides: IRide[] = await Ride.find({
     rideStatus: RideStatus.REQUESTED,
+    rejectedBy: { $ne: driver._id }, 
+    "pickupLocation.coordinates": {
+      $near: {
+        $geometry: { type: "Point", coordinates: [lng, lat] },
+        $maxDistance: 1000, 
+      },
+    },
   }).sort({ createdAt: -1 });
 
-  const nearByRides = requestedRides.filter((ride) => {
-    if (ride.rejectedBy?.some(id => id.toString() === driver._id.toString())) {
-      return false;
-    }
-    if (!ride.pickupLocation?.coordinates || !driver.currentLocation?.coordinates) return false;
-
-    const [pickupLng, pickupLat] = ride.pickupLocation.coordinates;
-    const [driverLng, driverLat] = driver.currentLocation.coordinates;
-
-    const distanceInMeters = haversine(
-      { lat: driverLat, lon: driverLng },
-      { lat: pickupLat, lon: pickupLng }
-    );
-    return distanceInMeters <= 1000;
-  });
 
   return {
     success: true,
@@ -846,7 +860,10 @@ const getAllRidesForDriver = async (userId: string, query: Record<string, string
 
 const getSingleRideForRider = async (rideId: string, riderId: string) => {
 
-  const data = await Ride.findById(rideId).populate("driverId").populate("payment")
+  const data = await Ride.findById(rideId).populate({
+    path: "driverId",    
+    populate: { path: "userId" } 
+  }).populate("payment")
 
   if (!data) {
     throw new AppError(httpStatus.NOT_FOUND, "Ride Information Not Found")
@@ -875,7 +892,7 @@ const getSingleRideForAdmin = async (rideId: string) => {
 }
 const getSingleRideForDriver = async (rideId: string, driverId: string) => {
 
-  const data = await Ride.findById(rideId)
+  const data = await Ride.findById(rideId).populate("riderId")
 
   const driver = await Driver.findOne({ userId: driverId });
 
@@ -914,22 +931,33 @@ const getSingleRideForDriver = async (rideId: string, driverId: string) => {
 const getLatestAcceptedRideForDriver = async (userId: string) => {
   console.log(userId);
 
-  // Find the driver
   const driver = await Driver.findOne({ userId });
   if (!driver) {
     throw new AppError(httpStatus.NOT_FOUND, "Driver Not Found!");
   }
 
-  // Define acceptable ride statuses
   const acceptedStatuses = ["ACCEPTED", "REQUESTED", "PICKED_UP", "IN_TRANSIT", "ARRIVED"];
 
-  // Find latest ride for this driver with any of the accepted statuses
   const data = await Ride.findOne({
     driverId: driver._id,
     rideStatus: { $in: acceptedStatuses },
   }).sort({ createdAt: -1 });
 
   return { data };
+};
+const getRequestedRideForRider = async (userId: string) => {
+  console.log(userId);
+
+  const acceptedStatuses = ["ACCEPTED", "REQUESTED", "PICKED_UP", "IN_TRANSIT", "ARRIVED"];
+
+  const latestRide = await Ride.findOne({
+    riderId:userId, 
+    rideStatus: { $in: acceptedStatuses },
+  })
+    .sort({ createdAt: -1 })
+    .lean();
+
+  return { data: latestRide };
 };
 
 const updateRideLocation = async (rideId: string, currentLocation: ICurrentLocation) => {
@@ -942,86 +970,6 @@ const updateRideLocation = async (rideId: string, currentLocation: ICurrentLocat
   );
   return { data: ride };
 };
-
-// const updateRideLocation = async (rideId: string, currentLocation: ICurrentLocation) => {
-//   const maxRetries = 3;
-//   let lastError;
-
-//   for (let i = 0; i < maxRetries; i++) {
-//     try {
-//       const ride = await Ride.findOneAndUpdate(
-//         { _id: rideId },
-//         { $set: { currentLocation } },   
-//         { new: true, writeConcern: { w: 1 } } 
-//       );
-//       return { data: ride };
-//     } catch (err: any) {
-//       if (err.code === 112 || err.errorLabels?.includes("TransientTransactionError")) {
-//         lastError = err;
-//         await new Promise((r) => setTimeout(r, 50 * (i + 1))); 
-//         continue;
-//       }
-//       throw err;
-//     }
-//   }
-
-//   throw lastError;
-// };
-
-
-
-// const getDriversNearMe = async (userId: string) => {
-//   const user: IUser | null = await User.findById(userId);
-//   if (!user) {
-//     throw new AppError(httpStatus.NOT_FOUND, "User not found.");
-//   }
-
-//   if (user.isBlocked === IsBlocked.BLOCKED) {
-//     throw new AppError(httpStatus.BAD_REQUEST, "You are blocked. Contact Admin.");
-//   }
-
-//   const latestRide = await Ride.findOne({ riderId: userId }).sort({ createdAt: -1 });
-//   if (!latestRide || !latestRide.pickupLocation?.coordinates?.length) {
-//     throw new AppError(httpStatus.BAD_REQUEST, "Your location not found.");
-//   }
-
-//   const [pickupLng, pickupLat] = latestRide.pickupLocation.coordinates;
-
-//   const drivers: IDriver[] = await Driver.find(
-//     {
-//       driverStatus: DriverStatus.APPROVED,
-//       onlineStatus: DriverOnlineStatus.ONLINE,
-//       ridingStatus: { $ne: DriverRidingStatus.RIDING },
-//       currentLocation: { $exists: true, $ne: null },
-//     },
-//     {
-//       vehicle: 1,
-//       currentLocation: 1,
-//     }
-//   ).populate("userId", "name phone");
-
-
-//   const nearbyDrivers = drivers.filter((driver) => {
-
-//     if (!driver.currentLocation?.coordinates?.length) return false;
-
-//     const [driverLng, driverLat] = driver.currentLocation.coordinates;
-
-//     const distanceInMeters = haversine(
-//       { lat: pickupLat, lon: pickupLng },
-//       { lat: driverLat, lon: driverLng }
-//     );
-
-//     return distanceInMeters <= 1000;
-//   });
-
-//   return {
-//     success: true,
-//     count: nearbyDrivers.length,
-//     data: nearbyDrivers,
-//   };
-// };
-
 
 
 
@@ -1282,6 +1230,7 @@ export const rideService = {
   getDriversNearMe,
   rejectRide,
   cancelRideByRider,
-  giveFeedbackAndRateDriver
+  giveFeedbackAndRateDriver,
+  getRequestedRideForRider 
 };
 

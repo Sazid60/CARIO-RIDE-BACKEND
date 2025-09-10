@@ -185,6 +185,7 @@ const getAllRidesForRider = catchAsync(async (req: Request, res: Response) => {
   });
 
 });
+
 const getAllRidesForDriver = catchAsync(async (req: Request, res: Response) => {
 
   const user = req.user as JwtPayload
@@ -239,6 +240,8 @@ const getSingleRideForDriver = catchAsync(async (req: Request, res: Response) =>
 
   const result = await rideService.getSingleRideForDriver(rideId, driverId)
 
+  console.log("dri", result)
+
   sendResponse(res, {
     success: true,
     statusCode: httpStatus.CREATED,
@@ -257,9 +260,27 @@ const getLatestAcceptedRideForDriver = catchAsync(async (req: Request, res: Resp
 
   sendResponse(res, {
     success: true,
-    statusCode: httpStatus.CREATED,
+    statusCode: httpStatus.OK,
     message: "Your Accepted Ride Information Retrieved!",
     data: result.data
+  });
+
+});
+
+const getRequestedRideForRider = catchAsync(async (req: Request, res: Response) => {
+
+  const rider = req.user as JwtPayload
+  const riderId = rider.userId
+
+  const rideInfo = await rideService.getRequestedRideForRider(riderId)
+
+  console.log(rideInfo)
+
+  sendResponse(res, {
+    success: true,
+    statusCode: httpStatus.OK,
+    message: "Rides Made By You are Retrieved!",
+    data: rideInfo
   });
 
 });
@@ -360,5 +381,6 @@ export const rideController = {
   giveFeedback,
   arrived,
   getLatestAcceptedRideForDriver,
-  getSingleRideForDriver
+  getSingleRideForDriver,
+  getRequestedRideForRider
 };
