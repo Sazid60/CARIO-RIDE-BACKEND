@@ -92,4 +92,6 @@ const rideSchema = new Schema<IRide>(
   }
 );
 
+rideSchema.index({ "pickupLocation.coordinates": "2dsphere" });
+
 export const Ride = model<IRide>("Ride", rideSchema);
