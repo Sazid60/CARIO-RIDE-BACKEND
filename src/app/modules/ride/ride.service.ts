@@ -946,7 +946,6 @@ const getLatestAcceptedRideForDriver = async (userId: string) => {
   return { data };
 };
 const getRequestedRideForRider = async (userId: string) => {
-  console.log(userId);
 
   const acceptedStatuses = ["ACCEPTED", "REQUESTED", "PICKED_UP", "IN_TRANSIT", "ARRIVED"];
 

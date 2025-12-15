@@ -240,7 +240,6 @@ const getSingleRideForDriver = catchAsync(async (req: Request, res: Response) =>
 
   const result = await rideService.getSingleRideForDriver(rideId, driverId)
 
-  console.log("dri", result)
 
   sendResponse(res, {
     success: true,
@@ -274,7 +273,6 @@ const getRequestedRideForRider = catchAsync(async (req: Request, res: Response) 
 
   const rideInfo = await rideService.getRequestedRideForRider(riderId)
 
-  console.log(rideInfo)
 
   sendResponse(res, {
     success: true,
