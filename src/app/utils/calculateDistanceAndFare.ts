@@ -22,6 +22,7 @@
 
 
 import axios from "axios";
+import { envVars } from "../config/env";
 
 export const calculateDistanceAndFare = async (
   pickup: [number, number],
@@ -29,25 +30,35 @@ export const calculateDistanceAndFare = async (
   baseFarePerKm = 100
 ) => {
   try {
-    // OSRM API call (free)
-    const url = `https://router.project-osrm.org/route/v1/driving/${pickup[0]},${pickup[1]};${destination[0]},${destination[1]}?overview=false`;
-    const res = await axios.get(url);
+    const res = await axios.post(
+      "https://api.openrouteservice.org/v2/directions/driving-car/geojson",
+      {
+        coordinates: [
+          [pickup[0], pickup[1]],        
+          [destination[0], destination[1]] 
+        ],
+      },
+      {
+        headers: {
+          Authorization: envVars.ORS_API_KEY,
+          "Content-Type": "application/json",
+        },
+        timeout: 15000,
+      }
+    );
 
-    if (!res.data.routes || res.data.routes.length === 0) {
-      throw new Error("No route found");
-    }
-
-    const route = res.data.routes[0];
-    const distanceInMeters = route.distance;
+    const route = res.data.features[0];
+    const distanceInMeters = route.properties.summary.distance; 
     const distanceKm = parseFloat((distanceInMeters / 1000).toFixed(2));
     const fare = parseFloat((distanceKm * baseFarePerKm).toFixed(2));
 
     return {
       distanceKm,
-      fare
+      fare,
     };
   } catch (err) {
-    console.error(err);
+    console.error("Error calculating distance and fare:", err);
     return { distanceKm: 0, fare: 0 };
   }
 };
+

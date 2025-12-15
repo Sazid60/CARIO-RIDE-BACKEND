@@ -18,6 +18,7 @@ interface EnvConfig {
     GOOGLE_CALLBACK_URL: string,
     EXPRESS_SESSION_SECRET: string,
     FRONTEND_URL: string,
+    ORS_API_KEY: string,
 
     SSL: {
         STORE_ID: string,
@@ -67,7 +68,8 @@ const loadEnvVariables = (): EnvConfig => {
         "SSL_SUCCESS_BACKEND_URL",
         "SSL_FAIL_BACKEND_URL",
         "SSL_CANCEL_BACKEND_URL",
-        "SSL_IPN_URL"
+        "SSL_IPN_URL",
+        "ORS_API_KEY"
     ];
 
     requiredEnvVariables.forEach(key => {
@@ -92,6 +94,7 @@ const loadEnvVariables = (): EnvConfig => {
         GOOGLE_CALLBACK_URL: process.env.GOOGLE_CALLBACK_URL as string,
         EXPRESS_SESSION_SECRET: process.env.EXPRESS_SESSION_SECRET as string,
         FRONTEND_URL: process.env.FRONTEND_URL as string,
+        ORS_API_KEY: process.env.ORS_API_KEY as string,
         SSL: {
             STORE_ID: process.env.SSL_STORE_ID as string,
             STORE_PASS: process.env.SSL_STORE_PASS as string,
