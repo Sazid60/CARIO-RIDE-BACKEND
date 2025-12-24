@@ -125,7 +125,7 @@ Driver_PASSWORD= Driver123@
 Rider_EMAIL= rider@gmail.com
 Rider_PASSWORD= Rider123@
 ```
-
+- login credentials are also available in frontend login page. anyone can directly hit and login 
 
 ### Project Structure
 
