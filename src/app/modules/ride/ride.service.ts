@@ -782,6 +782,7 @@ const payOffline = async (driverUserId: string, rideId: string) => {
   } catch (error) {
     await session.abortTransaction();
     session.endSession();
+    console.log(error)
     throw error;
   }
 };
