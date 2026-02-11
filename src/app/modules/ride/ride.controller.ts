@@ -126,6 +126,7 @@ const payOffline = catchAsync(async (req: Request, res: Response) => {
   const driver = req.user as JwtPayload;
   const driverId = driver.userId;
   const rideId = req.params.id
+  console.log(driver)
 
   const rideInfo = await rideService.payOffline(driverId, rideId)
 

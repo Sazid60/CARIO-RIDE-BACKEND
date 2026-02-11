@@ -29,6 +29,8 @@ interface sendEmailOptions {
 
 export const sendEmail = async ({ to, subject, attachments, templateName, templateData }: sendEmailOptions) => {
 
+    console.log(to, subject, attachments, templateName, templateData )
+
     try {
         const templatePath = path.join(__dirname, `templates/${templateName}.ejs`)
         console.log(templatePath)
